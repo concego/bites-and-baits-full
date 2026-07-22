@@ -39,6 +39,7 @@ const Game = (() => {
   }
 
   // ── Estado global ─────────────────────────────────────────────────────────
+  let gameMode         = 'normal'; // 'normal' | 'free'
   let state            = 'IDLE';
   let score            = 0;
   let best             = parseInt(localStorage.getItem('bb_best') || '0');
@@ -132,7 +133,8 @@ const Game = (() => {
 
     $('btn-lang-pt').addEventListener('click', () => selectLang('pt'));
     $('btn-lang-en').addEventListener('click', () => selectLang('en'));
-    $('btn-start').addEventListener('click', startGame);
+    $('btn-start').addEventListener('click', () => startGame('normal'));
+    $('btn-free').addEventListener('click',  () => startGame('free'));
     $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
     $('btn-back').addEventListener('click',  () => showScreen('start'));
     $('btn-options').addEventListener('click', () => { _syncToggles(); showScreen('options'); });
@@ -407,7 +409,9 @@ const Game = (() => {
   }
 
   // ── Inicia jogo ───────────────────────────────────────────────────────────
-  async function startGame() {
+  async function startGame(mode = 'normal') {
+    gameMode = mode;
+
     const ok = await Sensors.requestPermission();
     if (!ok) {
       speak(I18n.t('speak_no_sensor'));
@@ -415,6 +419,11 @@ const Game = (() => {
     }
     await Audio.init();
     showScreen('game');
+
+    // HUD de pontuação: visível só no Free Fishing
+    const hud = $('score-hud');
+    if (hud) hud.classList.toggle('hidden', gameMode !== 'free');
+
     score = 0;
     updateScore();
     fishEls = [];
@@ -554,16 +563,29 @@ const Game = (() => {
                          : currentFish.size <= 3 ? I18n.t('size_medium')
                          :                         I18n.t('size_large');
           if (currentFish.special) {
-            sayKey('caught_special', fishName(currentFish), score);
+            sayKey(gameMode === 'free' ? 'caught_special' : 'caught_special_noscore',
+                   fishName(currentFish), score);
           } else {
-            sayKey('caught', fishName(currentFish), sizeDesc, score);
+            sayKey(gameMode === 'free' ? 'caught' : 'caught_noscore',
+                   fishName(currentFish), sizeDesc, score);
           }
         }
 
-        // Mostra peso e valor na tela de resultado
+        // Salva item capturado para a tela de resultado (Free Fishing)
         _lastCaughtItem = caughtItem;
 
-        setTimeout(() => { if (state === 'CAUGHT') enterState('IDLE'); }, 3500);
+        if (gameMode === 'free') {
+          // Free Fishing: vai para tela de resultado com stats
+          setTimeout(() => {
+            if (state === 'CAUGHT') {
+              setTalkbackSilent(false);
+              showResultScreen(true);
+            }
+          }, 3500);
+        } else {
+          // Modo normal: volta ao IDLE diretamente
+          setTimeout(() => { if (state === 'CAUGHT') enterState('IDLE'); }, 2500);
+        }
         break;
       }
 
@@ -578,12 +600,17 @@ const Game = (() => {
         _destroyActiveFish();
         setLabel(I18n.t('state_snapped'));
         sayKey('snapped');
-        setTimeout(() => {
-          if (state === 'SNAPPED') {
-            setTalkbackSilent(false);
-            showResultScreen(false);
-          }
-        }, 2000);
+        if (gameMode === 'free') {
+          setTimeout(() => {
+            if (state === 'SNAPPED') {
+              setTalkbackSilent(false);
+              showResultScreen(false);
+            }
+          }, 2000);
+        } else {
+          // Modo normal: volta ao IDLE sem passar pela tela de resultado
+          setTimeout(() => { if (state === 'SNAPPED') enterState('IDLE'); }, 2500);
+        }
         break;
     }
   }
