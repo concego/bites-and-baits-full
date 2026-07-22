@@ -22,6 +22,26 @@ const I18n = (() => {
       credits_by:       'Por',
       credits_brand:    'Eu Concego Jogar',
 
+      // Tela de opções
+      btn_options:           'Opções',
+      options_title:         'Opções',
+      options_lang_title:    'Idioma',
+      options_a11y_title:    'Acessibilidade',
+      options_sound:         'Efeitos sonoros',
+      options_sound_desc:    'Ativa ou desativa todos os sons do jogo',
+      options_haptic:        'Vibração (háptica)',
+      options_haptic_desc:   'Ativa ou desativa o feedback de vibração',
+      options_contrast:      'Alto contraste',
+      options_contrast_desc: 'Aumenta o contraste das cores da interface',
+      options_large_text:    'Texto grande',
+      options_large_text_desc: 'Aumenta o tamanho dos textos do jogo',
+      options_slow_game:     'Jogo lento',
+      options_slow_game_desc:'Dá mais tempo para reagir (timers 60% mais longos)',
+      options_verbose:       'Narração detalhada',
+      options_verbose_desc:  'Anuncia mais informações de estado pelo leitor de tela',
+      toggle_on:             'Ativado',
+      toggle_off:            'Desativado',
+
       // Tela de instruções
       how_to_play:      'Como jogar',
       instr_sensor_title:  '📱 Celular com acelerômetro',
@@ -122,6 +142,26 @@ const I18n = (() => {
       hint:             'Hold your phone upright to play',
       credits_by:       'By',
       credits_brand:    'Eu Concego Jogar',
+
+      // Options screen
+      btn_options:           'Options',
+      options_title:         'Options',
+      options_lang_title:    'Language',
+      options_a11y_title:    'Accessibility',
+      options_sound:         'Sound effects',
+      options_sound_desc:    'Enable or disable all game sounds',
+      options_haptic:        'Vibration (haptic)',
+      options_haptic_desc:   'Enable or disable vibration feedback',
+      options_contrast:      'High contrast',
+      options_contrast_desc: 'Increase interface color contrast',
+      options_large_text:    'Large text',
+      options_large_text_desc: 'Increase game text size',
+      options_slow_game:     'Slow game',
+      options_slow_game_desc:'Gives more reaction time (timers 60% longer)',
+      options_verbose:       'Verbose narration',
+      options_verbose_desc:  'Announces more state info via screen reader',
+      toggle_on:             'On',
+      toggle_off:            'Off',
 
       // Instructions screen
       how_to_play:      'How to play',
