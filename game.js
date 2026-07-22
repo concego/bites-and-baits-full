@@ -150,6 +150,9 @@ const Game = (() => {
     $('btn-menu').addEventListener('click',  () => goToMenu());
     $('btn-menu2').addEventListener('click', () => goToMenu());
     $('btn-continue').addEventListener('click', () => {
+      // Ao voltar da tela de resultado, reinicia sensors e áudio
+      Sensors.start();
+      Audio.startAmbient();
       showScreen('game');
       enterState('IDLE');
     });
@@ -585,6 +588,7 @@ const Game = (() => {
 
         // Registra no inventário — sorteia peso e calcula valor
         const caughtItem = Inventory.addFish(currentFish);
+        _lastCaughtItem = caughtItem;
 
         setLabel(I18n.t('state_caught', fishName(currentFish)));
         {
@@ -601,21 +605,11 @@ const Game = (() => {
           }
         }
 
-        // Salva item capturado para a tela de resultado (Free Fishing)
-        _lastCaughtItem = caughtItem;
-
-        if (gameMode === 'free') {
-          // Free Fishing: vai para tela de resultado com stats
-          setTimeout(() => {
-            if (state === 'CAUGHT') {
-              setTalkbackSilent(false);
-              showResultScreen(true);
-            }
-          }, 3500);
-        } else {
-          // Modo normal: volta ao IDLE diretamente
-          setTimeout(() => { if (state === 'CAUGHT') enterState('IDLE'); }, 2500);
-        }
+        // Ambos os modos voltam ao IDLE — Free Fishing mostra feedback no HUD
+        // A tela de resultado só aparece ao sair (btn-menu) no Free Fishing
+        setTimeout(() => {
+          if (state === 'CAUGHT') enterState('IDLE');
+        }, 2500);
         break;
       }
 
@@ -942,11 +936,11 @@ const Game = (() => {
     ui.resultScore.textContent = score;
     ui.resultBest.textContent  = best;
     if (caught && currentFish) {
+      // Captura individual (não usado no Free Fishing mais)
       const useEl = $('result-fish-use');
       if (useEl) useEl.setAttribute('href', `#${currentFish.sprite}`);
       $('result-fish-svg').style.display = '';
       ui.resultTitle.textContent = I18n.t('result_caught');
-      // Exibe nome + peso + moedas ganhas se disponível
       if (_lastCaughtItem) {
         ui.resultDesc.textContent = I18n.t(
           'result_caught_weight',
@@ -958,7 +952,14 @@ const Game = (() => {
       } else {
         ui.resultDesc.textContent = I18n.t('result_caught_desc', fishName(currentFish));
       }
+    } else if (gameMode === 'free' && score > 0) {
+      // Free Fishing — resumo da sessão ao sair
+      $('result-fish-svg').style.display = 'none';
+      ui.resultIcon.innerHTML    = '<span style="font-size:80px">🎣</span>';
+      ui.resultTitle.textContent = I18n.t('result_session_title');
+      ui.resultDesc.textContent  = I18n.t('result_session_desc', score, Inventory.coins());
     } else {
+      // Linha arrebentou ou saiu sem pescar nada
       $('result-fish-svg').style.display = 'none';
       ui.resultIcon.innerHTML    = '<span style="font-size:80px">💔</span>';
       ui.resultTitle.textContent = I18n.t('result_snapped');
@@ -975,6 +976,13 @@ const Game = (() => {
     _destroyActiveFish();
     _hideLinePath();
     setTalkbackSilent(false);
+
+    // Free Fishing: exibe resumo da sessão ao sair (se pescou algo)
+    if (gameMode === 'free' && score > 0) {
+      showResultScreen(false); // false = não foi captura, é sumário de saída
+      return;
+    }
+
     state = 'IDLE';
     showScreen('start');
   }
