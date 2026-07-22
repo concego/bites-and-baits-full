@@ -134,7 +134,6 @@
     <div id="screen-start" class="screen">
       <div class="logo">🎣</div>
       <h1>Bites &amp; Baits</h1>
-      <p class="subtitle" data-i18n="subtitle"></p>
 
       <button id="btn-start"        class="btn-primary"   data-i18n="btn_start"></button>
       <button id="btn-free"         class="btn-secondary btn-with-desc" data-i18n="btn_free">
@@ -142,7 +141,6 @@
       </button>
       <button id="btn-instructions" class="btn-secondary" data-i18n="btn_instructions"></button>
       <button id="btn-options"      class="btn-secondary" data-i18n="btn_options"></button>
-      <p class="hint" data-i18n="hint"></p>
 
       <footer class="menu-credits">
         <p><span data-i18n="credits_by"></span> <strong>Anderson Carvalho</strong> · <span data-i18n="credits_brand"></span></p>
@@ -288,8 +286,25 @@
     <div id="screen-instructions" class="screen">
       <h2 data-i18n="how_to_play"></h2>
 
+      <!-- O que é o jogo -->
+      <div class="instr-section">
+        <h3 data-i18n="instr_about_title"></h3>
+        <p data-i18n="instr_about_desc"></p>
+      </div>
+
+      <!-- Modos de jogo -->
+      <div class="instr-section">
+        <h3 data-i18n="instr_modes_title"></h3>
+        <ul>
+          <li><strong data-i18n="instr_mode_normal"></strong>: <span data-i18n="instr_mode_normal_desc"></span></li>
+          <li><strong data-i18n="instr_mode_free"></strong>: <span data-i18n="instr_mode_free_desc"></span></li>
+        </ul>
+      </div>
+
+      <!-- Controles — celular -->
       <div class="instr-section">
         <h3 data-i18n="instr_sensor_title"></h3>
+        <p data-i18n="instr_posture"></p>
         <ul>
           <li><strong data-i18n="instr_cast"></strong>: <span data-i18n="instr_cast_desc"></span></li>
           <li><strong data-i18n="instr_reel"></strong>: <span data-i18n="instr_reel_desc"></span></li>
@@ -297,6 +312,7 @@
         </ul>
       </div>
 
+      <!-- Controles — teclado -->
       <div class="instr-section">
         <h3 data-i18n="instr_kb_title"></h3>
         <ul>
@@ -306,6 +322,7 @@
         </ul>
       </div>
 
+      <!-- Acessibilidade -->
       <div class="instr-section">
         <h3 data-i18n="instr_a11y_title"></h3>
         <ul>
