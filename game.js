@@ -48,6 +48,7 @@ const Game = (() => {
   let _lastCaughtItem  = null;   // último item adicionado ao inventário
   let tension          = 0;      // 0..100
   let fishPull         = 0;
+  let _fishStrengthMult = 1.0;  // multiplicador gradual de força (1.0 = 100%, 0.3 = cansado)
   let fishTired        = false;
   let tiredTimer       = null;
   let recoveryTimer    = null;   // timer de recuperação do fôlego do peixe
@@ -546,6 +547,7 @@ const Game = (() => {
         currentFish = pickFishFromMap(activeMap);
         fishPull    = currentFish.pull;
         fishTired   = false;
+        _fishStrengthMult = 1.0;
         clearTimeout(recoveryTimer);
         recoveryTimer = null;
 
@@ -735,11 +737,17 @@ const Game = (() => {
       if (state !== 'REELING') { clearInterval(tensionLoop); return; }
 
       // ── Força do peixe ─────────────────────────────────────────────────
-      const fishForce = fishTired ? fishPull * 0.3 : fishPull;
+      // fishTired → mult cai para 0.3; ao recuperar, sobe gradualmente de volta a 1.0
+      if (fishTired) {
+        _fishStrengthMult = Math.max(0.3, _fishStrengthMult - 0.04);
+      } else {
+        _fishStrengthMult = Math.min(1.0, _fishStrengthMult + 0.015); // ramp-up lento
+      }
+      const fishForce = fishPull * _fishStrengthMult;
       const delta = fishForce * 0.05;
       tension = Math.min(100, tension + delta);
 
-      if (fishPull >= 5 && delta > 0.2 && _resistCooldown <= 0 && !fishTired) {
+      if (fishPull >= 5 && delta > 0.2 && _resistCooldown <= 0 && _fishStrengthMult > 0.8) {
         Audio.fishResist();
         Audio.setReelMode('neutral');
         _resistCooldown = 8;
@@ -762,6 +770,7 @@ const Game = (() => {
           if (_fishFatigue >= stamina) {
             _fishFatigue = 0;
             fishTired = true;
+            Audio.fishTiredSound();
             sayKey('tired');
             setLabel(I18n.t('state_tired', fishName(currentFish)));
 
@@ -771,6 +780,7 @@ const Game = (() => {
             recoveryTimer = setTimeout(() => {
               if (state === 'REELING' && fishTired) {
                 fishTired = false;
+                Audio.fishRecoveredSound();
                 sayKey('recovered');
                 setLabel(I18n.t('state_reeling', fishName(currentFish)));
               }
@@ -843,6 +853,7 @@ const Game = (() => {
     tiredTimer = setTimeout(() => {
       if (state === 'REELING') {
         fishTired = true;
+        Audio.fishTiredSound();
         sayKey('tired');
         setLabel(I18n.t('state_tired', fishName(currentFish)));
       }
