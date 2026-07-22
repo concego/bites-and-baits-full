@@ -158,6 +158,20 @@ const Game = (() => {
     $('btn-equip').addEventListener('click', () => openEquipPanel());
     $('btn-equip-close').addEventListener('click', () => closeEquipPanel());
 
+    // Navegação interna do painel
+    $('btn-cat-baits').addEventListener('click', () => {
+      _renderBaitList();
+      _showEquipView('baits');
+      const firstBtn = ui.baitList.querySelector('button:not([disabled])') ||
+                       ui.baitList.querySelector('button') ||
+                       $('btn-equip-back');
+      firstBtn.focus();
+    });
+    $('btn-equip-back').addEventListener('click', () => {
+      _showEquipView('categories');
+      $('btn-cat-baits').focus();
+    });
+
     // Listeners dos toggles de acessibilidade
     document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -824,17 +838,20 @@ const Game = (() => {
 
   /** Abre o painel de equipamento — só disponível no IDLE */
   function openEquipPanel() {
-    _renderBaitList();
+    _showEquipView('categories');
     ui.equipPanel.classList.remove('hidden');
-    const firstBtn = ui.baitList.querySelector('button:not([disabled])') ||
-                     ui.baitList.querySelector('button');
-    if (firstBtn) firstBtn.focus();
-    else $('btn-equip-close').focus();
+    $('btn-cat-baits').focus();
   }
 
   function closeEquipPanel() {
     ui.equipPanel.classList.add('hidden');
     $('btn-equip').focus();
+  }
+
+  /** Alterna entre a vista de categorias e a de iscas */
+  function _showEquipView(view) {
+    $('equip-categories').classList.toggle('hidden', view !== 'categories');
+    $('equip-baits-view').classList.toggle('hidden', view !== 'baits');
   }
 
   /** Renderiza a lista de iscas disponíveis no painel */
