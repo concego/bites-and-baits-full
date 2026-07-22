@@ -65,6 +65,7 @@ const I18n = (() => {
       btn_back:         'Voltar ao menu',
 
       // HUD do jogo
+      game_title:       'Jogo em andamento',
       hud_fish:         'Peixes',
       hud_best:         'Melhor',
       tension_label:    'Tensão da linha',
@@ -186,6 +187,7 @@ const I18n = (() => {
       btn_back:         'Back to menu',
 
       // Game HUD
+      game_title:       'Game in progress',
       hud_fish:         'Fish',
       hud_best:         'Best',
       tension_label:    'Line tension',
