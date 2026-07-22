@@ -452,7 +452,7 @@ const Game = (() => {
         setTalkbackSilent(false);
         setLabel(I18n.t('state_idle'));
         setTiltHint('↕', I18n.t('tilt_idle'));
-        speak(I18n.t('speak_ready'));
+        sayKey('ready');
         break;
 
       case 'CASTING':
@@ -472,7 +472,7 @@ const Game = (() => {
           ui.lure.style.top     = `${_lureY}%`;
           ui.lure.style.left    = `${_lureX}%`;
           _updateLinePath();
-          speak(I18n.t('speak_waiting'));
+          sayKey('waiting');
           enterState('WAITING');
         }, 600);
         break;
@@ -504,13 +504,13 @@ const Game = (() => {
         setLabel(I18n.t('state_biting', fishName(currentFish)));
         setTiltHint('📳', I18n.t('tilt_biting'));
         ui.tiltArrow.classList.add('shake-hint');
-        speak(I18n.t('speak_fish'));
+        sayKey('fish');
 
         biteTimer = setTimeout(() => {
           // Peixe perdeu interesse — começa a recuar
           _fishState = 'retreating';
           ui.tiltArrow.classList.remove('shake-hint');
-          speak(I18n.t('speak_escaped'));
+          sayKey('escaped');
           setLabel(I18n.t('state_escaped'));
           setTimeout(() => {
             _destroyActiveFish();
@@ -527,7 +527,7 @@ const Game = (() => {
         setLabel(I18n.t('state_reeling', fishName(currentFish)));
         setTiltHint('↓', I18n.t('tilt_reeling'));
         _lastTensionWarn = null;
-        speak(I18n.t('speak_hooked'));
+        sayKey('hooked');
         Audio.startReel('neutral');
         startTensionLoop();
         scheduleFishTired();
@@ -553,10 +553,11 @@ const Game = (() => {
                          : currentFish.size <= 2 ? I18n.t('size_small')
                          : currentFish.size <= 3 ? I18n.t('size_medium')
                          :                         I18n.t('size_large');
-          const msg = currentFish.special
-            ? I18n.t('speak_caught_special', fishName(currentFish), score)
-            : I18n.t('speak_caught', fishName(currentFish), sizeDesc, score);
-          speak(msg);
+          if (currentFish.special) {
+            sayKey('caught_special', fishName(currentFish), score);
+          } else {
+            sayKey('caught', fishName(currentFish), sizeDesc, score);
+          }
         }
 
         // Mostra peso e valor na tela de resultado
@@ -576,7 +577,7 @@ const Game = (() => {
         _hideLinePath();
         _destroyActiveFish();
         setLabel(I18n.t('state_snapped'));
-        speak(I18n.t('speak_snapped'));
+        sayKey('snapped');
         setTimeout(() => {
           if (state === 'SNAPPED') {
             setTalkbackSilent(false);
@@ -619,7 +620,7 @@ const Game = (() => {
 
       case 'WAITING':
         if (dir === 'back') {
-          speak(I18n.t('speak_pulled_out'));
+          sayKey('pulled_out');
           setLabel(I18n.t('state_pulled_out'));
           enterState('IDLE');
         }
@@ -634,7 +635,7 @@ const Game = (() => {
       ui.tiltArrow.classList.remove('shake-hint');
       navigator.vibrate && navigator.vibrate(0);
       setTimeout(() => _vibrate([300, 100, 400]), 30);
-      speak(I18n.t('speak_rehooked'));
+      sayKey('rehooked');
       enterState('REELING');
     }
   }
@@ -667,14 +668,14 @@ const Game = (() => {
         if (!_lastTensionWarn || Date.now() - _lastTensionWarn > 3000) {
           _lastTensionWarn = Date.now();
           Audio.tensionAlert();               // ← novo alerta sonoro
-          speak(I18n.t('speak_danger'));
+          sayKey('danger');
         }
       } else if (tension > 65) {
         setTensionClass('tension-high');
         if (!_lastTensionWarn || Date.now() - _lastTensionWarn > 5000) {
           _lastTensionWarn = Date.now();
           Audio.tensionAlert();               // ← novo alerta sonoro
-          speak(I18n.t('speak_tension'));
+          sayKey('tension');
         }
       } else if (tension > 40) {
         setTensionClass('tension-medium');
@@ -715,7 +716,7 @@ const Game = (() => {
     tiredTimer = setTimeout(() => {
       if (state === 'REELING') {
         fishTired = true;
-        speak(I18n.t('speak_tired'));
+        sayKey('tired');
         setLabel(I18n.t('state_tired', fishName(currentFish)));
       }
     }, ms);
@@ -856,6 +857,18 @@ const Game = (() => {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       ui.announcer.textContent = text;
     }));
+  }
+
+  /**
+   * Fala uma chave i18n escolhendo automaticamente a versão detalhada
+   * quando o toggle de narração está ativo.
+   * Uso: sayKey('ready')  →  speak(I18n.t('speak_ready'))  ou  speak(I18n.t('vspeak_ready'))
+   * Para strings com argumentos: sayKey('caught', fishName, sizeDesc, score)
+   */
+  function sayKey(key, ...args) {
+    const verbose = typeof A11y !== 'undefined' && A11y.get('verboseVoice');
+    const fullKey = verbose ? `vspeak_${key}` : `speak_${key}`;
+    speak(I18n.t(fullKey, ...args));
   }
 
   function setTiltHint(arrow, text) {
