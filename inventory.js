@@ -41,6 +41,8 @@ const Inventory = (() => {
   const STORAGE_KEY_ITEMS  = 'bb_inventory';
   const STORAGE_KEY_COINS  = 'bb_coins';
   const STORAGE_KEY_BAITS  = 'bb_baits';
+  const STORAGE_KEY_BAITS_V = 'bb_baits_v';
+  const BAITS_VERSION = '1';   // incrementar aqui força reset do estoque
   const STORAGE_KEY_EQUIP  = 'bb_equip';   // { bait: 'worm' }
 
   // Estoque inicial generoso para testes
@@ -206,13 +208,16 @@ const Inventory = (() => {
 
   function _loadBaits() {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_BAITS));
-      // Se não existe, inicializa com o estoque padrão
-      if (!saved) {
-        localStorage.setItem(STORAGE_KEY_BAITS, JSON.stringify(DEFAULT_BAITS));
-        return { ...DEFAULT_BAITS };
+      // Versioning — se versão mudou ou chave não existe, reseta estoque
+      const savedVer = localStorage.getItem(STORAGE_KEY_BAITS_V);
+      if (savedVer !== BAITS_VERSION) {
+        const fresh = { ...DEFAULT_BAITS };
+        localStorage.setItem(STORAGE_KEY_BAITS,   JSON.stringify(fresh));
+        localStorage.setItem(STORAGE_KEY_BAITS_V, BAITS_VERSION);
+        return fresh;
       }
-      return saved;
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_BAITS));
+      return saved || { ...DEFAULT_BAITS };
     } catch { return { ...DEFAULT_BAITS }; }
   }
 
