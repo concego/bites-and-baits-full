@@ -648,6 +648,7 @@ const Game = (() => {
 
       case 'ESCAPED':
         Audio.stopReel();
+        Audio.fishEscaped();
         clearTimeout(recoveryTimer);
         recoveryTimer = null;
         _vibrate([100, 80, 100]);
