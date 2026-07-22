@@ -669,7 +669,7 @@ html, body {
   color: var(--yellow);
   margin: 0;
 }
-.equip-section h3 {
+.equip-dialog h3 {
   font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -678,6 +678,61 @@ html, body {
   margin-bottom: 10px;
   color: var(--accent);
 }
+
+/* Vistas do painel (categorias / iscas) */
+.equip-view.hidden { display: none !important; }
+
+/* Lista de categorias */
+.equip-cat-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+}
+.btn-equip-cat {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.btn-equip-cat:hover:not(:disabled) { background: rgba(255,255,255,0.18); }
+.btn-equip-cat:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.equip-cat-icon { font-size: 1.4rem; }
+.equip-cat-soon {
+  margin-left: auto;
+  font-size: 0.75rem;
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+/* Botão Voltar */
+.btn-equip-back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 4px;
+}
+.btn-equip-back:focus { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* Lista de iscas */
 .bait-list {
