@@ -2,26 +2,43 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --sky-top:    #87CEEB;
-  --sky-bot:    #B0E2FF;
-  --water-top:  #1a6fa8;
-  --water-bot:  #0d3f66;
-  --shore:      #8B6914;
-  --shore-dark: #5C4500;
-  --green:      #4CAF50;
-  --red:        #e53935;
-  --yellow:     #FFC107;
-  --white:      #ffffff;
-  --text-dark:  #1a1a2e;
-  --panel-bg:   rgba(0,0,0,0.55);
-  --radius:     14px;
+  --sky-top:        #87CEEB;
+  --sky-bot:        #B0E2FF;
+  --water-top:      #1a6fa8;
+  --water-bot:      #0d3f66;
+  --shore:          #8B6914;
+  --shore-dark:     #5C4500;
+  --green:          #4CAF50;
+  --red:            #e53935;
+  --yellow:         #FFC107;
+  --orange:         #FF7043;
+  --white:          #ffffff;
+  --text-dark:      #1a1a2e;
+  --panel-bg:       rgba(0,0,0,0.55);
+  --radius:         14px;
+
+  /* Cena */
+  --rod-top:        #8B4513;
+  --rod-bot:        #5C2E00;
+  --lure-top:       #FF4500;
+  --lure-bot:       #CC2200;
+  --lure-glow:      rgba(255,69,0,0.8);
+  --cloud-color:    rgba(255,255,255,0.7);
+  --water-surf:     rgba(255,255,255,0.5);
+
+  /* Tela resultado */
+  --result-top:     #1a3a5c;
+  --result-bot:     #0d2140;
+
+  /* UI / opções */
+  --accent:         #4fc3f7;
 }
 
 html, body {
   height: 100%;
   overflow: hidden;
   font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #0d3f66;
+  background: var(--water-bot);
   color: var(--white);
   touch-action: none;
   user-select: none;
@@ -167,25 +184,25 @@ html, body {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 35%;
-  background: linear-gradient(180deg, #87CEEB, #B0E2FF);
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bot));
 }
 
 /* Nuvens decorativas via pseudo */
 #sky::before, #sky::after {
   content: '';
   position: absolute;
-  background: rgba(255,255,255,0.7);
+  background: var(--cloud-color);
   border-radius: 50px;
 }
-#sky::before { width: 80px; height: 28px; top: 20%; left: 15%; box-shadow: 30px -8px 0 20px rgba(255,255,255,0.7); }
-#sky::after  { width: 60px; height: 20px; top: 35%; right: 20%; box-shadow: 20px -6px 0 14px rgba(255,255,255,0.7); }
+#sky::before { width: 80px; height: 28px; top: 20%; left: 15%; box-shadow: 30px -8px 0 20px var(--cloud-color); }
+#sky::after  { width: 60px; height: 20px; top: 35%; right: 20%; box-shadow: 20px -6px 0 14px var(--cloud-color); }
 
 #water-surface {
   position: absolute;
   top: 35%;
   left: 0; right: 0;
   height: 6px;
-  background: rgba(255,255,255,0.5);
+  background: var(--water-surf);
   border-radius: 3px;
   z-index: 2;
 }
@@ -246,7 +263,7 @@ html, body {
   position: absolute;
   width: 4px;
   height: 70px;
-  background: linear-gradient(180deg, #8B4513, #5C2E00);
+  background: linear-gradient(180deg, var(--rod-top), var(--rod-bot));
   border-radius: 2px;
   top: -60px;
   left: 50%;
@@ -270,11 +287,11 @@ html, body {
 #lure {
   width: 12px;
   height: 12px;
-  background: radial-gradient(circle, #FF4500, #CC2200);
+  background: radial-gradient(circle, var(--lure-top), var(--lure-bot));
   border-radius: 50%;
   position: absolute;
   display: none;
-  box-shadow: 0 0 6px rgba(255,69,0,0.8);
+  box-shadow: 0 0 6px var(--lure-glow);
   transition: top 0.5s ease, left 0.3s ease;
 }
 
@@ -355,7 +372,7 @@ html, body {
 /* Estados da barra de tensão */
 .tension-low    { background: var(--green) !important; }
 .tension-medium { background: var(--yellow) !important; }
-.tension-high   { background: #FF7043 !important; }
+.tension-high   { background: var(--orange) !important; }
 .tension-danger { background: var(--red) !important; }
 
 /* Animação de shake */
@@ -376,11 +393,10 @@ html, body {
 
 /* ===== RESULT SCREEN ===== */
 #screen-result {
-  background: linear-gradient(180deg, #1a3a5c, #0d2140);
+  background: linear-gradient(180deg, var(--result-top), var(--result-bot));
   gap: 20px;
   text-align: center;
 }
-/* result-icon agora é controlado pelo bloco acima */
 #result-title { font-size: 1.8rem; font-weight: 800; }
 #result-desc { font-size: 0.95rem; opacity: 0.8; max-width: 280px; }
 
@@ -429,7 +445,7 @@ html, body {
   font-size: 1rem;
   font-weight: 700;
   margin: 0 0 10px;
-  color: #4fc3f7;
+  color: var(--accent);
 }
 .instr-section ul {
   margin: 0;
@@ -463,16 +479,17 @@ html, body {
 /* ── Tela de opções ─────────────────────────────────────────────────────── */
 .options-section {
   width: 100%;
-  background: rgba(255,255,255,0.08);
-  border-radius: var(--radius);
-  padding: 14px 18px;
-  margin-bottom: 12px;
+  max-width: 480px;
+  margin-bottom: 20px;
 }
 .options-section h3 {
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  margin: 0 0 4px;
-  color: #4fc3f7;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+  margin-bottom: 10px;
+  color: var(--accent);
 }
 
 /* ── Tela de seleção de idioma ──────────────────────────────────────────── */
@@ -511,18 +528,6 @@ html, body {
 .btn-lang:active { transform: translateY(0); }
 
 /* ===== OPÇÕES — SEÇÃO DE ACESSIBILIDADE ===== */
-.options-section {
-  width: 100%;
-  max-width: 480px;
-  margin-bottom: 20px;
-}
-.options-section h3 {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.65;
-  margin-bottom: 10px;
-}
 
 /* Lista de toggles */
 .a11y-toggle-list {
@@ -600,29 +605,109 @@ html, body {
 
 /* ===== MODO ALTO CONTRASTE ===== */
 .a11y-high-contrast {
-  --sky-top:   #000000;
-  --sky-bot:   #000000;
-  --water-top: #000080;
-  --water-bot: #000050;
-  --panel-bg:  rgba(0,0,0,0.95);
-  --white:     #ffffff;
-  --green:     #00ff00;
-  --red:       #ff0000;
-  --yellow:    #ffff00;
+  /* Redefine variáveis de cena */
+  --sky-top:     #000000;
+  --sky-bot:     #000000;
+  --water-top:   #000080;
+  --water-bot:   #000050;
+  --shore:       #554400;
+  --shore-dark:  #332900;
+  --panel-bg:    rgba(0,0,0,0.95);
+  --white:       #ffffff;
+  --green:       #00ff00;
+  --red:         #ff0000;
+  --yellow:      #ffff00;
+  --orange:      #ff8800;
+  --accent:      #00ddff;
+
+  /* Cena */
+  --rod-top:     #ffffff;
+  --rod-bot:     #cccccc;
+  --lure-top:    #ff8800;
+  --lure-bot:    #ff4400;
+  --lure-glow:   rgba(255,136,0,0.9);
+  --cloud-color: rgba(255,255,255,0.15);
+  --water-surf:  rgba(255,255,255,0.3);
+
+  /* Tela resultado */
+  --result-top:  #000000;
+  --result-bot:  #000000;
 }
+
+/* Fundo geral preto para todas as telas */
+.a11y-high-contrast html,
+.a11y-high-contrast body  { background: #000; }
+.a11y-high-contrast .screen { background: #000 !important; }
+
+/* Bordas nos botões */
 .a11y-high-contrast .btn-primary,
 .a11y-high-contrast .btn-secondary { border: 2px solid #ffffff; }
+
+/* Botões de idioma */
+.a11y-high-contrast .btn-lang {
+  background: #000;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+/* Label de estado e dica */
 .a11y-high-contrast #state-label,
 .a11y-high-contrast #tilt-text {
   background: #000;
   color: #fff;
   outline: 2px solid #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* HUD de pontuação */
+.a11y-high-contrast .game-header {
+  background: #000;
+  border-bottom: 2px solid #fff;
+}
+.a11y-high-contrast .score-value { color: #ffff00; }
+
+/* Barra de tensão — borda visível */
+.a11y-high-contrast #tension-bar-bg {
+  border: 2px solid #fff;
+  background: #000;
+}
+
+/* Seções de opções / instruções */
+.a11y-high-contrast .options-section,
+.a11y-high-contrast .instr-section {
+  background: #000;
+  border: 1px solid #555;
+}
+
+/* Itens de toggle */
+.a11y-high-contrast .a11y-toggle-item {
+  background: #111;
+  border-bottom: 1px solid #333;
+}
+.a11y-high-contrast .a11y-toggle-item:hover { background: #222; }
+.a11y-high-contrast .a11y-toggle-list { background: #000; }
+
+/* Toggle thumb preto no modo ON (sobre fundo verde) */
+.a11y-high-contrast .toggle-btn[aria-checked="true"] .toggle-thumb { background: #000; }
+
+/* Notice box */
+.a11y-high-contrast .notice-box { background: #000; border-color: #ffff00; }
+
+/* Stats (tela resultado) */
+.a11y-high-contrast .result-stats {
+  background: #000;
+  border: 1px solid #555;
 }
 
 /* ===== TEXTO GRANDE ===== */
-.a11y-large-text #state-label    { font-size: 1.4rem; }
-.a11y-large-text #tilt-text      { font-size: 1.1rem; }
-.a11y-large-text .btn-primary    { font-size: 1.2rem; padding: 18px 32px; }
-.a11y-large-text .btn-secondary  { font-size: 1.05rem; }
-.a11y-large-text .a11y-toggle-label { font-size: 1.15rem; }
-.a11y-large-text .a11y-toggle-desc  { font-size: 0.9rem; }
+.a11y-large-text #state-label        { font-size: 1.4rem; }
+.a11y-large-text #tilt-text          { font-size: 1.1rem; }
+.a11y-large-text .btn-primary        { font-size: 1.2rem; padding: 18px 32px; }
+.a11y-large-text .btn-secondary      { font-size: 1.05rem; }
+.a11y-large-text .a11y-toggle-label  { font-size: 1.15rem; }
+.a11y-large-text .a11y-toggle-desc   { font-size: 0.9rem; }
+.a11y-large-text .score-value        { font-size: 2rem; }
+.a11y-large-text .score-label        { font-size: 0.85rem; }
+.a11y-large-text #result-title       { font-size: 2.2rem; }
+.a11y-large-text .stat-value         { font-size: 2.4rem; }
