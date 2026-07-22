@@ -137,6 +137,9 @@
       <p class="subtitle" data-i18n="subtitle"></p>
 
       <button id="btn-start"        class="btn-primary"   data-i18n="btn_start"></button>
+      <button id="btn-free"         class="btn-secondary" data-i18n="btn_free"
+              aria-describedby="btn-free-desc"></button>
+      <span   id="btn-free-desc"    class="menu-mode-desc" data-i18n="btn_free_desc"></span>
       <button id="btn-instructions" class="btn-secondary" data-i18n="btn_instructions"></button>
       <button id="btn-options"      class="btn-secondary" data-i18n="btn_options"></button>
       <p class="hint" data-i18n="hint"></p>
@@ -321,7 +324,7 @@
       <!-- Âncora de foco para leitores de tela: anunciada na entrada, depois silenciosa -->
       <h2 id="game-heading" class="sr-only" data-i18n="game_title"></h2>
 
-      <header class="game-header">
+      <header id="score-hud" class="game-header">
         <div class="score-box">
           <span class="score-label" data-i18n="hud_fish"></span>
           <span id="score" class="score-value">0</span>
