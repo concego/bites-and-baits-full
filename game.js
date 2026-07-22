@@ -50,12 +50,12 @@ const Game = (() => {
   let fishPull         = 0;
   let fishTired        = false;
   let tiredTimer       = null;
+  let recoveryTimer    = null;   // timer de recuperação do fôlego do peixe
   let tensionLoop      = null;
   let _lastTensionWarn = null;
   let waitTimer        = null;
   let biteTimer        = null;
   let fishEls          = [];     // peixes decorativos de fundo
-
   // ── Peixe ativo (física SVG) ───────────────────────────────────────────────
   let _activeFishEl    = null;   // elemento SVG do peixe ativo
   let _activeFishAnim  = null;   // requestAnimationFrame id
@@ -543,6 +543,8 @@ const Game = (() => {
         currentFish = pickFishFromMap(activeMap);
         fishPull    = currentFish.pull;
         fishTired   = false;
+        clearTimeout(recoveryTimer);
+        recoveryTimer = null;
 
         _spawnActiveFish(currentFish);
         scheduleNextBite();
@@ -643,6 +645,22 @@ const Game = (() => {
         // Ambos os modos: volta ao IDLE sem interromper o fluxo
         setTimeout(() => { if (state === 'SNAPPED') enterState('IDLE'); }, 2500);
         break;
+
+      case 'ESCAPED':
+        Audio.stopReel();
+        clearTimeout(recoveryTimer);
+        recoveryTimer = null;
+        _vibrate([100, 80, 100]);
+        ui.tensionCont.classList.add('hidden');
+        tension = 0;
+        ui.lure.style.display = 'none';
+        _hideLinePath();
+        _destroyActiveFish();
+        setLabel(I18n.t('state_escaped_reel', fishName(currentFish)));
+        sayKey('escaped_reel');
+        // Ambos os modos: volta ao IDLE
+        setTimeout(() => { if (state === 'ESCAPED') enterState('IDLE'); }, 2500);
+        break;
     }
   }
 
@@ -702,12 +720,16 @@ const Game = (() => {
   let _pullProgress = 0;
 
   function startTensionLoop() {
-    _pullProgress = 0;
-    let _resistCooldown = 0;
+    _pullProgress    = 0;
+    let _resistCooldown  = 0;
+    let _staticTicks     = 0;  // ticks consecutivos sem o jogador puxar
+    let _fishFatigue     = 0;  // acúmulo de cansaço por inércia do jogador
+    let _pulling         = false; // sinalizado por pullFish() a cada tick
 
     tensionLoop = setInterval(() => {
       if (state !== 'REELING') { clearInterval(tensionLoop); return; }
 
+      // ── Força do peixe ─────────────────────────────────────────────────
       const fishForce = fishTired ? fishPull * 0.3 : fishPull;
       const delta = fishForce * 0.05;
       tension = Math.min(100, tension + delta);
@@ -719,20 +741,61 @@ const Game = (() => {
       }
       if (_resistCooldown > 0) _resistCooldown--;
 
-      // Níveis de tensão
+      // ── Cansaço por inércia (linha estática com peixe lutando) ─────────
+      if (_pulling) {
+        // Jogador está puxando — zera inércia e não acumula cansaço
+        _staticTicks = 0;
+        _fishFatigue = 0;
+        _pulling = false; // reset até próximo pullFish()
+      } else {
+        _staticTicks++;
+
+        // Peixe se debatendo e jogador parado → acumula fadiga
+        if (!fishTired && fishPull > 0) {
+          _fishFatigue++;
+          const stamina = currentFish.stamina ?? 15;
+          if (_fishFatigue >= stamina) {
+            _fishFatigue = 0;
+            fishTired = true;
+            sayKey('tired');
+            setLabel(I18n.t('state_tired', fishName(currentFish)));
+
+            // Timer de recuperação — se o jogador não aproveitar a janela
+            clearTimeout(recoveryTimer);
+            const recovMs = (currentFish.recovery ?? 5000) * A11y.timeScale();
+            recoveryTimer = setTimeout(() => {
+              if (state === 'REELING' && fishTired) {
+                fishTired = false;
+                sayKey('recovered');
+                setLabel(I18n.t('state_reeling', fishName(currentFish)));
+              }
+            }, recovMs);
+          }
+        }
+
+        // Punição por inércia total — peixe perde a paciência e escapa
+        const patience = currentFish.escapePatience ?? 30;
+        if (_staticTicks >= patience) {
+          clearInterval(tensionLoop);
+          enterState('ESCAPED');
+          return;
+        }
+      }
+
+      // ── Níveis de tensão ───────────────────────────────────────────────
       if (tension > 85) {
         _vibrate(30);
         setTensionClass('tension-danger');
         if (!_lastTensionWarn || Date.now() - _lastTensionWarn > 3000) {
           _lastTensionWarn = Date.now();
-          Audio.tensionAlert();               // ← novo alerta sonoro
+          Audio.tensionAlert();
           sayKey('danger');
         }
       } else if (tension > 65) {
         setTensionClass('tension-high');
         if (!_lastTensionWarn || Date.now() - _lastTensionWarn > 5000) {
           _lastTensionWarn = Date.now();
-          Audio.tensionAlert();               // ← novo alerta sonoro
+          Audio.tensionAlert();
           sayKey('tension');
         }
       } else if (tension > 40) {
@@ -742,7 +805,7 @@ const Game = (() => {
       }
 
       if (tension >= 100) { clearInterval(tensionLoop); enterState('SNAPPED'); return; }
-      _updateLinePath();  // ← atualiza linha a cada tick de tensão
+      _updateLinePath();
       updateTensionBar();
     }, 120);
   }
@@ -751,6 +814,7 @@ const Game = (() => {
     if (state !== 'REELING') return;
     Audio.setReelMode('pulling');
     _pullProgress += amount;
+    _pulling = true; // sinaliza ao tensionLoop que houve ação neste tick
     tension = Math.min(100, tension + amount * 0.4);
     updateTensionBar();
     if (_pullProgress >= currentFish.pullNeeded) {
@@ -1060,6 +1124,7 @@ const Game = (() => {
     clearTimeout(waitTimer);
     clearTimeout(biteTimer);
     clearTimeout(tiredTimer);
+    clearTimeout(recoveryTimer);
     clearInterval(tensionLoop);
     Audio.stopReel();
   }
