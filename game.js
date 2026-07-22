@@ -38,6 +38,7 @@ const Game = (() => {
   let best             = parseInt(localStorage.getItem('bb_best') || '0');
   let currentFish      = null;   // espécie ativa (do FISH_CATALOG)
   let activeMap        = null;   // mapa ativo (do MAP_CATALOG)
+  let _lastCaughtItem  = null;   // último item adicionado ao inventário
   let tension          = 0;      // 0..100
   let fishPull         = 0;
   let fishTired        = false;
@@ -479,7 +480,7 @@ const Game = (() => {
         scheduleFishTired();
         break;
 
-      case 'CAUGHT':
+      case 'CAUGHT': {
         Audio.stopReel();
         Audio.play(currentFish.special ? 'point_special' : 'point_normal');
         Audio.vibrate([100, 50, 100, 50, 200]);
@@ -489,6 +490,10 @@ const Game = (() => {
         ui.tensionCont.classList.add('hidden');
         _hideLinePath();
         _destroyActiveFish();
+
+        // Registra no inventário — sorteia peso e calcula valor
+        const caughtItem = Inventory.addFish(currentFish);
+
         setLabel(I18n.t('state_caught', fishName(currentFish)));
         {
           const sizeDesc = currentFish.size <= 1 ? I18n.t('size_tiny')
@@ -500,8 +505,13 @@ const Game = (() => {
             : I18n.t('speak_caught', fishName(currentFish), sizeDesc, score);
           speak(msg);
         }
+
+        // Mostra peso e valor na tela de resultado
+        _lastCaughtItem = caughtItem;
+
         setTimeout(() => { if (state === 'CAUGHT') enterState('IDLE'); }, 3500);
         break;
+      }
 
       case 'SNAPPED':
         Audio.stopReel();
@@ -720,7 +730,18 @@ const Game = (() => {
       if (useEl) useEl.setAttribute('href', `#${currentFish.sprite}`);
       $('result-fish-svg').style.display = '';
       ui.resultTitle.textContent = I18n.t('result_caught');
-      ui.resultDesc.textContent  = I18n.t('result_caught_desc', fishName(currentFish));
+      // Exibe nome + peso + moedas ganhas se disponível
+      if (_lastCaughtItem) {
+        ui.resultDesc.textContent = I18n.t(
+          'result_caught_weight',
+          fishName(currentFish),
+          _lastCaughtItem.weight,
+          _lastCaughtItem.value,
+          Inventory.coins()
+        );
+      } else {
+        ui.resultDesc.textContent = I18n.t('result_caught_desc', fishName(currentFish));
+      }
     } else {
       $('result-fish-svg').style.display = 'none';
       ui.resultIcon.innerHTML    = '<span style="font-size:80px">💔</span>';
