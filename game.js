@@ -493,7 +493,10 @@ const Game = (() => {
         setTalkbackSilent(false);
         setLabel(I18n.t('state_idle'));
         setTiltHint('↕', I18n.t('tilt_idle'));
-        sayKey('ready');
+        // Só narra "pronto" se a tela de jogo estiver ativa
+        if (screens.game && screens.game.classList.contains('active')) {
+          sayKey('ready');
+        }
         // Botão de equipamento: visível só no IDLE e no modo normal
         { const be = $('btn-equip'); if (be) be.classList.toggle('hidden', gameMode !== 'normal'); }
         break;
@@ -648,7 +651,6 @@ const Game = (() => {
 
       case 'ESCAPED':
         Audio.stopReel();
-        Audio.fishEscaped();
         clearTimeout(recoveryTimer);
         recoveryTimer = null;
         _vibrate([100, 80, 100]);
@@ -659,6 +661,8 @@ const Game = (() => {
         _destroyActiveFish();
         setLabel(I18n.t('state_escaped_reel', fishName(currentFish)));
         sayKey('escaped_reel');
+        // Pequeno delay para garantir que o stopReel finalizou antes de tocar
+        setTimeout(() => Audio.fishEscaped(), 120);
         // Ambos os modos: volta ao IDLE
         setTimeout(() => { if (state === 'ESCAPED') enterState('IDLE'); }, 2500);
         break;
@@ -1044,6 +1048,10 @@ const Game = (() => {
     _hideLinePath();
     setTalkbackSilent(false);
     state = 'IDLE';
+    // Limpa label e announcer para não vazar informação de jogo no menu
+    setLabel('');
+    const ann = $('announcer');
+    if (ann) ann.textContent = '';
     showScreen('start');
   }
 
