@@ -164,7 +164,80 @@
         </div>
       </div>
 
-      <!-- Futuras seções de opções entram aqui -->
+      <!-- Seção: Acessibilidade -->
+      <div class="options-section">
+        <h3 data-i18n="options_a11y_title"></h3>
+
+        <div class="a11y-toggle-list">
+
+          <div class="a11y-toggle-item">
+            <div class="a11y-toggle-info">
+              <span class="a11y-toggle-label" data-i18n="options_sound"></span>
+              <span class="a11y-toggle-desc"  data-i18n="options_sound_desc"></span>
+            </div>
+            <button id="toggle-sound" class="toggle-btn" role="switch" aria-checked="true" data-pref="sound">
+              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              <span class="toggle-state-label sr-only"></span>
+            </button>
+          </div>
+
+          <div class="a11y-toggle-item">
+            <div class="a11y-toggle-info">
+              <span class="a11y-toggle-label" data-i18n="options_haptic"></span>
+              <span class="a11y-toggle-desc"  data-i18n="options_haptic_desc"></span>
+            </div>
+            <button id="toggle-haptic" class="toggle-btn" role="switch" aria-checked="true" data-pref="haptic">
+              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              <span class="toggle-state-label sr-only"></span>
+            </button>
+          </div>
+
+          <div class="a11y-toggle-item">
+            <div class="a11y-toggle-info">
+              <span class="a11y-toggle-label" data-i18n="options_contrast"></span>
+              <span class="a11y-toggle-desc"  data-i18n="options_contrast_desc"></span>
+            </div>
+            <button id="toggle-contrast" class="toggle-btn" role="switch" aria-checked="false" data-pref="highContrast">
+              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              <span class="toggle-state-label sr-only"></span>
+            </button>
+          </div>
+
+          <div class="a11y-toggle-item">
+            <div class="a11y-toggle-info">
+              <span class="a11y-toggle-label" data-i18n="options_large_text"></span>
+              <span class="a11y-toggle-desc"  data-i18n="options_large_text_desc"></span>
+            </div>
+            <button id="toggle-large-text" class="toggle-btn" role="switch" aria-checked="false" data-pref="largeText">
+              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              <span class="toggle-state-label sr-only"></span>
+            </button>
+          </div>
+
+          <div class="a11y-toggle-item">
+            <div class="a11y-toggle-info">
+              <span class="a11y-toggle-label" data-i18n="options_slow_game"></span>
+              <span class="a11y-toggle-desc"  data-i18n="options_slow_game_desc"></span>
+            </div>
+            <button id="toggle-slow-game" class="toggle-btn" role="switch" aria-checked="false" data-pref="slowGame">
+              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              <span class="toggle-state-label sr-only"></span>
+            </button>
+          </div>
+
+          <div class="a11y-toggle-item">
+            <div class="a11y-toggle-info">
+              <span class="a11y-toggle-label" data-i18n="options_verbose"></span>
+              <span class="a11y-toggle-desc"  data-i18n="options_verbose_desc"></span>
+            </div>
+            <button id="toggle-verbose" class="toggle-btn" role="switch" aria-checked="false" data-pref="verboseVoice">
+              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              <span class="toggle-state-label sr-only"></span>
+            </button>
+          </div>
+
+        </div><!-- /.a11y-toggle-list -->
+      </div><!-- /.options-section -->
 
       <button id="btn-options-back" class="btn-primary" data-i18n="btn_back"></button>
     </div>
@@ -282,6 +355,7 @@
 
   </div>
 
+  <script src="a11y.js"></script>
   <script src="i18n.js"></script>
   <script src="fish-data.js"></script>
   <script src="creature-profile.js"></script>
