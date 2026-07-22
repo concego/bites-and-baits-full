@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Bites &amp; Baits</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Sprites SVG inline (hidden) -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+
+    <!-- LAMBARI — pequeno, prateado-esverdeado -->
+    <symbol id="fish-lambari" viewBox="0 0 64 32">
+      <polygon points="0,10 10,16 0,22" fill="#90a4ae"/>
+      <ellipse cx="34" cy="16" rx="20" ry="9" fill="#b0bec5"/>
+      <ellipse cx="32" cy="19" rx="14" ry="5" fill="#eceff1"/>
+      <path d="M14 16 Q34 13 54 16" stroke="#78909c" stroke-width="1" fill="none"/>
+      <polygon points="18,7 28,14 38,7" fill="#78909c"/>
+      <circle cx="48" cy="14" r="2.5" fill="white"/>
+      <circle cx="49" cy="14" r="1.2" fill="#1a1a2e"/>
+      <path d="M58 16 Q60 18 58 20" stroke="#607d8b" stroke-width="1" fill="none"/>
+    </symbol>
+
+    <!-- TILÁPIA — laranja listrada -->
+    <symbol id="fish-tilapia" viewBox="0 0 72 36">
+      <polygon points="0,6 14,18 0,30" fill="#ff7043"/>
+      <line x1="7" y1="6" x2="7" y2="30" stroke="#bf360c" stroke-width="1"/>
+      <ellipse cx="42" cy="18" rx="26" ry="14" fill="#ff8a65"/>
+      <ellipse cx="40" cy="23" rx="18" ry="7" fill="#ffccbc"/>
+      <line x1="28" y1="6" x2="26" y2="30" stroke="#e64a19" stroke-width="2" opacity="0.5"/>
+      <line x1="38" y1="5" x2="36" y2="31" stroke="#e64a19" stroke-width="2" opacity="0.5"/>
+      <line x1="48" y1="6" x2="47" y2="30" stroke="#e64a19" stroke-width="2" opacity="0.5"/>
+      <polyline points="20,5 25,2 30,5 35,1 40,5 45,3 50,5" stroke="#bf360c" stroke-width="2" fill="none"/>
+      <circle cx="60" cy="16" r="4" fill="white"/>
+      <circle cx="61" cy="16" r="2" fill="#1a1a2e"/>
+      <path d="M70 18 Q72 21 70 24" stroke="#bf360c" stroke-width="1.5" fill="none"/>
+    </symbol>
+
+    <!-- TRUTA — verde-azulada com pintas -->
+    <symbol id="fish-truta" viewBox="0 0 80 34">
+      <polygon points="0,4 16,17 0,30" fill="#26a69a"/>
+      <ellipse cx="46" cy="17" rx="30" ry="13" fill="#4db6ac"/>
+      <path d="M16 17 Q46 14 76 17" stroke="#00796b" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+      <ellipse cx="44" cy="22" rx="22" ry="7" fill="#b2dfdb"/>
+      <circle cx="28" cy="13" r="2" fill="#e53935" opacity="0.8"/>
+      <circle cx="36" cy="10" r="1.5" fill="#212121" opacity="0.6"/>
+      <circle cx="44" cy="13" r="2" fill="#e53935" opacity="0.8"/>
+      <circle cx="52" cy="11" r="1.5" fill="#212121" opacity="0.6"/>
+      <circle cx="60" cy="14" r="2" fill="#e53935" opacity="0.8"/>
+      <polygon points="24,5 38,12 52,5" fill="#00796b"/>
+      <ellipse cx="34" cy="22" rx="7" ry="3" fill="#80cbc4" transform="rotate(-15,34,22)"/>
+      <circle cx="70" cy="15" r="4" fill="white"/>
+      <circle cx="71" cy="15" r="2" fill="#1a1a2e"/>
+      <circle cx="71.5" cy="14.5" r="0.6" fill="white"/>
+    </symbol>
+
+    <!-- DOURADO — peixe dourado brasileiro, corpo alongado e robusto -->
+    <symbol id="fish-dourado" viewBox="0 0 88 40">
+      <defs>
+        <linearGradient id="grad-dourado" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffe57f"/>
+          <stop offset="50%" stop-color="#ffb300"/>
+          <stop offset="100%" stop-color="#e65100"/>
+        </linearGradient>
+      </defs>
+      <polygon points="0,4 18,20 0,36" fill="#ffb300"/>
+      <polygon points="2,11 18,20 2,29" fill="#ffe082"/>
+      <ellipse cx="50" cy="20" rx="34" ry="15" fill="url(#grad-dourado)"/>
+      <ellipse cx="48" cy="27" rx="24" ry="7" fill="#fff8e1"/>
+      <path d="M18 20 Q50 17 82 20" stroke="#e65100" stroke-width="1.5" fill="none"/>
+      <polygon points="28,6 42,20 60,6" fill="#e65100"/>
+      <path d="M26 16 Q32 10 38 16" stroke="#f57f17" stroke-width="1.2" fill="none"/>
+      <path d="M38 14 Q44 8  50 14" stroke="#f57f17" stroke-width="1.2" fill="none"/>
+      <path d="M50 13 Q56 7  62 13" stroke="#f57f17" stroke-width="1.2" fill="none"/>
+      <circle cx="74" cy="17" r="5" fill="white"/>
+      <circle cx="75" cy="17" r="3" fill="#1a1a2e"/>
+      <circle cx="76" cy="16" r="1" fill="white"/>
+      <path d="M82 19 Q88 23 82 27" stroke="#bf360c" stroke-width="2" fill="none"/>
+    </symbol>
+
+    <!-- PIRARUCU — boss épico, enorme, vermelho-escuro com escamas -->
+    <symbol id="fish-pirarucu" viewBox="0 0 110 44">
+      <defs>
+        <linearGradient id="grad-pirarucu" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#b71c1c"/>
+          <stop offset="50%" stop-color="#c62828"/>
+          <stop offset="100%" stop-color="#4e342e"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="10" cy="22" rx="12" ry="18" fill="#b71c1c"/>
+      <ellipse cx="10" cy="22" rx="8"  ry="13" fill="#e53935"/>
+      <ellipse cx="62" cy="22" rx="48" ry="17" fill="url(#grad-pirarucu)"/>
+      <ellipse cx="60" cy="30" rx="36" ry="8" fill="#d7ccc8"/>
+      <path d="M30 16 Q38 8  46 16" stroke="#e53935" stroke-width="2" fill="none"/>
+      <path d="M46 14 Q54 6  62 14" stroke="#e53935" stroke-width="2" fill="none"/>
+      <path d="M62 13 Q70 5  78 13" stroke="#e53935" stroke-width="2" fill="none"/>
+      <path d="M30 22 Q38 14 46 22" stroke="#b71c1c" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <path d="M46 20 Q54 12 62 20" stroke="#b71c1c" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <path d="M62 19 Q70 11 78 19" stroke="#b71c1c" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <path d="M22 22 Q62 18 100 22" stroke="#4e342e" stroke-width="1.5" fill="none"/>
+      <path d="M28 15 Q50 8 72 13" stroke="#7f0000" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="96" cy="22" rx="12" ry="10" fill="#c62828"/>
+      <circle cx="103" cy="19" r="4" fill="#212121"/>
+      <circle cx="104" cy="18" r="1.2" fill="white" opacity="0.7"/>
+      <path d="M106 22 Q110 26 106 30" stroke="#7f0000" stroke-width="2.5" fill="none"/>
+    </symbol>
+
+  </svg>
+
+  <!-- Região aria-live: leitor de tela anuncia mudanças de estado -->
+  <div id="announcer" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
+
+  <div id="app">
+
+    <!-- ── Tela de seleção de idioma ───────────────────────────────────── -->
+    <div id="screen-lang" class="screen active">
+      <div class="logo">🎣</div>
+      <h1>Bites &amp; Baits</h1>
+      <p class="subtitle" id="lang-subtitle">Escolha o idioma · Choose your language</p>
+
+      <div class="lang-buttons">
+        <button id="btn-lang-pt" class="btn-lang" lang="pt-BR" aria-label="Jogar em Português">
+          🇧🇷<span>Português</span>
+        </button>
+        <button id="btn-lang-en" class="btn-lang" lang="en" aria-label="Play in English">
+          🇺🇸<span>English</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Tela de menu ────────────────────────────────────────────────── -->
+    <div id="screen-start" class="screen">
+      <div class="logo">🎣</div>
+      <h1>Bites &amp; Baits</h1>
+      <p class="subtitle" data-i18n="subtitle"></p>
+
+      <button id="btn-start"        class="btn-primary"   data-i18n="btn_start"></button>
+      <button id="btn-instructions" class="btn-secondary" data-i18n="btn_instructions"></button>
+      <button id="btn-options"      class="btn-secondary" data-i18n="btn_options"></button>
+      <p class="hint" data-i18n="hint"></p>
+
+      <footer class="menu-credits">
+        <p><span data-i18n="credits_by"></span> <strong>Anderson Carvalho</strong> · <span data-i18n="credits_brand"></span></p>
+        <p><a href="mailto:euconcego@gmail.com">euconcego@gmail.com</a></p>
+      </footer>
+    </div>
+
+    <!-- ── Tela de opções ─────────────────────────────────────────────── -->
+    <div id="screen-options" class="screen" role="main" aria-labelledby="options-heading">
+      <h2 id="options-heading" data-i18n="options_title"></h2>
+
+      <!-- Seção: Idioma -->
+      <div class="options-section">
+        <h3 data-i18n="options_lang_title"></h3>
+        <div class="lang-buttons">
+          <button id="btn-opt-lang-pt" class="btn-lang" lang="pt-BR" aria-label="Jogar em Português">
+            🇧🇷<span>Português</span>
+          </button>
+          <button id="btn-opt-lang-en" class="btn-lang" lang="en" aria-label="Play in English">
+            🇺🇸<span>English</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Futuras seções de opções entram aqui -->
+
+      <button id="btn-options-back" class="btn-primary" data-i18n="btn_back"></button>
+    </div>
+
+    <!-- ── Tela de instruções ──────────────────────────────────────────── -->
+    <div id="screen-instructions" class="screen">
+      <h2 data-i18n="how_to_play"></h2>
+
+      <div class="instr-section">
+        <h3 data-i18n="instr_sensor_title"></h3>
+        <ul>
+          <li><strong data-i18n="instr_cast"></strong>: <span data-i18n="instr_cast_desc"></span></li>
+          <li><strong data-i18n="instr_reel"></strong>: <span data-i18n="instr_reel_desc"></span></li>
+          <li><strong data-i18n="instr_hook"></strong>: <span data-i18n="instr_hook_desc"></span></li>
+        </ul>
+      </div>
+
+      <div class="instr-section">
+        <h3 data-i18n="instr_kb_title"></h3>
+        <ul>
+          <li><strong data-i18n="instr_kb_cast"></strong>: <span data-i18n="instr_kb_cast_desc"></span></li>
+          <li><strong data-i18n="instr_kb_reel"></strong>: <span data-i18n="instr_kb_reel_desc"></span></li>
+          <li><strong data-i18n="instr_kb_hook"></strong>: <span data-i18n="instr_kb_hook_desc"></span></li>
+        </ul>
+      </div>
+
+      <div class="instr-section">
+        <h3 data-i18n="instr_a11y_title"></h3>
+        <ul>
+          <li data-i18n="instr_a11y_1"></li>
+          <li data-i18n="instr_a11y_2"></li>
+          <li data-i18n="instr_a11y_3"></li>
+        </ul>
+      </div>
+
+      <button id="btn-back" class="btn-primary" data-i18n="btn_back"></button>
+    </div>
+
+    <!-- ── Tela de jogo ────────────────────────────────────────────────── -->
+    <div id="screen-game" class="screen">
+
+      <header class="game-header">
+        <div class="score-box">
+          <span class="score-label" data-i18n="hud_fish"></span>
+          <span id="score" class="score-value">0</span>
+        </div>
+        <div class="score-box">
+          <span class="score-label" data-i18n="hud_best"></span>
+          <span id="best" class="score-value">0</span>
+        </div>
+      </header>
+
+      <!-- Cena visual -->
+      <div id="scene">
+        <div id="sky"></div>
+        <div id="water-surface"></div>
+        <div id="water">
+          <div id="fish-container" aria-hidden="true"></div>
+          <div id="lure" aria-hidden="true"></div>
+        </div>
+        <div id="shore">
+          <div id="fisher" aria-hidden="true">
+            <div id="rod"></div>
+            <div id="line"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel de estado -->
+      <div id="status-panel">
+        <div id="state-label" role="status" aria-live="polite"></div>
+
+        <!-- Barra de tensão -->
+        <div id="tension-container" class="hidden" aria-hidden="true">
+          <div class="tension-label" data-i18n="tension_label"></div>
+          <div id="tension-bar-bg">
+            <div id="tension-bar"></div>
+            <div id="tension-marker"></div>
+          </div>
+        </div>
+
+        <!-- Indicador de inclinação -->
+        <div id="tilt-indicator" aria-hidden="true">
+          <div id="tilt-arrow">↕</div>
+          <div id="tilt-text"></div>
+        </div>
+      </div>
+
+      <button id="btn-menu" class="btn-secondary" data-i18n="btn_menu"></button>
+    </div>
+
+    <!-- ── Tela de resultado ───────────────────────────────────────────── -->
+    <div id="screen-result" class="screen">
+      <div id="result-icon">
+        <svg id="result-fish-svg" aria-hidden="true" width="140" height="70">
+          <use id="result-fish-use" href="#fish-lambari"/>
+        </svg>
+      </div>
+      <h2 id="result-title"></h2>
+      <p id="result-desc"></p>
+      <div class="result-stats">
+        <div class="stat">
+          <span class="stat-label" data-i18n="stat_today"></span>
+          <span id="result-score" class="stat-value">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label" data-i18n="stat_best"></span>
+          <span id="result-best" class="stat-value">0</span>
+          <span class="stat-unit" data-i18n="stat_unit"></span>
+        </div>
+      </div>
+      <button id="btn-continue" class="btn-primary"   data-i18n="btn_again"></button>
+      <button id="btn-menu2"    class="btn-secondary" data-i18n="btn_menu"></button>
+    </div>
+
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="fish-data.js"></script>
+  <script src="map-data.js"></script>
+  <script src="audio.js"></script>
+  <script src="sensors.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
