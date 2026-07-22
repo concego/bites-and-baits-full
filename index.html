@@ -131,7 +131,7 @@
     </div>
 
     <!-- ── Tela de menu ────────────────────────────────────────────────── -->
-    <div id="screen-start" class="screen">
+    <div id="screen-start" class="screen" inert>
       <div class="logo">🎣</div>
       <h1>Bites &amp; Baits</h1>
       <p class="subtitle" data-i18n="subtitle"></p>
@@ -148,102 +148,145 @@
     </div>
 
     <!-- ── Tela de opções ─────────────────────────────────────────────── -->
-    <div id="screen-options" class="screen" role="main" aria-labelledby="options-heading">
-      <h2 id="options-heading" data-i18n="options_title"></h2>
+    <!--
+      inert: telas inativas ficam completamente fora do foco do leitor de tela.
+      A tela ativa remove o inert via showScreen() no game.js.
+    -->
+    <div id="screen-options" class="screen" inert>
 
-      <!-- Seção: Idioma -->
-      <div class="options-section">
-        <h3 data-i18n="options_lang_title"></h3>
-        <div class="lang-buttons">
-          <button id="btn-opt-lang-pt" class="btn-lang" lang="pt-BR" aria-label="Jogar em Português">
-            🇧🇷<span>Português</span>
-          </button>
-          <button id="btn-opt-lang-en" class="btn-lang" lang="en" aria-label="Play in English">
-            🇺🇸<span>English</span>
-          </button>
+      <!--
+        role="dialog" + aria-modal="true": o leitor de tela sabe que
+        é uma "caixa" separada e prende o foco aqui dentro.
+        aria-labelledby aponta para o h2, que é o que o TalkBack/NVDA anuncia ao entrar.
+      -->
+      <div role="dialog" aria-modal="true" aria-labelledby="options-heading" class="options-dialog">
+
+        <h2 id="options-heading" data-i18n="options_title"></h2>
+
+        <!-- Seção: Idioma -->
+        <div class="options-section" role="group" aria-labelledby="lang-section-heading">
+          <h3 id="lang-section-heading" data-i18n="options_lang_title"></h3>
+          <div class="lang-buttons">
+            <!--
+              aria-label explícito: lê "Jogar em Português" em vez de
+              "bandeira do Brasil Português botão"
+            -->
+            <button id="btn-opt-lang-pt" class="btn-lang" lang="pt-BR"
+                    aria-label="Jogar em Português">
+              🇧🇷<span aria-hidden="true">Português</span>
+            </button>
+            <button id="btn-opt-lang-en" class="btn-lang" lang="en"
+                    aria-label="Play in English">
+              🇺🇸<span aria-hidden="true">English</span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- Seção: Acessibilidade -->
-      <div class="options-section">
-        <h3 data-i18n="options_a11y_title"></h3>
+        <!-- Seção: Acessibilidade -->
+        <div class="options-section" role="group" aria-labelledby="a11y-section-heading">
+          <h3 id="a11y-section-heading" data-i18n="options_a11y_title"></h3>
 
-        <div class="a11y-toggle-list">
+          <!--
+            Cada item é uma <div> com um <button role="switch">.
+            O aria-label do botão inclui nome + estado: "Efeitos sonoros, ativado"
+            A descrição fica em aria-describedby — o leitor lê depois de uma pausa.
+          -->
+          <div class="a11y-toggle-list">
 
-          <div class="a11y-toggle-item">
-            <div class="a11y-toggle-info">
-              <span class="a11y-toggle-label" data-i18n="options_sound"></span>
-              <span class="a11y-toggle-desc"  data-i18n="options_sound_desc"></span>
+            <div class="a11y-toggle-item">
+              <div id="desc-sound" class="a11y-toggle-info" aria-hidden="true">
+                <span class="a11y-toggle-label" data-i18n="options_sound"></span>
+                <span class="a11y-toggle-desc"  data-i18n="options_sound_desc"></span>
+              </div>
+              <button id="toggle-sound" class="toggle-btn"
+                      role="switch" aria-checked="true"
+                      data-pref="sound"
+                      data-label-key="options_sound"
+                      aria-describedby="desc-sound">
+                <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              </button>
             </div>
-            <button id="toggle-sound" class="toggle-btn" role="switch" aria-checked="true" data-pref="sound">
-              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
-              <span class="toggle-state-label sr-only"></span>
-            </button>
-          </div>
 
-          <div class="a11y-toggle-item">
-            <div class="a11y-toggle-info">
-              <span class="a11y-toggle-label" data-i18n="options_haptic"></span>
-              <span class="a11y-toggle-desc"  data-i18n="options_haptic_desc"></span>
+            <div class="a11y-toggle-item">
+              <div id="desc-haptic" class="a11y-toggle-info" aria-hidden="true">
+                <span class="a11y-toggle-label" data-i18n="options_haptic"></span>
+                <span class="a11y-toggle-desc"  data-i18n="options_haptic_desc"></span>
+              </div>
+              <button id="toggle-haptic" class="toggle-btn"
+                      role="switch" aria-checked="true"
+                      data-pref="haptic"
+                      data-label-key="options_haptic"
+                      aria-describedby="desc-haptic">
+                <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              </button>
             </div>
-            <button id="toggle-haptic" class="toggle-btn" role="switch" aria-checked="true" data-pref="haptic">
-              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
-              <span class="toggle-state-label sr-only"></span>
-            </button>
-          </div>
 
-          <div class="a11y-toggle-item">
-            <div class="a11y-toggle-info">
-              <span class="a11y-toggle-label" data-i18n="options_contrast"></span>
-              <span class="a11y-toggle-desc"  data-i18n="options_contrast_desc"></span>
+            <div class="a11y-toggle-item">
+              <div id="desc-contrast" class="a11y-toggle-info" aria-hidden="true">
+                <span class="a11y-toggle-label" data-i18n="options_contrast"></span>
+                <span class="a11y-toggle-desc"  data-i18n="options_contrast_desc"></span>
+              </div>
+              <button id="toggle-contrast" class="toggle-btn"
+                      role="switch" aria-checked="false"
+                      data-pref="highContrast"
+                      data-label-key="options_contrast"
+                      aria-describedby="desc-contrast">
+                <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              </button>
             </div>
-            <button id="toggle-contrast" class="toggle-btn" role="switch" aria-checked="false" data-pref="highContrast">
-              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
-              <span class="toggle-state-label sr-only"></span>
-            </button>
-          </div>
 
-          <div class="a11y-toggle-item">
-            <div class="a11y-toggle-info">
-              <span class="a11y-toggle-label" data-i18n="options_large_text"></span>
-              <span class="a11y-toggle-desc"  data-i18n="options_large_text_desc"></span>
+            <div class="a11y-toggle-item">
+              <div id="desc-large-text" class="a11y-toggle-info" aria-hidden="true">
+                <span class="a11y-toggle-label" data-i18n="options_large_text"></span>
+                <span class="a11y-toggle-desc"  data-i18n="options_large_text_desc"></span>
+              </div>
+              <button id="toggle-large-text" class="toggle-btn"
+                      role="switch" aria-checked="false"
+                      data-pref="largeText"
+                      data-label-key="options_large_text"
+                      aria-describedby="desc-large-text">
+                <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              </button>
             </div>
-            <button id="toggle-large-text" class="toggle-btn" role="switch" aria-checked="false" data-pref="largeText">
-              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
-              <span class="toggle-state-label sr-only"></span>
-            </button>
-          </div>
 
-          <div class="a11y-toggle-item">
-            <div class="a11y-toggle-info">
-              <span class="a11y-toggle-label" data-i18n="options_slow_game"></span>
-              <span class="a11y-toggle-desc"  data-i18n="options_slow_game_desc"></span>
+            <div class="a11y-toggle-item">
+              <div id="desc-slow-game" class="a11y-toggle-info" aria-hidden="true">
+                <span class="a11y-toggle-label" data-i18n="options_slow_game"></span>
+                <span class="a11y-toggle-desc"  data-i18n="options_slow_game_desc"></span>
+              </div>
+              <button id="toggle-slow-game" class="toggle-btn"
+                      role="switch" aria-checked="false"
+                      data-pref="slowGame"
+                      data-label-key="options_slow_game"
+                      aria-describedby="desc-slow-game">
+                <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              </button>
             </div>
-            <button id="toggle-slow-game" class="toggle-btn" role="switch" aria-checked="false" data-pref="slowGame">
-              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
-              <span class="toggle-state-label sr-only"></span>
-            </button>
-          </div>
 
-          <div class="a11y-toggle-item">
-            <div class="a11y-toggle-info">
-              <span class="a11y-toggle-label" data-i18n="options_verbose"></span>
-              <span class="a11y-toggle-desc"  data-i18n="options_verbose_desc"></span>
+            <div class="a11y-toggle-item">
+              <div id="desc-verbose" class="a11y-toggle-info" aria-hidden="true">
+                <span class="a11y-toggle-label" data-i18n="options_verbose"></span>
+                <span class="a11y-toggle-desc"  data-i18n="options_verbose_desc"></span>
+              </div>
+              <button id="toggle-verbose" class="toggle-btn"
+                      role="switch" aria-checked="false"
+                      data-pref="verboseVoice"
+                      data-label-key="options_verbose"
+                      aria-describedby="desc-verbose">
+                <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+              </button>
             </div>
-            <button id="toggle-verbose" class="toggle-btn" role="switch" aria-checked="false" data-pref="verboseVoice">
-              <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
-              <span class="toggle-state-label sr-only"></span>
-            </button>
-          </div>
 
-        </div><!-- /.a11y-toggle-list -->
-      </div><!-- /.options-section -->
+          </div><!-- /.a11y-toggle-list -->
+        </div><!-- /.options-section acessibilidade -->
 
-      <button id="btn-options-back" class="btn-primary" data-i18n="btn_back"></button>
-    </div>
+        <button id="btn-options-back" class="btn-primary" data-i18n="btn_back"></button>
+
+      </div><!-- /.options-dialog -->
+    </div><!-- /#screen-options -->
 
     <!-- ── Tela de instruções ──────────────────────────────────────────── -->
-    <div id="screen-instructions" class="screen">
+    <div id="screen-instructions" class="screen" inert>
       <h2 data-i18n="how_to_play"></h2>
 
       <div class="instr-section">
@@ -277,7 +320,7 @@
     </div>
 
     <!-- ── Tela de jogo ────────────────────────────────────────────────── -->
-    <div id="screen-game" class="screen">
+    <div id="screen-game" class="screen" inert>
 
       <header class="game-header">
         <div class="score-box">
@@ -330,7 +373,7 @@
     </div>
 
     <!-- ── Tela de resultado ───────────────────────────────────────────── -->
-    <div id="screen-result" class="screen">
+    <div id="screen-result" class="screen" inert>
       <div id="result-icon">
         <svg id="result-fish-svg" aria-hidden="true" width="140" height="70">
           <use id="result-fish-use" href="#fish-lambari"/>
