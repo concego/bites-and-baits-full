@@ -15,12 +15,10 @@ const I18n = (() => {
       lang_subtitle:    'Choose your language',
 
       // Menu
-      subtitle:         'Um jogo de pesca pelo acelerômetro',
       btn_start:        'Pescar',
       btn_free:         'Pesca Livre',
       btn_free_desc:    'Com pontuação',
       btn_instructions: 'Como jogar',
-      hint:             'Segure o celular na vertical para jogar',
       credits_by:       'Por',
       credits_brand:    'Eu Concego Jogar',
 
@@ -45,26 +43,39 @@ const I18n = (() => {
       toggle_off:            'Desativado',
 
       // Tela de instruções
-      how_to_play:      'Como jogar',
+      how_to_play:         'Como jogar',
+
+      instr_about_title:   '🎣 O que é Bites & Baits',
+      instr_about_desc:    'Um jogo de pesca controlado pelo acelerômetro do celular — ou pelo teclado no PC. Você lança a linha, espera uma mordida e fisga o peixe na hora certa.',
+
+      instr_modes_title:   '🎮 Modos de jogo',
+      instr_mode_normal:   'Pescar',
+      instr_mode_normal_desc: 'Modo com iscas e economia. Compre iscas, equipe o melhor para cada peixe e venda o que pescou.',
+      instr_mode_free:     'Pesca Livre',
+      instr_mode_free_desc: 'Sem iscas, sem moedas. Pesca contínua com pontuação. Ideal para praticar.',
+
       instr_sensor_title:  '📱 Celular com acelerômetro',
-      instr_cast:       'Lançar',
-      instr_cast_desc:  'incline o celular para frente',
-      instr_reel:       'Puxar',
-      instr_reel_desc:  'incline o celular para trás',
-      instr_hook:       'Fisgar',
-      instr_hook_desc:  'sacuda o celular quando ouvir o aviso',
-      instr_kb_title:   '⌨️ PC / teclado',
-      instr_kb_cast:    'Lançar',
-      instr_kb_cast_desc: 'seta para cima ↑',
-      instr_kb_reel:    'Puxar',
-      instr_kb_reel_desc: 'seta para baixo ↓',
-      instr_kb_hook:    'Fisgar',
-      instr_kb_hook_desc: 'barra de espaço',
-      instr_a11y_title: 'Acessibilidade',
-      instr_a11y_1:     'Compatível com TalkBack ativado',
-      instr_a11y_2:     'Todos os avisos são lidos em tempo real',
-      instr_a11y_3:     'Haptic feedback (vibração) nos eventos principais',
-      btn_back:         'Voltar ao menu',
+      instr_posture:       'Segure o celular na vertical para jogar.',
+      instr_cast:          'Lançar',
+      instr_cast_desc:     'incline o celular para frente',
+      instr_reel:          'Puxar',
+      instr_reel_desc:     'incline o celular para trás',
+      instr_hook:          'Fisgar',
+      instr_hook_desc:     'sacuda o celular quando ouvir o aviso',
+
+      instr_kb_title:      '⌨️ PC / teclado',
+      instr_kb_cast:       'Lançar',
+      instr_kb_cast_desc:  'seta para cima ↑',
+      instr_kb_reel:       'Puxar',
+      instr_kb_reel_desc:  'seta para baixo ↓',
+      instr_kb_hook:       'Fisgar',
+      instr_kb_hook_desc:  'barra de espaço',
+
+      instr_a11y_title:    'Acessibilidade',
+      instr_a11y_1:        'Compatível com TalkBack ativado',
+      instr_a11y_2:        'Todos os avisos são lidos em tempo real',
+      instr_a11y_3:        'Haptic feedback (vibração) nos eventos principais',
+      btn_back:            'Voltar ao menu',
 
       // HUD do jogo
       game_title:       'Jogo em andamento',
@@ -188,12 +199,10 @@ const I18n = (() => {
       lang_subtitle:    'Escolha o idioma',
 
       // Menu
-      subtitle:         'A fishing game using the accelerometer',
       btn_start:        'Fish',
       btn_free:         'Free Fishing',
       btn_free_desc:    'With scoring',
       btn_instructions: 'How to play',
-      hint:             'Hold your phone upright to play',
       credits_by:       'By',
       credits_brand:    'Eu Concego Jogar',
 
@@ -218,26 +227,39 @@ const I18n = (() => {
       toggle_off:            'Off',
 
       // Instructions screen
-      how_to_play:      'How to play',
+      how_to_play:         'How to play',
+
+      instr_about_title:   '🎣 What is Bites & Baits',
+      instr_about_desc:    'A fishing game controlled by your phone\'s accelerometer — or keyboard on PC. Cast your line, wait for a bite, and hook the fish at the right moment.',
+
+      instr_modes_title:   '🎮 Game modes',
+      instr_mode_normal:   'Fish',
+      instr_mode_normal_desc: 'Bait and economy mode. Buy baits, equip the right one for each fish, and sell your catch.',
+      instr_mode_free:     'Free Fishing',
+      instr_mode_free_desc: 'No baits, no coins. Continuous fishing with scoring. Great for practice.',
+
       instr_sensor_title:  '📱 Phone with accelerometer',
-      instr_cast:       'Cast',
-      instr_cast_desc:  'tilt the phone forward',
-      instr_reel:       'Reel in',
-      instr_reel_desc:  'tilt the phone backward',
-      instr_hook:       'Hook',
-      instr_hook_desc:  'shake the phone when you hear the alert',
-      instr_kb_title:   '⌨️ PC / keyboard',
-      instr_kb_cast:    'Cast',
-      instr_kb_cast_desc: 'arrow up ↑',
-      instr_kb_reel:    'Reel in',
-      instr_kb_reel_desc: 'arrow down ↓',
-      instr_kb_hook:    'Hook',
-      instr_kb_hook_desc: 'spacebar',
-      instr_a11y_title: 'Accessibility',
-      instr_a11y_1:     'Compatible with TalkBack enabled',
-      instr_a11y_2:     'All alerts are read in real time',
-      instr_a11y_3:     'Haptic feedback on key events',
-      btn_back:         'Back to menu',
+      instr_posture:       'Hold your phone upright to play.',
+      instr_cast:          'Cast',
+      instr_cast_desc:     'tilt the phone forward',
+      instr_reel:          'Reel in',
+      instr_reel_desc:     'tilt the phone backward',
+      instr_hook:          'Hook',
+      instr_hook_desc:     'shake the phone when you hear the alert',
+
+      instr_kb_title:      '⌨️ PC / keyboard',
+      instr_kb_cast:       'Cast',
+      instr_kb_cast_desc:  'arrow up ↑',
+      instr_kb_reel:       'Reel in',
+      instr_kb_reel_desc:  'arrow down ↓',
+      instr_kb_hook:       'Hook',
+      instr_kb_hook_desc:  'spacebar',
+
+      instr_a11y_title:    'Accessibility',
+      instr_a11y_1:        'Compatible with TalkBack enabled',
+      instr_a11y_2:        'All alerts are read in real time',
+      instr_a11y_3:        'Haptic feedback on key events',
+      btn_back:            'Back to menu',
 
       // Game HUD
       game_title:       'Game in progress',
