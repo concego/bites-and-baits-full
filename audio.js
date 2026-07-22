@@ -387,44 +387,89 @@ const Audio = (() => {
   //  2. Splash de fuga   — ruído filtrado curto simulando mergulho
   function fishEscaped() {
     if (!ctx) return;
-    if (ctx.state === 'suspended') ctx.resume();
+    const _play = () => {
+      const now = ctx.currentTime;
+      // 1. Linha assobiando (pitch caindo)
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(80, now + 0.45);
+      gain.gain.setValueAtTime(0.0,  now);
+      gain.gain.linearRampToValueAtTime(0.35, now + 0.03);
+      gain.gain.linearRampToValueAtTime(0.0,  now + 0.5);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.55);
+      // 2. Splash de fuga (ruído curto, filtro bandpass grave)
+      const bufLen = Math.floor(ctx.sampleRate * 0.35);
+      const buf    = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+      const data   = buf.getChannelData(0);
+      for (let i = 0; i < bufLen; i++) {
+        const t = i / ctx.sampleRate;
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-t * 14);
+      }
+      const noise  = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const nGain  = ctx.createGain();
+      noise.buffer           = buf;
+      filter.type            = 'bandpass';
+      filter.frequency.value = 600;
+      filter.Q.value         = 0.7;
+      nGain.gain.value       = 0.55;
+      noise.connect(filter);
+      filter.connect(nGain);
+      nGain.connect(ctx.destination);
+      noise.start(now + 0.05);
+    };
+    if (ctx.state === 'suspended') { ctx.resume().then(_play); } else { _play(); }
+  }
 
-    const now = ctx.currentTime;
+  // ── Peixe cansado (dois pulsos graves descendentes) ───────────────────────
+  function fishTiredSound() {
+    if (!ctx) return;
+    const _play = () => {
+      const now = ctx.currentTime;
+      [0, 0.2].forEach(offset => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(160, now + offset);
+        osc.frequency.exponentialRampToValueAtTime(60, now + offset + 0.25);
+        gain.gain.setValueAtTime(0.0,  now + offset);
+        gain.gain.linearRampToValueAtTime(0.42, now + offset + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.28);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 0.32);
+      });
+    };
+    if (ctx.state === 'suspended') { ctx.resume().then(_play); } else { _play(); }
+  }
 
-    // 1. Linha assobiando (pitch caindo)
-    const osc  = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(520, now);
-    osc.frequency.exponentialRampToValueAtTime(80, now + 0.45);
-    gain.gain.setValueAtTime(0.0,  now);
-    gain.gain.linearRampToValueAtTime(0.35, now + 0.03);
-    gain.gain.linearRampToValueAtTime(0.0,  now + 0.5);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.55);
-
-    // 2. Splash de fuga (ruído curto, filtro bandpass grave)
-    const bufLen = Math.floor(ctx.sampleRate * 0.35);
-    const buf    = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-    const data   = buf.getChannelData(0);
-    for (let i = 0; i < bufLen; i++) {
-      const t = i / ctx.sampleRate;
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-t * 14);
-    }
-    const noise  = ctx.createBufferSource();
-    const filter = ctx.createBiquadFilter();
-    const nGain  = ctx.createGain();
-    noise.buffer        = buf;
-    filter.type         = 'bandpass';
-    filter.frequency.value = 600;
-    filter.Q.value      = 0.7;
-    nGain.gain.value    = 0.55;
-    noise.connect(filter);
-    filter.connect(nGain);
-    nGain.connect(ctx.destination);
-    noise.start(now + 0.05); // leve delay — linha assobia primeiro, depois o splash
+  // ── Peixe recuperou o fôlego (dois pulsos agudos ascendentes) ────────────
+  function fishRecoveredSound() {
+    if (!ctx) return;
+    const _play = () => {
+      const now = ctx.currentTime;
+      [0, 0.22].forEach(offset => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(200, now + offset);
+        osc.frequency.exponentialRampToValueAtTime(440, now + offset + 0.22);
+        gain.gain.setValueAtTime(0.0,  now + offset);
+        gain.gain.linearRampToValueAtTime(0.35, now + offset + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.26);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 0.3);
+      });
+    };
+    if (ctx.state === 'suspended') { ctx.resume().then(_play); } else { _play(); }
   }
 
   // Chomp é sempre sintético (não tem no pack)
@@ -433,4 +478,5 @@ const Audio = (() => {
 
   return { init, play, stop, startAmbient, stopAmbient, vibrate, chomp, snap,
            startReel, setReelMode, stopReel, fishResist,
-           fishApproach, fishRetreat, tensionAlert, fishEscaped };
+           fishApproach, fishRetreat, tensionAlert,
+           fishEscaped, fishTiredSound, fishRecoveredSound };
