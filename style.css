@@ -1,0 +1,511 @@
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sky-top:    #87CEEB;
+  --sky-bot:    #B0E2FF;
+  --water-top:  #1a6fa8;
+  --water-bot:  #0d3f66;
+  --shore:      #8B6914;
+  --shore-dark: #5C4500;
+  --green:      #4CAF50;
+  --red:        #e53935;
+  --yellow:     #FFC107;
+  --white:      #ffffff;
+  --text-dark:  #1a1a2e;
+  --panel-bg:   rgba(0,0,0,0.55);
+  --radius:     14px;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0d3f66;
+  color: var(--white);
+  touch-action: none;
+  user-select: none;
+}
+
+/* ===== ACESSIBILIDADE ===== */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== APP CONTAINER ===== */
+#app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* ===== SCREENS ===== */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  padding: 24px;
+}
+.screen.active { display: flex; }
+
+/* ===== START SCREEN ===== */
+#screen-start {
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--water-top) 60%, var(--water-bot) 100%);
+  gap: 16px;
+}
+
+/* Aviso de TalkBack */
+.notice-box {
+  background: rgba(0,0,0,0.5);
+  border: 2px solid var(--yellow);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  max-width: 340px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.notice-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--yellow);
+}
+.notice-box p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--white);
+}
+#screen-start .logo {
+  font-size: 72px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+}
+#screen-start h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+#screen-start .subtitle {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+#screen-start .hint {
+  font-size: 0.85rem;
+  opacity: 0.65;
+  margin-top: 8px;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  padding: 16px 40px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.1s, box-shadow 0.1s;
+  min-width: 200px;
+}
+.btn-primary:active { transform: scale(0.96); box-shadow: none; }
+
+.btn-secondary {
+  background: rgba(255,255,255,0.15);
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: var(--radius);
+  padding: 10px 24px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.25); }
+
+/* ===== GAME SCREEN ===== */
+#screen-game {
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bot) 30%);
+  padding: 0;
+  justify-content: flex-start;
+}
+
+.game-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+.score-box { text-align: center; }
+.score-label { display: block; font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+.score-value { font-size: 1.6rem; font-weight: 800; }
+
+/* ===== CENA ===== */
+#scene {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#sky {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 35%;
+  background: linear-gradient(180deg, #87CEEB, #B0E2FF);
+}
+
+/* Nuvens decorativas via pseudo */
+#sky::before, #sky::after {
+  content: '';
+  position: absolute;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50px;
+}
+#sky::before { width: 80px; height: 28px; top: 20%; left: 15%; box-shadow: 30px -8px 0 20px rgba(255,255,255,0.7); }
+#sky::after  { width: 60px; height: 20px; top: 35%; right: 20%; box-shadow: 20px -6px 0 14px rgba(255,255,255,0.7); }
+
+#water-surface {
+  position: absolute;
+  top: 35%;
+  left: 0; right: 0;
+  height: 6px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 3px;
+  z-index: 2;
+}
+
+#water {
+  position: absolute;
+  top: calc(35% + 6px);
+  left: 0; right: 0; bottom: 15%;
+  background: linear-gradient(180deg, var(--water-top), var(--water-bot));
+  overflow: hidden;
+}
+
+/* Ondas via pseudo */
+#water::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -50%;
+  width: 200%;
+  height: 20px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+  animation: wave 3s ease-in-out infinite;
+}
+@keyframes wave {
+  0%, 100% { transform: translateX(0) scaleY(1); }
+  50%       { transform: translateX(5%) scaleY(1.3); }
+}
+
+#shore {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 15%;
+  background: linear-gradient(180deg, var(--shore), var(--shore-dark));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* ===== PESCADOR ===== */
+#fisher {
+  position: relative;
+  width: 60px;
+  height: 80px;
+  margin-top: -50px;
+}
+
+/* Corpo simples com CSS */
+#fisher::before {
+  content: '🧍';
+  font-size: 48px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#rod {
+  position: absolute;
+  width: 4px;
+  height: 70px;
+  background: linear-gradient(180deg, #8B4513, #5C2E00);
+  border-radius: 2px;
+  top: -60px;
+  left: 50%;
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(-30deg);
+  transition: transform 0.4s ease;
+}
+
+#line {
+  position: absolute;
+  width: 1px;
+  background: rgba(255,255,255,0.6);
+  top: -60px;
+  left: calc(50% + 20px);
+  height: 0;
+  transform-origin: top center;
+  transition: height 0.5s ease;
+}
+
+/* Isca */
+#lure {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, #FF4500, #CC2200);
+  border-radius: 50%;
+  position: absolute;
+  display: none;
+  box-shadow: 0 0 6px rgba(255,69,0,0.8);
+  transition: top 0.5s ease, left 0.3s ease;
+}
+
+/* Peixes decorativos de fundo */
+.fish {
+  position: absolute;
+  transition: left 2s linear;
+  animation: fish-swim 2.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+@keyframes fish-swim {
+  0%   { transform: translateY(0) scaleX(1); }
+  100% { transform: translateY(-8px) scaleX(1); }
+}
+
+/* Ícone de peixe na tela de resultado */
+#result-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90px;
+}
+#result-fish-svg {
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+}
+
+/* ===== STATUS PANEL ===== */
+#status-panel {
+  width: 100%;
+  padding: 12px 20px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 110px;
+}
+
+#state-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Barra de tensão */
+#tension-container { width: 100%; }
+.tension-label { font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px; text-align: center; }
+#tension-bar-bg {
+  width: 100%;
+  height: 18px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 9px;
+  overflow: hidden;
+  position: relative;
+}
+#tension-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 9px;
+  transition: width 0.1s linear, background 0.3s;
+  background: var(--green);
+}
+#tension-marker {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 75%;
+  width: 2px;
+  background: rgba(255,255,255,0.6);
+}
+
+/* Indicador de inclinação */
+#tilt-indicator { display: flex; align-items: center; gap: 8px; }
+#tilt-arrow { font-size: 1.4rem; transition: transform 0.2s; }
+#tilt-text { font-size: 0.85rem; opacity: 0.8; }
+
+/* Estados da barra de tensão */
+.tension-low    { background: var(--green) !important; }
+.tension-medium { background: var(--yellow) !important; }
+.tension-high   { background: #FF7043 !important; }
+.tension-danger { background: var(--red) !important; }
+
+/* Animação de shake */
+@keyframes shake-hint {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-6px); }
+  75%       { transform: translateX(6px); }
+}
+.shake-hint { animation: shake-hint 0.4s ease infinite; }
+
+/* Pulso na tela quando peixe morde */
+@keyframes bite-pulse {
+  0%   { box-shadow: inset 0 0 0px 0px rgba(255,193,7,0); }
+  50%  { box-shadow: inset 0 0 40px 20px rgba(255,193,7,0.4); }
+  100% { box-shadow: inset 0 0 0px 0px rgba(255,193,7,0); }
+}
+.bite-pulse { animation: bite-pulse 0.5s ease 3; }
+
+/* ===== RESULT SCREEN ===== */
+#screen-result {
+  background: linear-gradient(180deg, #1a3a5c, #0d2140);
+  gap: 20px;
+  text-align: center;
+}
+/* result-icon agora é controlado pelo bloco acima */
+#result-title { font-size: 1.8rem; font-weight: 800; }
+#result-desc { font-size: 0.95rem; opacity: 0.8; max-width: 280px; }
+
+.result-stats {
+  display: flex;
+  gap: 32px;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 16px 32px;
+}
+.stat { text-align: center; }
+.stat-label { display: block; font-size: 0.75rem; opacity: 0.7; margin-bottom: 4px; }
+.stat-value { font-size: 2rem; font-weight: 800; }
+.stat-unit  { display: block; font-size: 0.7rem; opacity: 0.6; margin-top: 2px; }
+
+/* Botão menu inline no jogo */
+#btn-menu {
+  position: absolute;
+  bottom: 130px;
+  right: 16px;
+  z-index: 20;
+}
+
+/* Utilitários */
+.hidden { display: none !important; }
+
+/* ── Tela de instruções ─────────────────────────────────────────────────── */
+#screen-instructions {
+  padding: 24px 20px;
+  overflow-y: auto;
+  justify-content: flex-start;
+  gap: 16px;
+}
+#screen-instructions h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.instr-section {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+}
+.instr-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: #4fc3f7;
+}
+.instr-section ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.instr-section li {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+/* ── Créditos no menu ───────────────────────────────────────────────────── */
+.menu-credits {
+  margin-top: auto;
+  padding-top: 16px;
+  text-align: center;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  line-height: 1.6;
+}
+.menu-credits a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.menu-credits a:hover { opacity: 0.8; }
+
+/* ── Tela de opções ─────────────────────────────────────────────────────── */
+.options-section {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 12px;
+}
+.options-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #4fc3f7;
+}
+
+/* ── Tela de seleção de idioma ──────────────────────────────────────────── */
+.lang-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+.btn-lang {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius);
+  color: white;
+  font-size: 2.4rem;
+  padding: 20px 28px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  min-width: 120px;
+}
+.btn-lang span {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.btn-lang:hover,
+.btn-lang:focus {
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.6);
+  transform: translateY(-2px);
+  outline: none;
+}
+.btn-lang:active { transform: translateY(0); }
