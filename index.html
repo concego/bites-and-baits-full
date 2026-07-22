@@ -131,7 +131,7 @@
     </div>
 
     <!-- ── Tela de menu ────────────────────────────────────────────────── -->
-    <div id="screen-start" class="screen" inert>
+    <div id="screen-start" class="screen">
       <div class="logo">🎣</div>
       <h1>Bites &amp; Baits</h1>
       <p class="subtitle" data-i18n="subtitle"></p>
@@ -148,11 +148,7 @@
     </div>
 
     <!-- ── Tela de opções ─────────────────────────────────────────────── -->
-    <!--
-      inert: telas inativas ficam completamente fora do foco do leitor de tela.
-      A tela ativa remove o inert via showScreen() no game.js.
-    -->
-    <div id="screen-options" class="screen" inert>
+    <div id="screen-options" class="screen">
 
       <!--
         role="dialog" + aria-modal="true": o leitor de tela sabe que
@@ -286,7 +282,7 @@
     </div><!-- /#screen-options -->
 
     <!-- ── Tela de instruções ──────────────────────────────────────────── -->
-    <div id="screen-instructions" class="screen" inert>
+    <div id="screen-instructions" class="screen">
       <h2 data-i18n="how_to_play"></h2>
 
       <div class="instr-section">
@@ -320,7 +316,7 @@
     </div>
 
     <!-- ── Tela de jogo ────────────────────────────────────────────────── -->
-    <div id="screen-game" class="screen" inert>
+    <div id="screen-game" class="screen">
 
       <header class="game-header">
         <div class="score-box">
@@ -373,7 +369,7 @@
     </div>
 
     <!-- ── Tela de resultado ───────────────────────────────────────────── -->
-    <div id="screen-result" class="screen" inert>
+    <div id="screen-result" class="screen">
       <div id="result-icon">
         <svg id="result-fish-svg" aria-hidden="true" width="140" height="70">
           <use id="result-fish-use" href="#fish-lambari"/>
