@@ -2,7 +2,7 @@
  * map-data.js — Bites & Baits
  * Catálogo de mapas. Cada mapa define:
  *   - visual (classe CSS aplicada ao #scene)
- *   - pool de peixes com peso próprio por mapa
+ *   - pool de peixes com peso próprio por mapa (usado pelo CreatureProfile)
  *
  * O mesmo peixe pode ser raro num mapa e comum em outro.
  * Os pesos de cada mapa devem somar 1.0.
@@ -28,19 +28,28 @@ const MAP_CATALOG = {
   // }
 };
 
+/** Cache de pools por mapa (evita recriar a cada sorteio) */
+const _mapPools = {};
+
+/** Retorna (ou cria) o CreatureProfile.pool para o mapa dado */
+function _getPool(mapObj) {
+  if (_mapPools[mapObj.id]) return _mapPools[mapObj.id];
+
+  const profiles = mapObj.fish.map(entry => ({
+    ...FISH_CATALOG[entry.id],
+    weight: entry.weight,
+  }));
+  _mapPools[mapObj.id] = CreatureProfile.createPool(profiles);
+  return _mapPools[mapObj.id];
+}
+
 /** Retorna o objeto de mapa ativo (padrão: rio_doce) */
 function getActiveMap() {
   const saved = localStorage.getItem('bb_map') || 'rio_doce';
   return MAP_CATALOG[saved] || MAP_CATALOG['rio_doce'];
 }
 
-/** Sorteia uma espécie com base nos pesos do mapa */
+/** Sorteia uma espécie com base nos pesos do mapa via CreatureProfile */
 function pickFishFromMap(mapObj) {
-  const roll = Math.random();
-  let acc = 0;
-  for (const entry of mapObj.fish) {
-    acc += entry.weight;
-    if (roll < acc) return FISH_CATALOG[entry.id];
-  }
-  return FISH_CATALOG[mapObj.fish[0].id];
+  return _getPool(mapObj).roll();
 }
