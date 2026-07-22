@@ -70,7 +70,28 @@ const I18n = (() => {
       game_title:       'Jogo em andamento',
       hud_fish:         'Peixes',
       hud_best:         'Melhor',
+      hud_bait:         'Isca',
       tension_label:    'Tensão da linha',
+
+      // Painel de equipamento
+      equip_title:      'Equipamento',
+      equip_bait_title: 'Isca',
+      equip_no_bait:    'Sem isca no estoque',
+      equip_qty:        qty => `×${qty}`,
+      equip_select:     'Usar',
+      equip_selected:   'Equipada',
+      equip_close:      'Fechar',
+      equip_consume_ok: (bait, qty) => `${bait} equipada. Restam ${qty}.`,
+      equip_no_stock:   'Isca esgotada!',
+
+      // Iscas
+      bait_worm:      'Minhoca',
+      bait_cricket:   'Grilo',
+      bait_fly:       'Mosca Artificial',
+      bait_spoon:     'Colher',
+      bait_live_bait: 'Isca Viva',
+      bait_shrimp:    'Camarão',
+      bait_jig:       'Jig',
 
       // Tela de resultado
       result_caught:    'Peixe capturado!',
@@ -92,6 +113,8 @@ const I18n = (() => {
       state_reeling:    fish => `🎣 Puxando ${fish}...`,
       state_caught:     fish => `🏆 ${fish} capturado!`,
       state_snapped:    '💥 A linha arrebentou!',
+      bait_wrong_fish_left: 'O peixe não se interessou pela isca e foi embora.',
+      bait_no_stock:    'Sem isca! Acesse Equipamento para trocar.',
       state_escaped:    '😔 O peixe fugiu...',
       state_tired:      fish => `😮‍💨 ${fish} está cansando — puxe!`,
       state_pulled_out: 'Isca fora da água — incline para frente',
@@ -213,7 +236,28 @@ const I18n = (() => {
       game_title:       'Game in progress',
       hud_fish:         'Fish',
       hud_best:         'Best',
+      hud_bait:         'Bait',
       tension_label:    'Line tension',
+
+      // Equipment panel
+      equip_title:      'Equipment',
+      equip_bait_title: 'Bait',
+      equip_no_bait:    'No bait in stock',
+      equip_qty:        qty => `×${qty}`,
+      equip_select:     'Use',
+      equip_selected:   'Equipped',
+      equip_close:      'Close',
+      equip_consume_ok: (bait, qty) => `${bait} equipped. ${qty} remaining.`,
+      equip_no_stock:   'Bait out of stock!',
+
+      // Baits
+      bait_worm:      'Earthworm',
+      bait_cricket:   'Cricket',
+      bait_fly:       'Artificial Fly',
+      bait_spoon:     'Spoon',
+      bait_live_bait: 'Live Bait',
+      bait_shrimp:    'Shrimp',
+      bait_jig:       'Jig',
 
       // Result screen
       result_caught:    'Fish caught!',
@@ -238,6 +282,8 @@ const I18n = (() => {
       state_escaped:    '😔 The fish got away...',
       state_tired:      fish => `😮‍💨 ${fish} is tiring — reel in!`,
       state_pulled_out: 'Lure out of water — tilt forward',
+      bait_wrong_fish_left: 'The fish lost interest and swam away.',
+      bait_no_stock:    'No bait! Open Equipment to change.',
 
       // Tilt hints
       tilt_idle:        'Tilt to cast',
