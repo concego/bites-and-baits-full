@@ -116,6 +116,10 @@ const Game = (() => {
     $('btn-start').addEventListener('click', startGame);
     $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
     $('btn-back').addEventListener('click',  () => showScreen('start'));
+    $('btn-options').addEventListener('click', () => { _syncToggles(); showScreen('options'); });
+    $('btn-options-back').addEventListener('click', () => showScreen('start'));
+    $('btn-opt-lang-pt').addEventListener('click', () => selectLang('pt'));
+    $('btn-opt-lang-en').addEventListener('click', () => selectLang('en'));
     $('btn-menu').addEventListener('click',  () => goToMenu());
     $('btn-menu2').addEventListener('click', () => goToMenu());
     $('btn-continue').addEventListener('click', () => {
@@ -123,8 +127,32 @@ const Game = (() => {
       enterState('IDLE');
     });
 
+    // Toggles de acessibilidade
+    A11y.init();
+    document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pref = btn.dataset.pref;
+        A11y.toggle(pref);
+        _updateToggleBtn(btn, A11y.get(pref));
+      });
+    });
+
     Sensors.on('onTilt',  handleTilt);
     Sensors.on('onShake', handleShake);
+  }
+
+  /** Sincroniza o estado visual dos toggles com as preferências salvas */
+  function _syncToggles() {
+    document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
+      _updateToggleBtn(btn, A11y.get(btn.dataset.pref));
+    });
+  }
+
+  /** Atualiza aria-checked + label sr-only de um toggle */
+  function _updateToggleBtn(btn, value) {
+    btn.setAttribute('aria-checked', value ? 'true' : 'false');
+    const label = btn.querySelector('.toggle-state-label');
+    if (label) label.textContent = I18n.t(value ? 'toggle_on' : 'toggle_off');
   }
 
   // ── Linha SVG dinâmica ────────────────────────────────────────────────────
@@ -444,7 +472,7 @@ const Game = (() => {
         _fishState = 'biting';
 
         Audio.chomp();
-        Audio.vibrate([80, 40, 80]);
+        _vibrate([80, 40, 80]);
         ui.scene.classList.add('bite-pulse');
         setTimeout(() => ui.scene.classList.remove('bite-pulse'), 1500);
 
@@ -463,7 +491,7 @@ const Game = (() => {
             _destroyActiveFish();
             enterState('WAITING');
           }, 2000);
-        }, currentFish.biteWindow);
+        }, currentFish.biteWindow * A11y.timeScale());
         break;
 
       case 'REELING':
@@ -483,7 +511,7 @@ const Game = (() => {
       case 'CAUGHT': {
         Audio.stopReel();
         Audio.play(currentFish.special ? 'point_special' : 'point_normal');
-        Audio.vibrate([100, 50, 100, 50, 200]);
+        _vibrate([100, 50, 100, 50, 200]);
         score++;
         if (score > best) { best = score; localStorage.setItem('bb_best', best); }
         updateScore();
@@ -516,7 +544,7 @@ const Game = (() => {
       case 'SNAPPED':
         Audio.stopReel();
         Audio.snap();
-        Audio.vibrate([200, 100, 400]);
+        _vibrate([200, 100, 400]);
         ui.tensionCont.classList.add('hidden');
         tension = 0;
         ui.lure.style.display = 'none';
@@ -580,7 +608,7 @@ const Game = (() => {
       clearTimeout(biteTimer);
       ui.tiltArrow.classList.remove('shake-hint');
       navigator.vibrate && navigator.vibrate(0);
-      setTimeout(() => Audio.vibrate([300, 100, 400]), 30);
+      setTimeout(() => _vibrate([300, 100, 400]), 30);
       speak(I18n.t('speak_rehooked'));
       enterState('REELING');
     }
@@ -609,7 +637,7 @@ const Game = (() => {
 
       // Níveis de tensão
       if (tension > 85) {
-        Audio.vibrate(30);
+        _vibrate(30);
         setTensionClass('tension-danger');
         if (!_lastTensionWarn || Date.now() - _lastTensionWarn > 3000) {
           _lastTensionWarn = Date.now();
@@ -658,7 +686,7 @@ const Game = (() => {
   // ── Cansaço do peixe ──────────────────────────────────────────────────────
   function scheduleFishTired() {
     const jitter = Math.random() * 0.3 - 0.15;
-    const ms = currentFish.tiredBase * (1 + jitter);
+    const ms = currentFish.tiredBase * (1 + jitter) * A11y.timeScale();
     tiredTimer = setTimeout(() => {
       if (state === 'REELING') {
         fishTired = true;
@@ -711,7 +739,7 @@ const Game = (() => {
 
   // ── Mordida ───────────────────────────────────────────────────────────────
   function scheduleNextBite() {
-    const ms = 3000 + Math.random() * 7000;
+    const ms = (3000 + Math.random() * 7000) * A11y.timeScale();
     waitTimer = setTimeout(() => {
       if (state === 'WAITING') enterState('BITING');
     }, ms);
@@ -770,6 +798,12 @@ const Game = (() => {
   }
 
   function setLabel(text)  { ui.stateLabel.textContent = text; }
+
+  /** Vibra apenas se háptica estiver ativada nas preferências */
+  function _vibrate(pattern) { if (A11y.get('haptic')) Audio.vibrate(pattern); }
+
+  /** Toca som apenas se som estiver ativado nas preferências */
+  function _play(id) { if (A11y.get('sound')) Audio.play(id); }
 
   function speak(text) {
     ui.announcer.textContent = '';
