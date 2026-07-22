@@ -76,6 +76,11 @@ const I18n = (() => {
       // Painel de equipamento
       equip_title:      'Equipamento',
       equip_bait_title: 'Isca',
+      equip_cat_baits:  'Iscas',
+      equip_cat_line:   'Linha',
+      equip_cat_float:  'Boia',
+      equip_soon:       '(em breve)',
+      equip_back:       '← Voltar',
       equip_no_bait:    'Sem isca no estoque',
       equip_qty:        qty => `×${qty}`,
       equip_select:     'Usar',
@@ -244,6 +249,11 @@ const I18n = (() => {
       // Equipment panel
       equip_title:      'Equipment',
       equip_bait_title: 'Bait',
+      equip_cat_baits:  'Baits',
+      equip_cat_line:   'Line',
+      equip_cat_float:  'Float',
+      equip_soon:       '(coming soon)',
+      equip_back:       '← Back',
       equip_no_bait:    'No bait in stock',
       equip_qty:        qty => `×${qty}`,
       equip_select:     'Use',
