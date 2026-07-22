@@ -1,7 +1,6 @@
 /**
  * fish-data.js — Bites & Baits
- * Catálogo global de espécies. O peso (weight) fica no mapa, não aqui.
- * Cada espécie define comportamento, física e aparência.
+ * Catálogo global de espécies.
  *
  * physics:
  *   swimSpeed     → velocidade de nado em px/frame (decorativo)
@@ -14,10 +13,11 @@
  *   'saltwater'   → água salgada
  *   'both'        → suporta os dois
  *
+ * weightRange: [min, max] em kg — dados reais da fauna brasileira
+ *
  * baits:
- *   Array de IDs de isca que aumentam chance de mordida.
- *   IDs disponíveis: 'worm', 'cricket', 'fly', 'spoon', 'live_bait', 'shrimp', 'jig'
- *   (o sistema de iscas vai consumir esses IDs — manter coerentes)
+ *   IDs de isca que aumentam chance de mordida.
+ *   IDs: 'worm', 'cricket', 'fly', 'spoon', 'live_bait', 'shrimp', 'jig'
  */
 
 /**
@@ -41,6 +41,7 @@ const FISH_CATALOG = {
     biteWindow: 4500,
     tiredBase: 3000,
     habitat: 'freshwater',
+    weightRange: [0.02, 0.12],   // 20g–120g (real: lambari típico do Brasil)
     baits: ['worm', 'cricket'],
     physics: { swimSpeed: 1.2, approachSpeed: 2.0, wobble: 4,  wobbleFreq: 0.18 },
   },
@@ -56,6 +57,7 @@ const FISH_CATALOG = {
     biteWindow: 3500,
     tiredBase: 4500,
     habitat: 'freshwater',
+    weightRange: [0.3, 2.5],     // 300g–2.5kg (tilápia do Nilo, muito comum no Brasil)
     baits: ['worm', 'live_bait', 'cricket'],
     physics: { swimSpeed: 0.9, approachSpeed: 1.5, wobble: 5,  wobbleFreq: 0.14 },
   },
@@ -71,6 +73,7 @@ const FISH_CATALOG = {
     biteWindow: 3000,
     tiredBase: 6000,
     habitat: 'freshwater',
+    weightRange: [0.5, 4.0],     // 500g–4kg (truta arco-íris cultivada no Sul/MG)
     baits: ['fly', 'spoon', 'worm'],
     physics: { swimSpeed: 1.5, approachSpeed: 2.5, wobble: 6,  wobbleFreq: 0.16 },
   },
@@ -86,6 +89,7 @@ const FISH_CATALOG = {
     biteWindow: 2500,
     tiredBase: 9000,
     habitat: 'freshwater',
+    weightRange: [2.0, 20.0],    // 2kg–20kg (dourado brasileiro — Salminus brasiliensis)
     baits: ['live_bait', 'spoon', 'jig'],
     physics: { swimSpeed: 1.8, approachSpeed: 3.0, wobble: 8,  wobbleFreq: 0.12 },
   },
@@ -101,6 +105,7 @@ const FISH_CATALOG = {
     biteWindow: 2000,
     tiredBase: 14000,
     habitat: 'freshwater',
+    weightRange: [20.0, 200.0],  // 20kg–200kg (pirarucu adulto — Arapaima gigas)
     baits: ['live_bait', 'jig'],
     physics: { swimSpeed: 0.7, approachSpeed: 1.0, wobble: 10, wobbleFreq: 0.09 },
   },
