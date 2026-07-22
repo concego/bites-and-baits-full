@@ -109,13 +109,16 @@ const Sensors = (() => {
     let _keyTilt = 'neutral';
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'ArrowUp')   { _keyTilt = 'forward';  _fireKey(); }
-      if (e.key === 'ArrowDown') { _keyTilt = 'back';     _fireKey(); }
-      if (e.key === ' ')         { if (_callbacks.onShake) _callbacks.onShake(); }
+      // Só intercepta quando a tela de jogo está ativa
+      if (!document.getElementById('screen-game').classList.contains('active')) return;
+      if (e.key === 'ArrowUp')   { e.preventDefault(); _keyTilt = 'forward';  _fireKey(); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); _keyTilt = 'back';     _fireKey(); }
+      if (e.key === ' ')         { e.preventDefault(); if (_callbacks.onShake) _callbacks.onShake(); }
     });
     document.addEventListener('keyup', e => {
+      if (!document.getElementById('screen-game').classList.contains('active')) return;
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        _keyTilt = 'neutral'; _fireKey();
+        e.preventDefault(); _keyTilt = 'neutral'; _fireKey();
       }
     });
 
