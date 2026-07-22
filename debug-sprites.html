@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Debug Sprites — Bites & Baits</title>
+  <style>
+    body { background: #0d3f66; color: white; font-family: sans-serif; padding: 20px; }
+    h2   { color: #4fc3f7; margin: 20px 0 8px; }
+    .row { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; background: rgba(255,255,255,0.08); padding: 14px 20px; border-radius: 12px; }
+    .label { font-size: 14px; opacity: 0.7; min-width: 80px; }
+    svg  { filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5)); }
+    .big svg { width: 200px; height: 100px; }
+    .small svg { width: 80px; height: 40px; }
+    .tag { font-size: 11px; background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 20px; }
+    .special .tag { background: #f9a825; color: #1a1a2e; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h1>🎣 Bites & Baits — Sprites de Peixe</h1>
+
+<!-- SVG definitions inline -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+
+  <symbol id="fish-peixinho" viewBox="0 0 64 32">
+    <polygon points="0,8 12,16 0,24" fill="#4fc3f7"/>
+    <ellipse cx="36" cy="16" rx="22" ry="11" fill="#29b6f6"/>
+    <ellipse cx="34" cy="19" rx="16" ry="6" fill="#81d4fa"/>
+    <polygon points="22,5 32,14 42,5" fill="#0288d1"/>
+    <circle cx="52" cy="14" r="3" fill="white"/>
+    <circle cx="53" cy="14" r="1.5" fill="#1a1a2e"/>
+    <path d="M62 16 Q64 18 62 20" stroke="#1565c0" stroke-width="1.2" fill="none"/>
+  </symbol>
+
+  <symbol id="fish-tilapia" viewBox="0 0 72 36">
+    <polygon points="0,6 14,18 0,30" fill="#ff7043"/>
+    <line x1="7" y1="6" x2="7" y2="30" stroke="#bf360c" stroke-width="1"/>
+    <ellipse cx="42" cy="18" rx="26" ry="14" fill="#ff8a65"/>
+    <ellipse cx="40" cy="23" rx="18" ry="7" fill="#ffccbc"/>
+    <line x1="28" y1="6" x2="26" y2="30" stroke="#e64a19" stroke-width="2" opacity="0.5"/>
+    <line x1="38" y1="5" x2="36" y2="31" stroke="#e64a19" stroke-width="2" opacity="0.5"/>
+    <line x1="48" y1="6" x2="47" y2="30" stroke="#e64a19" stroke-width="2" opacity="0.5"/>
+    <polyline points="20,5 25,2 30,5 35,1 40,5 45,3 50,5" stroke="#bf360c" stroke-width="2" fill="none"/>
+    <circle cx="60" cy="16" r="4" fill="white"/>
+    <circle cx="61" cy="16" r="2" fill="#1a1a2e"/>
+    <path d="M70 18 Q72 21 70 24" stroke="#bf360c" stroke-width="1.5" fill="none"/>
+  </symbol>
+
+  <symbol id="fish-truta" viewBox="0 0 80 34">
+    <polygon points="0,4 16,17 0,30" fill="#26a69a"/>
+    <ellipse cx="46" cy="17" rx="30" ry="13" fill="#4db6ac"/>
+    <path d="M16 17 Q46 14 76 17" stroke="#00796b" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+    <ellipse cx="44" cy="22" rx="22" ry="7" fill="#b2dfdb"/>
+    <circle cx="28" cy="13" r="2" fill="#e53935" opacity="0.8"/>
+    <circle cx="36" cy="10" r="1.5" fill="#212121" opacity="0.6"/>
+    <circle cx="44" cy="13" r="2" fill="#e53935" opacity="0.8"/>
+    <circle cx="52" cy="11" r="1.5" fill="#212121" opacity="0.6"/>
+    <circle cx="60" cy="14" r="2" fill="#e53935" opacity="0.8"/>
+    <polygon points="24,5 38,12 52,5" fill="#00796b"/>
+    <ellipse cx="34" cy="22" rx="7" ry="3" fill="#80cbc4" transform="rotate(-15,34,22)"/>
+    <circle cx="70" cy="15" r="4" fill="white"/>
+    <circle cx="71" cy="15" r="2" fill="#1a1a2e"/>
+    <circle cx="71.5" cy="14.5" r="0.6" fill="white"/>
+  </symbol>
+
+  <symbol id="fish-dourada" viewBox="0 0 88 40">
+    <defs>
+      <radialGradient id="grad-dourada" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#fff176"/>
+        <stop offset="60%" stop-color="#ffd600"/>
+        <stop offset="100%" stop-color="#f57f17"/>
+      </radialGradient>
+    </defs>
+    <polygon points="0,2 18,20 0,38" fill="#ffd600"/>
+    <polygon points="2,10 18,20 2,30" fill="#fff176"/>
+    <ellipse cx="52" cy="20" rx="32" ry="17" fill="url(#grad-dourada)"/>
+    <path d="M24 18 Q30 12 36 18" stroke="#f9a825" stroke-width="1.2" fill="none"/>
+    <path d="M34 14 Q40 8 46 14" stroke="#f9a825" stroke-width="1.2" fill="none"/>
+    <path d="M44 12 Q50 6 56 12" stroke="#f9a825" stroke-width="1.2" fill="none"/>
+    <path d="M30 24 Q36 18 42 24" stroke="#f9a825" stroke-width="1.2" fill="none"/>
+    <path d="M40 22 Q46 16 52 22" stroke="#f9a825" stroke-width="1.2" fill="none"/>
+    <path d="M50 20 Q56 14 62 20" stroke="#f9a825" stroke-width="1.2" fill="none"/>
+    <ellipse cx="50" cy="28" rx="22" ry="8" fill="#fff9c4"/>
+    <path d="M22 8 Q36 0 50 6 Q60 2 68 8" stroke="#f57f17" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="40" cy="28" rx="9" ry="4" fill="#ffe082" transform="rotate(-20,40,28)"/>
+    <circle cx="76" cy="17" r="5.5" fill="white"/>
+    <circle cx="77" cy="17" r="3" fill="#1a1a2e"/>
+    <circle cx="78" cy="15.5" r="1" fill="white"/>
+    <path d="M84 19 Q88 22 84 26" stroke="#e65100" stroke-width="1.8" fill="none"/>
+  </symbol>
+
+  <symbol id="fish-tubarao" viewBox="0 0 100 44">
+    <polygon points="0,2 20,22 0,42" fill="#546e7a"/>
+    <polygon points="4,8 20,22 4,36" fill="#78909c"/>
+    <ellipse cx="58" cy="22" rx="38" ry="18" fill="#78909c"/>
+    <ellipse cx="56" cy="30" rx="28" ry="9" fill="#eceff1"/>
+    <polygon points="36,5 44,22 62,5" fill="#546e7a"/>
+    <polygon points="38,26 58,34 40,38" fill="#607d8b"/>
+    <polygon points="44,26 64,34 46,38" fill="#607d8b" opacity="0.5"/>
+    <path d="M20 22 Q58 18 95 22" stroke="#455a64" stroke-width="1.5" fill="none"/>
+    <circle cx="88" cy="19" r="5" fill="#1a1a2e"/>
+    <circle cx="87" cy="18" r="1.5" fill="white" opacity="0.6"/>
+    <path d="M95 22 Q100 27 95 32" stroke="#eceff1" stroke-width="2" fill="none"/>
+    <line x1="96" y1="23" x2="99" y2="25" stroke="white" stroke-width="1.2"/>
+    <line x1="97" y1="26" x2="100" y2="27" stroke="white" stroke-width="1.2"/>
+    <line x1="96" y1="29" x2="99" y2="29" stroke="white" stroke-width="1.2"/>
+  </symbol>
+
+</svg>
+
+<!-- Peixes grandes (tela de resultado) -->
+<h2>Tela de resultado — tamanho grande</h2>
+
+<div class="row big">
+  <div class="label">Peixinho</div>
+  <svg viewBox="0 0 64 32"><use href="#fish-peixinho"/></svg>
+  <span class="tag">Comum</span>
+</div>
+<div class="row big">
+  <div class="label">Tilápia</div>
+  <svg viewBox="0 0 72 36"><use href="#fish-tilapia"/></svg>
+  <span class="tag">Comum</span>
+</div>
+<div class="row big">
+  <div class="label">Truta</div>
+  <svg viewBox="0 0 80 34"><use href="#fish-truta"/></svg>
+  <span class="tag">Médio</span>
+</div>
+<div class="row big special">
+  <div class="label">Dourada</div>
+  <svg viewBox="0 0 88 40"><use href="#fish-dourada"/></svg>
+  <span class="tag">⭐ Especial</span>
+</div>
+<div class="row big special">
+  <div class="label">Tubarão</div>
+  <svg viewBox="0 0 100 44"><use href="#fish-tubarao"/></svg>
+  <span class="tag">⭐ Especial</span>
+</div>
+
+<!-- Peixes pequenos (fundo do cenário) -->
+<h2>Fundo do cenário — tamanho decorativo</h2>
+<div style="background:#1a6fa8; padding:20px; border-radius:12px; position:relative; height:120px; overflow:hidden;">
+  <svg class="small" style="position:absolute;top:20px;left:5%" viewBox="0 0 64 32"><use href="#fish-peixinho"/></svg>
+  <svg class="small" style="position:absolute;top:55px;left:28%" viewBox="0 0 72 36"><use href="#fish-tilapia"/></svg>
+  <svg class="small" style="position:absolute;top:15px;left:55%" viewBox="0 0 80 34"><use href="#fish-truta"/></svg>
+  <svg class="small" style="position:absolute;top:60px;left:75%" viewBox="0 0 64 32"><use href="#fish-peixinho"/></svg>
+</div>
+
+</body>
+</html>
