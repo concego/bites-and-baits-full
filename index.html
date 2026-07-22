@@ -344,26 +344,8 @@
           <span id="bait-active-name"  class="bait-name"></span>
           <span id="bait-active-qty"   class="bait-qty"></span>
         </div>
-        <button id="btn-equip" class="btn-equip" data-i18n-aria="equip_title" aria-label="Equipamento">⚙️</button>
+        <button id="btn-equip" class="btn-equip" aria-label="Equipamento">⚙️</button>
       </header>
-
-      <!-- Painel de Equipamento (modo normal) -->
-      <div id="equip-panel" class="equip-panel hidden" role="dialog"
-           aria-modal="true" aria-labelledby="equip-heading">
-        <div class="equip-dialog">
-          <h2 id="equip-heading" data-i18n="equip_title"></h2>
-
-          <!-- Aba única por ora: Isca -->
-          <div class="equip-section" role="group" aria-labelledby="equip-bait-heading">
-            <h3 id="equip-bait-heading" data-i18n="equip_bait_title"></h3>
-            <ul id="bait-list" class="bait-list" role="list">
-              <!-- Preenchido pelo game.js -->
-            </ul>
-          </div>
-
-          <button id="btn-equip-close" class="btn-secondary" data-i18n="equip_close"></button>
-        </div>
-      </div>
 
       <!-- Cena visual -->
       <div id="scene">
@@ -402,6 +384,23 @@
       </div>
 
       <button id="btn-menu" class="btn-secondary" data-i18n="btn_menu"></button>
+    </div>
+
+    <!-- Painel de Equipamento — fora do screen-game para não herdar inert -->
+    <div id="equip-panel" class="equip-panel hidden" role="dialog"
+         aria-modal="true" aria-labelledby="equip-heading">
+      <div class="equip-dialog">
+        <h2 id="equip-heading" data-i18n="equip_title"></h2>
+
+        <div class="equip-section" role="group" aria-labelledby="equip-bait-heading">
+          <h3 id="equip-bait-heading" data-i18n="equip_bait_title"></h3>
+          <ul id="bait-list" class="bait-list" role="list">
+            <!-- Preenchido pelo game.js -->
+          </ul>
+        </div>
+
+        <button id="btn-equip-close" class="btn-secondary" data-i18n="equip_close"></button>
+      </div>
     </div>
 
     <!-- ── Tela de resultado ───────────────────────────────────────────── -->
