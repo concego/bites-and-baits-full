@@ -318,6 +318,9 @@
     <!-- ── Tela de jogo ────────────────────────────────────────────────── -->
     <div id="screen-game" class="screen">
 
+      <!-- Âncora de foco para leitores de tela: anunciada na entrada, depois silenciosa -->
+      <h2 id="game-heading" class="sr-only" data-i18n="game_title"></h2>
+
       <header class="game-header">
         <div class="score-box">
           <span class="score-label" data-i18n="hud_fish"></span>
@@ -347,7 +350,7 @@
 
       <!-- Painel de estado -->
       <div id="status-panel">
-        <div id="state-label" role="status" aria-live="polite"></div>
+        <div id="state-label" aria-hidden="true"></div>
 
         <!-- Barra de tensão -->
         <div id="tension-container" class="hidden" aria-hidden="true">
