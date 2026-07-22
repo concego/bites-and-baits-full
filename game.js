@@ -30,6 +30,10 @@ const Game = (() => {
     Object.values(FISH_CATALOG).forEach(f => {
       f.name = I18n.t(f.nameKey);
     });
+    // Atualiza aria-label dos toggles com o idioma atual
+    document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
+      _updateToggleBtn(btn, A11y.get(btn.dataset.pref));
+    });
   }
 
   // ── Estado global ─────────────────────────────────────────────────────────
@@ -74,6 +78,7 @@ const Game = (() => {
       game:         $('screen-game'),
       result:       $('screen-result'),
       instructions: $('screen-instructions'),
+      options:      $('screen-options'),
     };
     ui = {
       announcer:   $('announcer'),
@@ -105,9 +110,12 @@ const Game = (() => {
     activeMap = getActiveMap();
     ui.scene.classList.add(activeMap.sceneClass);
 
+    // Preferências de acessibilidade — carrega antes de tudo
+    A11y.init();
+
     // Idioma salvo
     if (I18n.getLang()) {
-      applyI18n();
+      applyI18n();   // atualiza aria-labels dos toggles com idioma correto
       showScreen('start');
     }
 
@@ -127,8 +135,7 @@ const Game = (() => {
       enterState('IDLE');
     });
 
-    // Toggles de acessibilidade
-    A11y.init();
+    // Listeners dos toggles de acessibilidade
     document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
       btn.addEventListener('click', () => {
         const pref = btn.dataset.pref;
@@ -148,11 +155,18 @@ const Game = (() => {
     });
   }
 
-  /** Atualiza aria-checked + label sr-only de um toggle */
+  /**
+   * Atualiza aria-checked + aria-label de um toggle.
+   * aria-label = "<nome do toggle>, <ativado/desativado>"
+   * ex: "Efeitos sonoros, ativado"
+   * O leitor de tela lê isso ao navegar até o botão e ao ativar.
+   */
   function _updateToggleBtn(btn, value) {
     btn.setAttribute('aria-checked', value ? 'true' : 'false');
-    const label = btn.querySelector('.toggle-state-label');
-    if (label) label.textContent = I18n.t(value ? 'toggle_on' : 'toggle_off');
+    const labelKey = btn.dataset.labelKey;
+    const name     = labelKey ? I18n.t(labelKey) : '';
+    const state    = I18n.t(value ? 'toggle_on' : 'toggle_off');
+    btn.setAttribute('aria-label', name ? `${name}, ${state}` : state);
   }
 
   // ── Linha SVG dinâmica ────────────────────────────────────────────────────
@@ -793,8 +807,32 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
-    Object.values(screens).forEach(s => s.classList.remove('active'));
-    screens[name].classList.add('active');
+    // Remove active e bloqueia tudo com inert
+    Object.entries(screens).forEach(([, s]) => {
+      s.classList.remove('active');
+      s.setAttribute('inert', '');
+    });
+
+    // Ativa a tela escolhida e libera foco
+    const target = screens[name];
+    target.classList.add('active');
+    target.removeAttribute('inert');
+
+    // Move foco para o primeiro elemento focável da tela
+    // (h2, button, [href]) — o leitor anuncia imediatamente ao entrar
+    requestAnimationFrame(() => {
+      const focusable = target.querySelector(
+        'h2[tabindex], button:not([disabled]), [href], input, select, textarea, [tabindex="0"]'
+      );
+      // h2 precisa de tabindex para receber foco programático
+      const heading = target.querySelector('h2');
+      if (heading) {
+        if (!heading.getAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+        heading.focus();
+      } else if (focusable) {
+        focusable.focus();
+      }
+    });
   }
 
   function setLabel(text)  { ui.stateLabel.textContent = text; }
