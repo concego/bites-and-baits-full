@@ -447,7 +447,7 @@ const Game = (() => {
         ui.scene.classList.add('bite-pulse');
         setTimeout(() => ui.scene.classList.remove('bite-pulse'), 1500);
 
-        setLabel(I18n.t('state_biting', I18n.t(currentFish.nameKey)));
+        setLabel(I18n.t('state_biting', fishName(currentFish)));
         setTiltHint('📳', I18n.t('tilt_biting'));
         ui.tiltArrow.classList.add('shake-hint');
         speak(I18n.t('speak_fish'));
@@ -470,7 +470,7 @@ const Game = (() => {
         _fishState = 'fighting';
         ui.tensionCont.classList.remove('hidden');
         ui.rod.style.transform = 'translateX(-50%) rotate(-50deg)';
-        setLabel(I18n.t('state_reeling', I18n.t(currentFish.nameKey)));
+        setLabel(I18n.t('state_reeling', fishName(currentFish)));
         setTiltHint('↓', I18n.t('tilt_reeling'));
         _lastTensionWarn = null;
         speak(I18n.t('speak_hooked'));
@@ -489,15 +489,15 @@ const Game = (() => {
         ui.tensionCont.classList.add('hidden');
         _hideLinePath();
         _destroyActiveFish();
-        setLabel(I18n.t('state_caught', I18n.t(currentFish.nameKey)));
+        setLabel(I18n.t('state_caught', fishName(currentFish)));
         {
           const sizeDesc = currentFish.size <= 1 ? I18n.t('size_tiny')
                          : currentFish.size <= 2 ? I18n.t('size_small')
                          : currentFish.size <= 3 ? I18n.t('size_medium')
                          :                         I18n.t('size_large');
           const msg = currentFish.special
-            ? I18n.t('speak_caught_special', I18n.t(currentFish.nameKey), score)
-            : I18n.t('speak_caught', I18n.t(currentFish.nameKey), sizeDesc, score);
+            ? I18n.t('speak_caught_special', fishName(currentFish), score)
+            : I18n.t('speak_caught', fishName(currentFish), sizeDesc, score);
           speak(msg);
         }
         setTimeout(() => { if (state === 'CAUGHT') enterState('IDLE'); }, 3500);
@@ -653,7 +653,7 @@ const Game = (() => {
       if (state === 'REELING') {
         fishTired = true;
         speak(I18n.t('speak_tired'));
-        setLabel(I18n.t('state_tired', I18n.t(currentFish.nameKey)));
+        setLabel(I18n.t('state_tired', fishName(currentFish)));
       }
     }, ms);
   }
@@ -720,7 +720,7 @@ const Game = (() => {
       if (useEl) useEl.setAttribute('href', `#${currentFish.sprite}`);
       $('result-fish-svg').style.display = '';
       ui.resultTitle.textContent = I18n.t('result_caught');
-      ui.resultDesc.textContent  = I18n.t('result_caught_desc', I18n.t(currentFish.nameKey));
+      ui.resultDesc.textContent  = I18n.t('result_caught_desc', fishName(currentFish));
     } else {
       $('result-fish-svg').style.display = 'none';
       ui.resultIcon.innerHTML    = '<span style="font-size:80px">💔</span>';
