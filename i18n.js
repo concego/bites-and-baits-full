@@ -101,7 +101,7 @@ const I18n = (() => {
       tilt_biting:      'Sacuda o celular para fisgar!',
       tilt_reeling:     'Incline para trás para puxar!',
 
-      // Voz (aria-live / TTS)
+      // Voz curta (padrão)
       speak_ready:      'Pronto. Incline para frente.',
       speak_waiting:    'Isca na água. Aguarde.',
       speak_fish:       'Peixe! Sacuda!',
@@ -116,6 +116,21 @@ const I18n = (() => {
       speak_danger:     'Perigo! Solte!',
       speak_tension:    'Tensão alta!',
       speak_no_sensor:  'Permissão de sensores negada. Usando teclado para teste.',
+
+      // Voz detalhada (narração ativada)
+      vspeak_ready:      'Você está na beira da água com a vara preparada. Incline o celular para frente para lançar a isca.',
+      vspeak_waiting:    'A isca está na água. Aguarde um peixe se aproximar sem mover o celular.',
+      vspeak_fish:       'Um peixe está mordendo a isca! Sacuda o celular para fisgar agora!',
+      vspeak_hooked:     'Você fisgou! Incline o celular para trás devagar para puxar o peixe sem arrebentar a linha.',
+      vspeak_rehooked:   'Você fisgou novamente! Continue inclinando para trás.',
+      vspeak_escaped:    'O peixe escapou antes de você fisgar. Tente novamente.',
+      vspeak_pulled_out: 'A isca saiu da água. Incline para frente para relançar.',
+      vspeak_tired:      'O peixe está cansando — agora é a hora de puxar com força! Incline para trás!',
+      vspeak_snapped:    'A linha não aguentou a tensão e arrebentou. O peixe fugiu.',
+      vspeak_caught:     (fish, size, score) => `Você capturou um ${fish} ${size}! Pontuação atual: ${score} peixes.`,
+      vspeak_caught_special: (fish, score) => `Incrível! Você capturou um ${fish} especial! Pontuação atual: ${score} peixes.`,
+      vspeak_danger:     'Tensão crítica! Solte um pouco a linha para evitar que ela arrebente.',
+      vspeak_tension:    'A tensão da linha está alta. Cuidado para não puxar demais.',
 
       // Tamanhos (para voz)
       size_tiny:   'pequeno',
@@ -238,6 +253,21 @@ const I18n = (() => {
       speak_danger:     'Danger! Release!',
       speak_tension:    'High tension!',
       speak_no_sensor:  'Sensor permission denied. Using keyboard fallback.',
+
+      // Verbose voice (narration on)
+      vspeak_ready:      'You are at the water\'s edge with your rod ready. Tilt your phone forward to cast the lure.',
+      vspeak_waiting:    'The lure is in the water. Wait for a fish to approach without moving your phone.',
+      vspeak_fish:       'A fish is biting the lure! Shake your phone to hook it now!',
+      vspeak_hooked:     'You\'ve hooked it! Tilt the phone back slowly to reel in the fish without snapping the line.',
+      vspeak_rehooked:   'Hooked again! Keep tilting back.',
+      vspeak_escaped:    'The fish escaped before you could hook it. Try again.',
+      vspeak_pulled_out: 'The lure is out of the water. Tilt forward to recast.',
+      vspeak_tired:      'The fish is tiring — now is the time to reel in hard! Tilt back!',
+      vspeak_snapped:    'The line couldn\'t hold the tension and snapped. The fish got away.',
+      vspeak_caught:     (fish, size, score) => `You caught a ${size} ${fish}! Current score: ${score} fish.`,
+      vspeak_caught_special: (fish, score) => `Amazing! You caught a special ${fish}! Current score: ${score} fish.`,
+      vspeak_danger:     'Critical tension! Ease up on the line to avoid snapping it.',
+      vspeak_tension:    'The line tension is high. Be careful not to pull too hard.',
 
       // Size descriptions
       size_tiny:   'small',
