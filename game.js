@@ -30,10 +30,12 @@ const Game = (() => {
     Object.values(FISH_CATALOG).forEach(f => {
       f.name = I18n.t(f.nameKey);
     });
-    // Atualiza aria-label dos toggles com o idioma atual
-    document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
-      _updateToggleBtn(btn, A11y.get(btn.dataset.pref));
-    });
+    // Atualiza aria-label dos toggles com o idioma atual (só se A11y disponível)
+    if (typeof A11y !== 'undefined') {
+      document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
+        _updateToggleBtn(btn, A11y.get(btn.dataset.pref));
+      });
+    }
   }
 
   // ── Estado global ─────────────────────────────────────────────────────────
@@ -80,6 +82,15 @@ const Game = (() => {
       instructions: $('screen-instructions'),
       options:      $('screen-options'),
     };
+
+    // Garante que só screen-lang está ativa no carregamento inicial
+    // (as outras já têm inert no HTML, mas blindagem extra aqui)
+    Object.entries(screens).forEach(([key, s]) => {
+      if (key !== 'lang') {
+        s.classList.remove('active');
+        s.setAttribute('inert', '');
+      }
+    });
     ui = {
       announcer:   $('announcer'),
       stateLabel:  $('state-label'),
@@ -157,15 +168,15 @@ const Game = (() => {
 
   /**
    * Atualiza aria-checked + aria-label de um toggle.
-   * aria-label = "<nome do toggle>, <ativado/desativado>"
-   * ex: "Efeitos sonoros, ativado"
-   * O leitor de tela lê isso ao navegar até o botão e ao ativar.
+   * Lê o nome do label visual (.a11y-toggle-label) que já foi traduzido pelo applyI18n.
+   * ex: aria-label="Efeitos sonoros, Ativado"
    */
   function _updateToggleBtn(btn, value) {
     btn.setAttribute('aria-checked', value ? 'true' : 'false');
-    const labelKey = btn.dataset.labelKey;
-    const name     = labelKey ? I18n.t(labelKey) : '';
-    const state    = I18n.t(value ? 'toggle_on' : 'toggle_off');
+    // Busca o nome do toggle no item pai
+    const item  = btn.closest('.a11y-toggle-item');
+    const name  = item ? (item.querySelector('.a11y-toggle-label') || {}).textContent || '' : '';
+    const state = I18n.t(value ? 'toggle_on' : 'toggle_off');
     btn.setAttribute('aria-label', name ? `${name}, ${state}` : state);
   }
 
@@ -807,31 +818,28 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
-    // Remove active e bloqueia tudo com inert
+    // Desativa e bloqueia TODAS as telas conhecidas (incluindo lang)
     Object.entries(screens).forEach(([, s]) => {
       s.classList.remove('active');
       s.setAttribute('inert', '');
     });
 
-    // Ativa a tela escolhida e libera foco
+    // Ativa só a tela pedida
     const target = screens[name];
+    if (!target) return;
     target.classList.add('active');
     target.removeAttribute('inert');
 
-    // Move foco para o primeiro elemento focável da tela
-    // (h2, button, [href]) — o leitor anuncia imediatamente ao entrar
+    // Move foco para o h2 (ou primeiro botão) — leitor anuncia ao entrar
     requestAnimationFrame(() => {
-      const focusable = target.querySelector(
-        'h2[tabindex], button:not([disabled]), [href], input, select, textarea, [tabindex="0"]'
-      );
-      // h2 precisa de tabindex para receber foco programático
       const heading = target.querySelector('h2');
       if (heading) {
-        if (!heading.getAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+        heading.setAttribute('tabindex', '-1');
         heading.focus();
-      } else if (focusable) {
-        focusable.focus();
+        return;
       }
+      const btn = target.querySelector('button:not([disabled])');
+      if (btn) btn.focus();
     });
   }
 
