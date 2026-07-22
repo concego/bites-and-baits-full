@@ -18,9 +18,6 @@ const I18n = (() => {
       subtitle:         'Um jogo de pesca pelo acelerômetro',
       btn_start:        'Começar a pescar',
       btn_instructions: 'Como jogar',
-      btn_options:      'Opções',
-      options_title:    'Opções',
-      options_lang_title: 'Idioma',
       hint:             'Segure o celular na vertical para jogar',
       credits_by:       'Por',
       credits_brand:    'Eu Concego Jogar',
@@ -54,7 +51,8 @@ const I18n = (() => {
 
       // Tela de resultado
       result_caught:    'Peixe capturado!',
-      result_caught_desc: fish => `Você pescou um(a) ${fish}.`,
+      result_caught_desc:    fish => `Você pescou um(a) ${fish}.`,
+      result_caught_weight:  (fish, kg, coins, total) => `${fish} • ${kg} kg • +${coins} moedas (total: ${total} 🪙)`,
       result_snapped:   'A linha arrebentou!',
       result_snapped_desc: 'O peixe era forte demais desta vez.',
       stat_today:       'Peixes hoje',
@@ -121,9 +119,6 @@ const I18n = (() => {
       subtitle:         'A fishing game using the accelerometer',
       btn_start:        'Start fishing',
       btn_instructions: 'How to play',
-      btn_options:      'Options',
-      options_title:    'Options',
-      options_lang_title: 'Language',
       hint:             'Hold your phone upright to play',
       credits_by:       'By',
       credits_brand:    'Eu Concego Jogar',
@@ -157,7 +152,8 @@ const I18n = (() => {
 
       // Result screen
       result_caught:    'Fish caught!',
-      result_caught_desc: fish => `You caught a ${fish}!`,
+      result_caught_desc:    fish => `You caught a ${fish}!`,
+      result_caught_weight:  (fish, kg, coins, total) => `${fish} • ${kg} kg • +${coins} coins (total: ${total} 🪙)`,
       result_snapped:   'The line snapped!',
       result_snapped_desc: 'That fish was too strong this time.',
       stat_today:       'Fish today',
