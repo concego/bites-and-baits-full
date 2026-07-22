@@ -4,10 +4,20 @@
  * Cada espécie define comportamento, física e aparência.
  *
  * physics:
- *   swimSpeed   → velocidade de nado em px/frame (decorativo)
+ *   swimSpeed     → velocidade de nado em px/frame (decorativo)
  *   approachSpeed → velocidade ao se aproximar da isca
- *   wobble      → amplitude de ondulação vertical (px)
- *   wobbleFreq  → frequência da ondulação (rad/frame)
+ *   wobble        → amplitude de ondulação vertical (px)
+ *   wobbleFreq    → frequência da ondulação (rad/frame)
+ *
+ * habitat:
+ *   'freshwater'  → água doce
+ *   'saltwater'   → água salgada
+ *   'both'        → suporta os dois
+ *
+ * baits:
+ *   Array de IDs de isca que aumentam chance de mordida.
+ *   IDs disponíveis: 'worm', 'cricket', 'fly', 'spoon', 'live_bait', 'shrimp', 'jig'
+ *   (o sistema de iscas vai consumir esses IDs — manter coerentes)
  */
 
 /**
@@ -30,6 +40,8 @@ const FISH_CATALOG = {
     pullNeeded: 40,
     biteWindow: 4500,
     tiredBase: 3000,
+    habitat: 'freshwater',
+    baits: ['worm', 'cricket'],
     physics: { swimSpeed: 1.2, approachSpeed: 2.0, wobble: 4,  wobbleFreq: 0.18 },
   },
   tilapia: {
@@ -43,6 +55,8 @@ const FISH_CATALOG = {
     pullNeeded: 60,
     biteWindow: 3500,
     tiredBase: 4500,
+    habitat: 'freshwater',
+    baits: ['worm', 'live_bait', 'cricket'],
     physics: { swimSpeed: 0.9, approachSpeed: 1.5, wobble: 5,  wobbleFreq: 0.14 },
   },
   truta: {
@@ -56,6 +70,8 @@ const FISH_CATALOG = {
     pullNeeded: 80,
     biteWindow: 3000,
     tiredBase: 6000,
+    habitat: 'freshwater',
+    baits: ['fly', 'spoon', 'worm'],
     physics: { swimSpeed: 1.5, approachSpeed: 2.5, wobble: 6,  wobbleFreq: 0.16 },
   },
   dourado: {
@@ -69,6 +85,8 @@ const FISH_CATALOG = {
     pullNeeded: 110,
     biteWindow: 2500,
     tiredBase: 9000,
+    habitat: 'freshwater',
+    baits: ['live_bait', 'spoon', 'jig'],
     physics: { swimSpeed: 1.8, approachSpeed: 3.0, wobble: 8,  wobbleFreq: 0.12 },
   },
   pirarucu: {
@@ -82,6 +100,8 @@ const FISH_CATALOG = {
     pullNeeded: 150,
     biteWindow: 2000,
     tiredBase: 14000,
+    habitat: 'freshwater',
+    baits: ['live_bait', 'jig'],
     physics: { swimSpeed: 0.7, approachSpeed: 1.0, wobble: 10, wobbleFreq: 0.09 },
   },
 };
