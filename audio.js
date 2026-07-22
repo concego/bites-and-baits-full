@@ -381,11 +381,56 @@ const Audio = (() => {
     if ('vibrate' in navigator) navigator.vibrate(pattern);
   }
 
+  // ── Escape durante o REELING (peixe soltou e foi embora) ─────────────────
+  // Dois elementos simultâneos:
+  //  1. Linha assobiando — tensão se dissolvendo (sine descendente rápido)
+  //  2. Splash de fuga   — ruído filtrado curto simulando mergulho
+  function fishEscaped() {
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const now = ctx.currentTime;
+
+    // 1. Linha assobiando (pitch caindo)
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, now);
+    osc.frequency.exponentialRampToValueAtTime(80, now + 0.45);
+    gain.gain.setValueAtTime(0.0,  now);
+    gain.gain.linearRampToValueAtTime(0.35, now + 0.03);
+    gain.gain.linearRampToValueAtTime(0.0,  now + 0.5);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.55);
+
+    // 2. Splash de fuga (ruído curto, filtro bandpass grave)
+    const bufLen = Math.floor(ctx.sampleRate * 0.35);
+    const buf    = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const data   = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) {
+      const t = i / ctx.sampleRate;
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-t * 14);
+    }
+    const noise  = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    const nGain  = ctx.createGain();
+    noise.buffer        = buf;
+    filter.type         = 'bandpass';
+    filter.frequency.value = 600;
+    filter.Q.value      = 0.7;
+    nGain.gain.value    = 0.55;
+    noise.connect(filter);
+    filter.connect(nGain);
+    nGain.connect(ctx.destination);
+    noise.start(now + 0.05); // leve delay — linha assobia primeiro, depois o splash
+  }
+
   // Chomp é sempre sintético (não tem no pack)
   function chomp() { _chomp(); }
   function snap()  { _snap(); }
 
   return { init, play, stop, startAmbient, stopAmbient, vibrate, chomp, snap,
            startReel, setReelMode, stopReel, fishResist,
-           fishApproach, fishRetreat, tensionAlert };
-})();
+           fishApproach, fishRetreat, tensionAlert, fishEscaped };
