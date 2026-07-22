@@ -10,6 +10,14 @@
  *   wobbleFreq  → frequência da ondulação (rad/frame)
  */
 
+/**
+ * Retorna o nome traduzido de um peixe no idioma ativo.
+ * Usar sempre em vez de fish.name para evitar undefined.
+ */
+function fishName(fish) {
+  return (typeof I18n !== 'undefined') ? I18n.t(fish.nameKey) : fish.nameKey;
+}
+
 const FISH_CATALOG = {
   lambari: {
     id: 'lambari',
