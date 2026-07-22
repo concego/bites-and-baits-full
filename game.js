@@ -150,11 +150,8 @@ const Game = (() => {
     $('btn-menu').addEventListener('click',  () => goToMenu());
     $('btn-menu2').addEventListener('click', () => goToMenu());
     $('btn-continue').addEventListener('click', () => {
-      // Ao voltar da tela de resultado, reinicia sensors e áudio
-      Sensors.start();
-      Audio.startAmbient();
-      showScreen('game');
-      enterState('IDLE');
+      // "Pescar de novo" — reinicia a sessão no mesmo modo
+      startGame(gameMode);
     });
 
     // Painel de equipamento (modo normal)
@@ -624,17 +621,8 @@ const Game = (() => {
         _destroyActiveFish();
         setLabel(I18n.t('state_snapped'));
         sayKey('snapped');
-        if (gameMode === 'free') {
-          setTimeout(() => {
-            if (state === 'SNAPPED') {
-              setTalkbackSilent(false);
-              showResultScreen(false);
-            }
-          }, 2000);
-        } else {
-          // Modo normal: volta ao IDLE sem passar pela tela de resultado
-          setTimeout(() => { if (state === 'SNAPPED') enterState('IDLE'); }, 2500);
-        }
+        // Ambos os modos: volta ao IDLE sem interromper o fluxo
+        setTimeout(() => { if (state === 'SNAPPED') enterState('IDLE'); }, 2500);
         break;
     }
   }
@@ -831,12 +819,12 @@ const Game = (() => {
 
   /** Abre o painel de equipamento — só disponível no IDLE */
   function openEquipPanel() {
-    if (state !== 'IDLE') return;
     _renderBaitList();
     ui.equipPanel.classList.remove('hidden');
-    // Foco no primeiro item da lista para acessibilidade
-    const firstBtn = ui.baitList.querySelector('button');
+    const firstBtn = ui.baitList.querySelector('button:not([disabled])') ||
+                     ui.baitList.querySelector('button');
     if (firstBtn) firstBtn.focus();
+    else $('btn-equip-close').focus();
   }
 
   function closeEquipPanel() {
