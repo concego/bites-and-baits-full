@@ -93,24 +93,30 @@ const Game = (() => {
       }
     });
     ui = {
-      announcer:   $('announcer'),
-      stateLabel:  $('state-label'),
-      tensionCont: $('tension-container'),
-      tensionBar:  $('tension-bar'),
-      tiltArrow:   $('tilt-arrow'),
-      tiltText:    $('tilt-text'),
-      score:       $('score'),
-      best:        $('best'),
-      rod:         $('rod'),
-      line:        $('line'),         // elemento legado (oculto quando usa SVG)
-      lure:        $('lure'),
-      fishContainer:$('fish-container'),
-      scene:       $('scene'),
-      resultIcon:  $('result-icon'),
-      resultTitle: $('result-title'),
-      resultDesc:  $('result-desc'),
-      resultScore: $('result-score'),
-      resultBest:  $('result-best'),
+      announcer:      $('announcer'),
+      stateLabel:     $('state-label'),
+      tensionCont:    $('tension-container'),
+      tensionBar:     $('tension-bar'),
+      tiltArrow:      $('tilt-arrow'),
+      tiltText:       $('tilt-text'),
+      score:          $('score'),
+      best:           $('best'),
+      rod:            $('rod'),
+      line:           $('line'),
+      lure:           $('lure'),
+      fishContainer:  $('fish-container'),
+      scene:          $('scene'),
+      resultIcon:     $('result-icon'),
+      resultTitle:    $('result-title'),
+      resultDesc:     $('result-desc'),
+      resultScore:    $('result-score'),
+      resultBest:     $('result-best'),
+      normalHud:      $('normal-hud'),
+      baitEmoji:      $('bait-active-emoji'),
+      baitName:       $('bait-active-name'),
+      baitQty:        $('bait-active-qty'),
+      equipPanel:     $('equip-panel'),
+      baitList:       $('bait-list'),
     };
 
     ui.best.textContent = best;
@@ -147,6 +153,10 @@ const Game = (() => {
       showScreen('game');
       enterState('IDLE');
     });
+
+    // Painel de equipamento (modo normal)
+    $('btn-equip').addEventListener('click', () => openEquipPanel());
+    $('btn-equip-close').addEventListener('click', () => closeEquipPanel());
 
     // Listeners dos toggles de acessibilidade
     document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
@@ -420,9 +430,13 @@ const Game = (() => {
     await Audio.init();
     showScreen('game');
 
-    // HUD de pontuação: visível só no Free Fishing
-    const hud = $('score-hud');
-    if (hud) hud.classList.toggle('hidden', gameMode !== 'free');
+    // HUDs: score só no Free Fishing; normal-hud só no modo normal
+    const scoreHud = $('score-hud');
+    if (scoreHud) scoreHud.classList.toggle('hidden', gameMode !== 'free');
+    if (ui.normalHud) ui.normalHud.classList.toggle('hidden', gameMode !== 'normal');
+
+    // Inicializa indicador de isca
+    if (gameMode === 'normal') refreshBaitHud();
 
     score = 0;
     updateScore();
@@ -462,9 +476,25 @@ const Game = (() => {
         setLabel(I18n.t('state_idle'));
         setTiltHint('↕', I18n.t('tilt_idle'));
         sayKey('ready');
+        // Botão de equipamento: visível só no IDLE e no modo normal
+        { const be = $('btn-equip'); if (be) be.classList.toggle('hidden', gameMode !== 'normal'); }
         break;
 
       case 'CASTING':
+        // Modo normal: verifica estoque e consome 1 isca
+        if (gameMode === 'normal') {
+          const result = Inventory.consumeBait();
+          if (!result.ok) {
+            speak(I18n.t('bait_no_stock'));
+            enterState('IDLE');
+            break;
+          }
+          refreshBaitHud();
+        }
+
+        // Esconde botão de equipamento fora do IDLE
+        { const be = $('btn-equip'); if (be) be.classList.add('hidden'); }
+
         setTalkbackSilent(true);
         setLabel(I18n.t('state_casting'));
         setTiltHint('↑', I18n.t('tilt_casting'));
@@ -791,8 +821,113 @@ const Game = (() => {
   }
 
   // ── Mordida ───────────────────────────────────────────────────────────────
+  // ── Equipamento / Iscas ───────────────────────────────────────────────────
+
+  /** Atualiza o indicador de isca no HUD do modo normal */
+  function refreshBaitHud() {
+    if (gameMode !== 'normal') return;
+    const equip  = Inventory.getEquip();
+    const baitId = equip.bait;
+    const bait   = BAIT_CATALOG[baitId];
+    const qty    = Inventory.baitCount(baitId);
+    if (ui.baitEmoji) ui.baitEmoji.textContent = bait ? bait.emoji : '?';
+    if (ui.baitName)  ui.baitName.textContent  = bait ? I18n.t(bait.nameKey) : baitId;
+    if (ui.baitQty)   ui.baitQty.textContent   = `×${qty}`;
+  }
+
+  /** Abre o painel de equipamento — só disponível no IDLE */
+  function openEquipPanel() {
+    if (state !== 'IDLE') return;
+    _renderBaitList();
+    ui.equipPanel.classList.remove('hidden');
+    // Foco no primeiro item da lista para acessibilidade
+    const firstBtn = ui.baitList.querySelector('button');
+    if (firstBtn) firstBtn.focus();
+  }
+
+  function closeEquipPanel() {
+    ui.equipPanel.classList.add('hidden');
+    $('btn-equip').focus();
+  }
+
+  /** Renderiza a lista de iscas disponíveis no painel */
+  function _renderBaitList() {
+    const baits  = Inventory.getBaits();
+    const equip  = Inventory.getEquip();
+    ui.baitList.innerHTML = '';
+
+    const ids = Object.keys(BAIT_CATALOG);
+    if (ids.every(id => (baits[id] ?? 0) === 0)) {
+      const li = document.createElement('li');
+      li.className = 'bait-item bait-empty';
+      li.textContent = I18n.t('equip_no_bait');
+      ui.baitList.appendChild(li);
+      return;
+    }
+
+    ids.forEach(id => {
+      const qty  = baits[id] ?? 0;
+      const bait = BAIT_CATALOG[id];
+      const isEq = equip.bait === id;
+
+      const li  = document.createElement('li');
+      li.className = `bait-item${isEq ? ' bait-equipped' : ''}${qty === 0 ? ' bait-out' : ''}`;
+
+      const label = document.createElement('span');
+      label.className = 'bait-item-label';
+      label.textContent = `${bait.emoji} ${I18n.t(bait.nameKey)}`;
+
+      const qtyEl = document.createElement('span');
+      qtyEl.className = 'bait-item-qty';
+      qtyEl.textContent = I18n.t('equip_qty', qty);
+
+      const btn = document.createElement('button');
+      btn.className = 'btn-bait-select';
+      btn.textContent = isEq ? I18n.t('equip_selected') : I18n.t('equip_select');
+      btn.disabled = qty === 0 || isEq;
+      btn.setAttribute('aria-pressed', isEq ? 'true' : 'false');
+      btn.addEventListener('click', () => {
+        if (Inventory.equipBait(id)) {
+          speak(I18n.t('equip_consume_ok', I18n.t(bait.nameKey), Inventory.baitCount(id)));
+          refreshBaitHud();
+          closeEquipPanel();
+        }
+      });
+
+      li.append(label, qtyEl, btn);
+      ui.baitList.appendChild(li);
+    });
+  }
+
+  // ── Mordida com influência de isca ────────────────────────────────────────
+
   function scheduleNextBite() {
-    const ms = (3000 + Math.random() * 7000) * A11y.timeScale();
+    let ms = (3000 + Math.random() * 7000) * A11y.timeScale();
+
+    // Modo normal: isca afeta o tempo de espera e a chance de o peixe ir embora
+    if (gameMode === 'normal' && currentFish) {
+      const equip  = Inventory.getEquip();
+      const baitId = equip.bait;
+      const liked  = currentFish.baits && currentFish.baits.includes(baitId);
+
+      if (liked) {
+        // Isca preferida: peixe morde 40% mais rápido
+        ms *= 0.6;
+      } else {
+        // Isca errada: 35% de chance de o peixe ir embora sem morder
+        ms *= 1.4;
+        if (Math.random() < 0.35) {
+          waitTimer = setTimeout(() => {
+            if (state === 'WAITING') {
+              speak(I18n.t('bait_wrong_fish_left'));
+              enterState('IDLE');
+            }
+          }, ms);
+          return;
+        }
+      }
+    }
+
     waitTimer = setTimeout(() => {
       if (state === 'WAITING') enterState('BITING');
     }, ms);
