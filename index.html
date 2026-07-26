@@ -154,9 +154,15 @@
     <div id="screen-story-hub" class="screen">
       <header class="story-hub-header">
         <h2 data-i18n="city_hub_title"></h2>
-        <div class="coins-display story-hub-coins" aria-live="polite">
-          <span aria-hidden="true">🪙</span>
-          <span id="hub-coins"></span>
+        <div class="hub-status-row">
+          <div class="coins-display story-hub-coins" aria-live="polite">
+            <span aria-hidden="true">🪙</span>
+            <span id="hub-coins"></span>
+          </div>
+          <div class="time-display" aria-live="polite" aria-label="Data e hora">
+            <span id="hub-date" class="hub-date"></span>
+            <span id="hub-clock" class="hub-clock"></span>
+          </div>
         </div>
       </header>
 
@@ -679,7 +685,8 @@
   <script src="i18n.js"></script>
   <script src="fish-data.js"></script>
   <script src="creature-profile.js"></script>
-  <script src="map-data.js"></script>
+  <script src="game-time.js"></script>
+    <script src="map-data.js"></script>
   <script src="score-system.js"></script>
   <script src="inventory.js"></script>
   <script src="shop-data.js"></script>
