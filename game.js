@@ -157,7 +157,7 @@ const Game = (() => {
 
     // ── Hub da História ────────────────────────────────────────────────────
     $('btn-hub-fish').addEventListener('click',   () => startGame('normal'));
-    $('btn-hub-travel').addEventListener('click', () => { speak(t('story_hub_title')); });
+    $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); });
     $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop'); });
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
 
@@ -167,7 +167,7 @@ const Game = (() => {
       tab.addEventListener('click', () => switchTab('screen-shop', tab.dataset.tab));
     });
 
-    // Abas inventário (dentro da loja — aba Vender)
+    // Inventário (acesso via hub)
     document.querySelectorAll('#screen-inventory .shop-tab').forEach(tab => {
       tab.addEventListener('click', () => switchTab('screen-inventory', tab.dataset.tab));
     });
@@ -182,11 +182,6 @@ const Game = (() => {
         );
       }
     });
-
-    // Abas loja
-    document.querySelectorAll('#screen-shop .shop-tab').forEach(tab => {
-      tab.addEventListener('click', () => switchTab('screen-shop', tab.dataset.tab));
-    });
     $('btn-opt-lang-pt').addEventListener('click', () => selectLang('pt'));
     $('btn-opt-lang-en').addEventListener('click', () => selectLang('en'));
     $('btn-menu').addEventListener('click',  () => goToMenu());
@@ -197,14 +192,10 @@ const Game = (() => {
 
     // ── Barra inferior (modo história) ────────────────────────────────────
     $('btn-bar-equip').addEventListener('click', () => openEquipPanel());
-    $('btn-bar-shop').addEventListener('click',  () => {
-      // Pausa o jogo se estiver em combate, depois abre loja
-      const wasPlaying = (state !== 'IDLE' && state !== 'WAITING');
-      if (wasPlaying) Sensors.stop();
-      renderShop();
-      showScreen('shop');
+    $('btn-bar-hub').addEventListener('click', () => {
+      Sensors.stop();
+      goToMenu();
     });
-    $('btn-bar-hub').addEventListener('click',   () => goToMenu());
 
     // Painel de equipamento
     $('btn-equip-close').addEventListener('click', () => closeEquipPanel());
