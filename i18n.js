@@ -102,6 +102,31 @@ const I18n = (() => {
       inv_sell_all:       'Vender tudo',
       inv_sell_one:       'Vender',
       inv_total_label:    (n, coins) => `${n} peixe${n!==1?'s':''} → ${coins} 🪙`,
+      // Inventário — novas chaves
+      inv_tab_equip:      'Equipamentos',
+      inv_empty_equip:    'Nenhum equipamento no inventário.',
+      inv_examine:        'Examinar',
+      inv_discard:        'Descartar',
+      inv_protect:        '🔒 Proteger',
+      inv_unprotect:      '🔓 Desproteger',
+      inv_protected_badge:'🔒',
+      inv_equipped_badge: '✓ Equipado',
+      inv_confirm_discard:(name) => `Descartar ${name}?`,
+
+      // Loja — novas chaves
+      shop_mode_buy:      'Comprar',
+      shop_mode_sell:     'Vender',
+      shop_sell_empty:    'Nada disponível para venda aqui.',
+      shop_buy_qty_label: 'Quantidade:',
+      shop_buy_total:     (n, p) => `Total: ${n} × ${p} = ${n*p} 🪙`,
+      shop_sell_qty_label:'Quantidade:',
+      shop_sell_unit:     (p) => `${p} 🪙 / un.`,
+      shop_sell_total:    (n, p) => `Total: ${n*p} 🪙`,
+      shop_sell_confirm:  'Vender',
+      shop_sold:          (item, n, earned) => `${n}× ${item} vendido${n!==1?'s':''} (+${earned} 🪙)`,
+      shop_sell_all_fish: 'Vender todos os peixes',
+      shop_stock_label:   (n) => `Em estoque: ${n}`,
+
 
       // Loja
       shop_title:         'Loja do Pescador',
@@ -379,6 +404,31 @@ const I18n = (() => {
       inv_sell_all:       'Sell all',
       inv_sell_one:       'Sell',
       inv_total_label:    (n, coins) => `${n} fish → ${coins} 🪙`,
+      // Inventory — new keys
+      inv_tab_equip:      'Equipment',
+      inv_empty_equip:    'No equipment in inventory.',
+      inv_examine:        'Examine',
+      inv_discard:        'Discard',
+      inv_protect:        '🔒 Protect',
+      inv_unprotect:      '🔓 Unprotect',
+      inv_protected_badge:'🔒',
+      inv_equipped_badge: '✓ Equipped',
+      inv_confirm_discard:(name) => `Discard ${name}?`,
+
+      // Shop — new keys
+      shop_mode_buy:      'Buy',
+      shop_mode_sell:     'Sell',
+      shop_sell_empty:    'Nothing available to sell here.',
+      shop_buy_qty_label: 'Quantity:',
+      shop_buy_total:     (n, p) => `Total: ${n} × ${p} = ${n*p} 🪙`,
+      shop_sell_qty_label:'Quantity:',
+      shop_sell_unit:     (p) => `${p} 🪙 / ea.`,
+      shop_sell_total:    (n, p) => `Total: ${n*p} 🪙`,
+      shop_sell_confirm:  'Sell',
+      shop_sold:          (item, n, earned) => `${n}× ${item} sold (+${earned} 🪙)`,
+      shop_sell_all_fish: 'Sell all fish',
+      shop_stock_label:   (n) => `In stock: ${n}`,
+
 
       // Shop
       shop_title:         'Fisher\'s Shop',
