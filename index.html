@@ -426,25 +426,25 @@
         </div>
       </div>
 
-      <!-- Barra de ações inferior (modo história) -->
-      <nav id="game-bottom-bar" class="game-bottom-bar hidden" aria-label="Ações do jogo">
-        <button id="btn-bar-shop"  class="bar-btn" data-i18n="bar_shop"  aria-label="Loja">
-          <span class="bar-icon" aria-hidden="true">🏪</span>
-          <span class="bar-label" data-i18n="bar_shop"></span>
-        </button>
-        <button id="btn-bar-equip" class="bar-btn" data-i18n="bar_equip" aria-label="Equipamento">
-          <span class="bar-icon" aria-hidden="true">⚙️</span>
-          <span class="bar-label" data-i18n="bar_equip"></span>
-        </button>
-        <button id="btn-bar-hub"   class="bar-btn bar-btn-back" data-i18n="bar_hub" aria-label="Voltar ao Hub">
-          <span class="bar-icon" aria-hidden="true">🗺️</span>
-          <span class="bar-label" data-i18n="bar_hub"></span>
-        </button>
-      </nav>
-
       <!-- Botão voltar simples (pesca livre) -->
       <button id="btn-menu" class="btn-secondary btn-menu-free hidden" data-i18n="btn_back_hub"></button>
     </div>
+
+    <!-- Barra de ações inferior — fora do screen-game para não herdar inert -->
+    <nav id="game-bottom-bar" class="game-bottom-bar hidden" aria-label="Ações do jogo">
+      <button id="btn-bar-shop"  class="bar-btn" data-i18n="bar_shop"  aria-label="Loja">
+        <span class="bar-icon" aria-hidden="true">🏪</span>
+        <span class="bar-label" data-i18n="bar_shop"></span>
+      </button>
+      <button id="btn-bar-equip" class="bar-btn" data-i18n="bar_equip" aria-label="Equipamento">
+        <span class="bar-icon" aria-hidden="true">⚙️</span>
+        <span class="bar-label" data-i18n="bar_equip"></span>
+      </button>
+      <button id="btn-bar-hub"   class="bar-btn bar-btn-back" data-i18n="bar_hub" aria-label="Voltar ao Hub">
+        <span class="bar-icon" aria-hidden="true">🗺️</span>
+        <span class="bar-label" data-i18n="bar_hub"></span>
+      </button>
+    </nav>
 
     <!-- Painel de Equipamento — fora do screen-game para não herdar inert -->
     <div id="equip-panel" class="equip-panel hidden" role="dialog"
