@@ -29,6 +29,10 @@ const I18n = (() => {
       btn_hub_shop:       '🏪 Loja',
       btn_back_hub:       '← Hub',
       btn_back_main:      '← Menu Principal',
+      // Barra inferior do jogo
+      bar_shop:           'Loja',
+      bar_equip:          'Equipamento',
+      bar_hub:            'Hub',
       btn_instructions: 'Como jogar',
       credits_by:       'Por',
       credits_brand:    'Eu Concego Jogar',
@@ -301,6 +305,10 @@ const I18n = (() => {
       btn_hub_shop:       '🏪 Shop',
       btn_back_hub:       '← Hub',
       btn_back_main:      '← Main Menu',
+      // In-game bottom bar
+      bar_shop:           'Shop',
+      bar_equip:          'Equipment',
+      bar_hub:            'Hub',
       btn_instructions: 'How to play',
       credits_by:       'By',
       credits_brand:    'Eu Concego Jogar',
