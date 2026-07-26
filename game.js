@@ -91,6 +91,8 @@ const Game = (() => {
       options:      $('screen-options'),
       inventory:    $('screen-inventory'),
       shop:         $('screen-shop'),
+      travel:       $('screen-travel'),
+      vessel:       $('screen-vessel'),
     };
 
     // Garante que só screen-lang está ativa no carregamento inicial
@@ -157,10 +159,15 @@ const Game = (() => {
     $('btn-options-back').addEventListener('click', () => showScreen('start'));
 
     // ── Hub da História ────────────────────────────────────────────────────
-    $('btn-hub-fish').addEventListener('click',   () => startGame('normal'));
-    $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); });
+    // Hub da cidade
     $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop'); });
+    $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); });
+    $('btn-hub-travel').addEventListener('click', () => { renderTravel(); showScreen('travel'); });
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
+    // Tela de viagem
+    $('btn-travel-back').addEventListener('click',() => showStoryHub());
+    // Estaleiro
+    $('btn-vessel-back').addEventListener('click',() => showStoryHub());
 
     // ── Loja (acesso via hub) ──────────────────────────────────────────────
     $('btn-shop-back').addEventListener('click', () => showStoryHub());
@@ -1155,16 +1162,75 @@ const Game = (() => {
     }
   }
 
-  /** Exibe o hub da história atualizando o card do mapa atual */
+  /** Exibe o hub da cidade */
   function showStoryHub() {
-    const map = getActiveMap();
-    const nameEl  = $('hub-map-name');
-    const emojiEl = $('hub-map-emoji');
     const coinsEl = $('hub-coins');
-    if (nameEl)  nameEl.textContent  = I18n.t(map.nameKey) || map.id;
-    if (emojiEl) emojiEl.textContent = map.emoji || '🏞️';
     if (coinsEl) coinsEl.textContent = Inventory.coins();
     showScreen('storyHub');
+  }
+
+  /** Renderiza a tela de seleção de destino */
+  function renderTravel() {
+    const map     = getActiveMap();
+    const nameEl  = $('travel-current-name');
+    const emojiEl = $('travel-current-emoji');
+    if (nameEl)  nameEl.textContent  = I18n.t(map.nameKey) || map.id;
+    if (emojiEl) emojiEl.textContent = map.emoji || '🏞️';
+
+    const list = $('travel-dest-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    // Barco do jogador (futuramente virá do inventário; por ora 'canoe' padrão)
+    const playerVessel = localStorage.getItem('bb_vessel') || 'canoe';
+
+    MAPS.forEach(m => {
+      const isActive   = m.id === map.id;
+      const hasVessel  = !m.requiredVessel || m.requiredVessel === playerVessel;
+      const li = document.createElement('li');
+      li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
+
+      li.innerHTML = `
+        <span class="travel-item-emoji" aria-hidden="true">${m.emoji || '🏞️'}</span>
+        <div class="travel-item-info">
+          <span class="travel-item-name">${I18n.t(m.nameKey) || m.id}</span>
+          ${m.requiredVessel
+            ? `<span class="travel-item-vessel">⛵ ${m.requiredVessel}</span>`
+            : ''}
+        </div>
+        <div class="travel-item-actions">
+          ${isActive
+            ? `<button class="btn-primary btn-sm travel-btn-fish"
+                       data-map-id="${m.id}"
+                       aria-label="${I18n.t('travel_fish_here')} — ${I18n.t(m.nameKey) || m.id}">
+                 ${I18n.t('travel_fish_here')}
+               </button>`
+            : hasVessel
+              ? `<button class="btn-secondary btn-sm travel-btn-go"
+                         data-map-id="${m.id}"
+                         aria-label="Ir para ${I18n.t(m.nameKey) || m.id}">
+                   🗺️ Ir
+                 </button>`
+              : `<span class="travel-locked" aria-label="${I18n.t('travel_locked')}">
+                   ${I18n.t('travel_locked')}
+                 </span>`
+          }
+        </div>`;
+
+      // Pescar no mapa atual
+      li.querySelector('.travel-btn-fish')?.addEventListener('click', () => {
+        startGame('normal');
+      });
+
+      // Viajar para outro mapa
+      li.querySelector('.travel-btn-go')?.addEventListener('click', e => {
+        const id = e.currentTarget.dataset.mapId;
+        setActiveMap(id);
+        renderTravel(); // atualiza a lista
+      });
+
+      list.appendChild(li);
+    });
   }
 
   // ── Loja / Inventário ─────────────────────────────────────────────────────
