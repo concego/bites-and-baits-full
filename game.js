@@ -1,3 +1,4 @@
+console.log("[BB] game.js carregado");
 /**
  * game.js — Bites & Baits (branch: full)
  * Máquina de estados principal
@@ -12,6 +13,7 @@
  *   SNAPPED    → linha arrebentou
  */
 
+console.log("[BB] IIFE iniciando");
 const Game = (() => {
 
   const $ = id => document.getElementById(id);
