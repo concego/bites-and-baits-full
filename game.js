@@ -81,6 +81,7 @@ const Game = (() => {
 
   // ── Inicialização ─────────────────────────────────────────────────────────
   function init() {
+    console.log('[BB] init() called, readyState:', document.readyState);
         screens = {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
@@ -151,7 +152,7 @@ const Game = (() => {
     $('btn-lang-en').addEventListener('click', () => selectLang('en'));
 
     // ── Menu Principal ─────────────────────────────────────────────────────
-    $('btn-story').addEventListener('click', () => { gameMode = 'normal'; showStoryHub(); });
+    $('btn-story').addEventListener('click', () => { console.log('[BB] btn-story clicked, gameMode=normal'); gameMode = 'normal'; showStoryHub(); });
     $('btn-free').addEventListener('click',  () => startGame('free'));
     $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
     $('btn-back').addEventListener('click',  () => showScreen('start'));
@@ -1830,7 +1831,7 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
-    console.log('[BB] showScreen:', name, 'target:', screens[name]);
+    console.log('[BB] showScreen:', name, 'target:', screens[name], 'keys:', Object.keys(screens));
     // Desativa e bloqueia TODAS as telas conhecidas
     Object.entries(screens).forEach(([, s]) => {
       if (!s) return;
