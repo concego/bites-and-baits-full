@@ -57,6 +57,10 @@ const Game = (() => {
   let waitTimer        = null;
   let biteTimer        = null;
   let fishEls          = [];     // peixes decorativos de fundo
+  let _pulling         = false;  // sinalizado por pullFish(), lido pelo tensionLoop
+  let _pullGraceTicks  = 0;      // janela de tolerância após último pull
+  let _staticTicks     = 0;      // ticks consecutivos sem o jogador puxar
+  let _fishFatigue     = 0;      // acúmulo de cansaço por inércia do jogador
   // ── Peixe ativo (física SVG) ───────────────────────────────────────────────
   let _activeFishEl    = null;   // elemento SVG do peixe ativo
   let _activeFishAnim  = null;   // requestAnimationFrame id
@@ -603,6 +607,10 @@ const Game = (() => {
         _fishStrengthMult = 1.0;
         clearTimeout(recoveryTimer);
         recoveryTimer = null;
+        _pulling        = false;
+        _pullGraceTicks = 0;
+        _staticTicks    = 0;
+        _fishFatigue    = 0;
 
         _spawnActiveFish(currentFish);
         scheduleNextBite();
@@ -782,10 +790,10 @@ const Game = (() => {
   function startTensionLoop() {
     _pullProgress    = 0;
     let _resistCooldown  = 0;
-    let _staticTicks     = 0;  // ticks consecutivos sem o jogador puxar
-    let _fishFatigue     = 0;  // acúmulo de cansaço por inércia do jogador
-    let _pulling         = false; // sinalizado por pullFish() a cada tick
-    let _pullGraceTicks  = 0;  // janela de tolerância após último pull
+    _staticTicks     = 0;
+    _fishFatigue     = 0;
+    _pulling         = false;
+    _pullGraceTicks  = 0;
 
     tensionLoop = setInterval(() => {
       if (state !== 'REELING') { clearInterval(tensionLoop); return; }
