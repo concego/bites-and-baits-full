@@ -680,12 +680,14 @@ const Game = (() => {
                          : currentFish.size <= 2 ? I18n.t('size_small')
                          : currentFish.size <= 3 ? I18n.t('size_medium')
                          :                         I18n.t('size_large');
+          const kg    = caughtItem ? caughtItem.weight.toFixed(2) : null;
+          const coins = caughtItem ? caughtItem.value : null;
           if (currentFish.special) {
             sayKey(gameMode === 'free' ? 'caught_special' : 'caught_special_noscore',
-                   fishName(currentFish), score);
+                   fishName(currentFish), gameMode === 'free' ? score : kg, gameMode === 'free' ? undefined : coins);
           } else {
             sayKey(gameMode === 'free' ? 'caught' : 'caught_noscore',
-                   fishName(currentFish), sizeDesc, score);
+                   fishName(currentFish), sizeDesc, gameMode === 'free' ? score : kg, gameMode === 'free' ? undefined : coins);
           }
         }
 
