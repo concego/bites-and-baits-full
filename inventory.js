@@ -43,7 +43,8 @@ const Inventory = (() => {
   const STORAGE_KEY_BAITS  = 'bb_baits';
   const STORAGE_KEY_BAITS_V = 'bb_baits_v';
   const BAITS_VERSION = '1';   // incrementar aqui força reset do estoque
-  const STORAGE_KEY_EQUIP  = 'bb_equip';   // { bait: 'worm' }
+  const STORAGE_KEY_EQUIP    = 'bb_equip';     // { bait:'worm', rod:'rod_basic', ... }
+  const STORAGE_KEY_PROTECTED = 'bb_protected'; // Set de ids de peixes protegidos
 
   // Estoque inicial generoso para testes
   const DEFAULT_BAITS = {
@@ -166,19 +167,7 @@ const Inventory = (() => {
     return { ok: true, coins, earned: item.value };
   }
 
-  /**
-   * Vende todos os itens do inventário de uma vez.
-   * Retorna { ok, coins, earned, count }.
-   */
-  function sellAll() {
-    const items  = _load();
-    if (items.length === 0) return { ok: false, reason: 'empty' };
-    const earned = items.reduce((s, i) => s + i.value, 0);
-    _save([]);
-    const coins  = _loadCoins() + earned;
-    _saveCoins(coins);
-    return { ok: true, coins, earned, count: items.length };
-  }
+  // sellAll() movida para bloco de proteção acima
 
   /** Retorna saldo atual de moedas */
   function coins() { return _loadCoins(); }
@@ -280,6 +269,118 @@ const Inventory = (() => {
     return true;
   }
 
+
+  // ── Proteção de itens ────────────────────────────────────────────────────
+
+  function _loadProtected() {
+    try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY_PROTECTED) || '[]')); }
+    catch { return new Set(); }
+  }
+
+  function _saveProtected(set) {
+    try { localStorage.setItem(STORAGE_KEY_PROTECTED, JSON.stringify([...set])); }
+    catch { /* noop */ }
+  }
+
+  /** Retorna true se o item está protegido */
+  function isProtected(itemId) { return _loadProtected().has(itemId); }
+
+  /** Alterna proteção de um item. Retorna o novo estado (true = protegido). */
+  function toggleProtect(itemId) {
+    const set = _loadProtected();
+    if (set.has(itemId)) { set.delete(itemId); } else { set.add(itemId); }
+    _saveProtected(set);
+    return set.has(itemId);
+  }
+
+  /** Vende todos os peixes NÃO protegidos. Retorna { ok, earned, count }. */
+  function sellAll() {
+    const items     = _load();
+    const protected_ = _loadProtected();
+    const toSell    = items.filter(i => !protected_.has(i.id));
+    if (toSell.length === 0) return { ok: false, reason: 'empty' };
+    const earned    = toSell.reduce((s, i) => s + i.value, 0);
+    const keep      = items.filter(i => protected_.has(i.id));
+    _save(keep);
+    const coins = _loadCoins() + earned;
+    _saveCoins(coins);
+    return { ok: true, coins, earned, count: toSell.length };
+  }
+
+  // ── Venda granular na loja ────────────────────────────────────────────────
+
+  /** Vende qty unidades de uma isca. Retorna { ok, earned } ou { ok:false }. */
+  function sellBaits(baitId, qty) {
+    if (!BAIT_CATALOG[baitId]) return { ok: false, reason: 'unknown' };
+    const baits   = _loadBaits();
+    const have    = baits[baitId] ?? 0;
+    const selling = Math.min(qty, have);
+    if (selling <= 0) return { ok: false, reason: 'no_stock' };
+    // Preço de revenda = 50% do preço de compra (buscado no SHOP_CATALOG global)
+    const shopItem  = (typeof SHOP_CATALOG !== 'undefined')
+      ? SHOP_CATALOG.find(i => i.type === 'bait' && i.id === baitId) : null;
+    const unitPrice = shopItem ? Math.max(1, Math.floor(shopItem.price * 0.5)) : 1;
+    // Custo é por pacote — preço unitário = price / qty_per_pack
+    const unitSell  = shopItem
+      ? Math.max(1, Math.floor((shopItem.price / (shopItem.qty || 1)) * 0.5)) : 1;
+    const earned    = selling * unitSell;
+    baits[baitId]   = have - selling;
+    _saveBaits(baits);
+    const coins     = _loadCoins() + earned;
+    _saveCoins(coins);
+    return { ok: true, earned, unitPrice: unitSell, sold: selling };
+  }
+
+  /**
+   * Vende um equipamento que o jogador possui (não pode estar equipado).
+   * id = id do item (ex: 'rod_carbon').
+   * Retorna { ok, earned } ou { ok:false, reason }.
+   */
+  function sellEquip(itemId) {
+    const equip = _loadEquip();
+    // Verifica se está equipado em algum slot
+    for (const [slot, equipped] of Object.entries(equip)) {
+      if (equipped === itemId) return { ok: false, reason: 'equipped' };
+    }
+    const owned = _loadOwnedEquip();
+    const idx   = owned.indexOf(itemId);
+    if (idx === -1) return { ok: false, reason: 'not_owned' };
+    owned.splice(idx, 1);
+    _saveOwnedEquip(owned);
+    // Preço de revenda = 50% do preço de compra
+    const shopItem = (typeof SHOP_CATALOG !== 'undefined')
+      ? SHOP_CATALOG.find(i => i.id === itemId) : null;
+    const earned   = shopItem ? Math.max(1, Math.floor(shopItem.price * 0.5)) : 1;
+    const coins    = _loadCoins() + earned;
+    _saveCoins(coins);
+    return { ok: true, earned };
+  }
+
+  // ── Equipamentos possuídos ────────────────────────────────────────────────
+  // Equipamentos comprados ficam em bb_owned_equip (array de ids).
+  // O equipado ativo fica em bb_equip (por slot).
+
+  const STORAGE_KEY_OWNED_EQUIP = 'bb_owned_equip';
+
+  function _loadOwnedEquip() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_OWNED_EQUIP) || '[]'); }
+    catch { return []; }
+  }
+
+  function _saveOwnedEquip(arr) {
+    try { localStorage.setItem(STORAGE_KEY_OWNED_EQUIP, JSON.stringify(arr)); }
+    catch { /* noop */ }
+  }
+
+  /** Registra um equipamento como possuído (chamado ao comprar). */
+  function addEquip(itemId) {
+    const owned = _loadOwnedEquip();
+    if (!owned.includes(itemId)) { owned.push(itemId); _saveOwnedEquip(owned); }
+  }
+
+  /** Retorna array de ids de equipamentos possuídos. */
+  function getOwnedEquip() { return _loadOwnedEquip(); }
+
   return {
     addFish,
     getAll,
@@ -300,5 +401,14 @@ const Inventory = (() => {
     equipBait,
     consumeBait,
     addBaits,
+    // Proteção
+    isProtected,
+    toggleProtect,
+    // Venda na loja
+    sellBaits,
+    sellEquip,
+    // Equipamentos possuídos
+    addEquip,
+    getOwnedEquip,
   };
 })();
