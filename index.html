@@ -380,7 +380,7 @@
         </div>
       </header>
 
-      <!-- HUD Modo Normal (isca equipada + botão equipamento) -->
+      <!-- HUD Modo Normal (isca equipada) -->
       <header id="normal-hud" class="game-header normal-hud hidden">
         <div class="score-box bait-indicator" id="bait-indicator">
           <span class="score-label" data-i18n="hud_bait"></span>
@@ -388,7 +388,6 @@
           <span id="bait-active-name"  class="bait-name"></span>
           <span id="bait-active-qty"   class="bait-qty"></span>
         </div>
-        <button id="btn-equip" class="btn-equip" aria-label="Equipamento">⚙️</button>
       </header>
 
       <!-- Cena visual -->
@@ -427,7 +426,24 @@
         </div>
       </div>
 
-      <button id="btn-menu" class="btn-secondary" data-i18n="btn_back_hub"></button>
+      <!-- Barra de ações inferior (modo história) -->
+      <nav id="game-bottom-bar" class="game-bottom-bar hidden" aria-label="Ações do jogo">
+        <button id="btn-bar-shop"  class="bar-btn" data-i18n="bar_shop"  aria-label="Loja">
+          <span class="bar-icon" aria-hidden="true">🏪</span>
+          <span class="bar-label" data-i18n="bar_shop"></span>
+        </button>
+        <button id="btn-bar-equip" class="bar-btn" data-i18n="bar_equip" aria-label="Equipamento">
+          <span class="bar-icon" aria-hidden="true">⚙️</span>
+          <span class="bar-label" data-i18n="bar_equip"></span>
+        </button>
+        <button id="btn-bar-hub"   class="bar-btn bar-btn-back" data-i18n="bar_hub" aria-label="Voltar ao Hub">
+          <span class="bar-icon" aria-hidden="true">🗺️</span>
+          <span class="bar-label" data-i18n="bar_hub"></span>
+        </button>
+      </nav>
+
+      <!-- Botão voltar simples (pesca livre) -->
+      <button id="btn-menu" class="btn-secondary btn-menu-free hidden" data-i18n="btn_back_hub"></button>
     </div>
 
     <!-- Painel de Equipamento — fora do screen-game para não herdar inert -->
