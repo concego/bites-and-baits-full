@@ -1,4 +1,3 @@
-console.log("[BB] a11y.js carregado");
 /**
  * a11y.js — Bites & Baits
  * Módulo de preferências de acessibilidade.
