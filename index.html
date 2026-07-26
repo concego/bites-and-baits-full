@@ -150,30 +150,58 @@
       </footer>
     </div>
 
-    <!-- ── Hub da História ────────────────────────────────────────────── -->
+    <!-- ── Hub da Cidade ─────────────────────────────────────────────── -->
     <div id="screen-story-hub" class="screen">
       <header class="story-hub-header">
-        <h2 data-i18n="story_hub_title"></h2>
+        <h2 data-i18n="city_hub_title"></h2>
         <div class="coins-display story-hub-coins" aria-live="polite">
           <span aria-hidden="true">🪙</span>
           <span id="hub-coins"></span>
         </div>
       </header>
 
-      <!-- Mapa atual em destaque -->
-      <div id="hub-map-card" class="hub-map-card" aria-live="polite">
-        <span id="hub-map-emoji" class="hub-map-emoji" aria-hidden="true">🏞️</span>
+      <nav class="city-menu" aria-label="Menu da cidade">
+        <button id="btn-hub-home"   class="btn-city" disabled data-i18n="btn_hub_home"></button>
+        <button id="btn-hub-shop"   class="btn-city"          data-i18n="btn_hub_shop"></button>
+        <button id="btn-hub-vessel" class="btn-city" disabled data-i18n="btn_hub_vessel"></button>
+        <button id="btn-hub-travel" class="btn-city"          data-i18n="btn_hub_travel"></button>
+        <button id="btn-hub-inv"    class="btn-city"          data-i18n="btn_hub_inv"></button>
+      </nav>
+
+      <button id="btn-hub-back" class="btn-ghost" data-i18n="btn_back_main"></button>
+    </div>
+
+    <!-- ── Tela de Viagem (seleção de destino) ───────────────────────── -->
+    <div id="screen-travel" class="screen" role="dialog" aria-modal="true"
+         aria-labelledby="travel-title">
+      <header class="panel-header">
+        <h2 id="travel-title" data-i18n="travel_title"></h2>
+      </header>
+
+      <!-- Mapa atualmente ativo -->
+      <div id="travel-current-card" class="hub-map-card" aria-live="polite">
+        <span id="travel-current-emoji" class="hub-map-emoji" aria-hidden="true">🏞️</span>
         <div class="hub-map-info">
           <span class="hub-map-label" data-i18n="story_current_map"></span>
-          <span id="hub-map-name" class="hub-map-name"></span>
+          <span id="travel-current-name" class="hub-map-name"></span>
         </div>
       </div>
 
-      <button id="btn-hub-fish"   class="btn-primary"    data-i18n="btn_hub_fish"></button>
-      <button id="btn-hub-inv"    class="btn-secondary"  data-i18n="btn_hub_inv"></button>
-      <button id="btn-hub-travel" class="btn-secondary"  data-i18n="btn_hub_travel"></button>
-      <button id="btn-hub-shop"   class="btn-secondary"  data-i18n="btn_hub_shop"></button>
-      <button id="btn-hub-back"   class="btn-ghost"      data-i18n="btn_back_main"></button>
+      <!-- Lista de destinos -->
+      <ul id="travel-dest-list" class="travel-list" role="list"
+          aria-label="Destinos disponíveis"></ul>
+
+      <button id="btn-travel-back" class="btn-ghost" data-i18n="btn_back"></button>
+    </div>
+
+    <!-- ── Estaleiro (stub) ───────────────────────────────────────────── -->
+    <div id="screen-vessel" class="screen" role="dialog" aria-modal="true"
+         aria-labelledby="vessel-title">
+      <header class="panel-header">
+        <h2 id="vessel-title" data-i18n="vessel_title"></h2>
+      </header>
+      <p class="coming-soon" data-i18n="coming_soon"></p>
+      <button id="btn-vessel-back" class="btn-ghost" data-i18n="btn_back"></button>
     </div>
 
     <!-- ── Tela de opções ─────────────────────────────────────────────── -->
