@@ -133,3 +133,5 @@ A filosofia do projeto é que acessibilidade não é uma camada separada — ela
 ---
 
 *Licença MIT — sinta-se livre para estudar, adaptar e evoluir.*
+
+<!-- deploy bump 2026-07-26T18:18:06.774008 -->
