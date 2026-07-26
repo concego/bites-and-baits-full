@@ -79,6 +79,7 @@ const Game = (() => {
     screens = {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
+      storyHub:     $('screen-story-hub'),
       game:         $('screen-game'),
       result:       $('screen-result'),
       instructions: $('screen-instructions'),
@@ -142,19 +143,32 @@ const Game = (() => {
 
     $('btn-lang-pt').addEventListener('click', () => selectLang('pt'));
     $('btn-lang-en').addEventListener('click', () => selectLang('en'));
-    $('btn-start').addEventListener('click', () => startGame('normal'));
+
+    // ── Menu Principal ─────────────────────────────────────────────────────
+    $('btn-story').addEventListener('click', () => showStoryHub());
     $('btn-free').addEventListener('click',  () => startGame('free'));
     $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
     $('btn-back').addEventListener('click',  () => showScreen('start'));
     $('btn-options').addEventListener('click', () => { _syncToggles(); showScreen('options'); });
     $('btn-options-back').addEventListener('click', () => showScreen('start'));
 
-    // ── Inventário ─────────────────────────────────────────────────────────
-    $('btn-inventory').addEventListener('click', () => {
-      renderInventory();
-      showScreen('inventory');
+    // ── Hub da História ────────────────────────────────────────────────────
+    $('btn-hub-fish').addEventListener('click',   () => startGame('normal'));
+    $('btn-hub-travel').addEventListener('click', () => { /* TODO: tela de mapa */ announce(t('story_hub_title')); });
+    $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop'); });
+    $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
+
+    // ── Loja (acesso via hub) ──────────────────────────────────────────────
+    $('btn-shop-back').addEventListener('click', () => showStoryHub());
+    document.querySelectorAll('#screen-shop .shop-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab('screen-shop', tab.dataset.tab));
     });
-    $('btn-inv-back').addEventListener('click', () => showScreen('start'));
+
+    // Abas inventário (dentro da loja — aba Vender)
+    document.querySelectorAll('#screen-inventory .shop-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab('screen-inventory', tab.dataset.tab));
+    });
+    $('btn-inv-back').addEventListener('click', () => showStoryHub());
     $('btn-sell-all').addEventListener('click', () => {
       const result = Inventory.sellAll();
       renderInventory();
@@ -165,18 +179,6 @@ const Game = (() => {
         );
       }
     });
-
-    // Abas inventário
-    document.querySelectorAll('#screen-inventory .shop-tab').forEach(tab => {
-      tab.addEventListener('click', () => switchTab('screen-inventory', tab.dataset.tab));
-    });
-
-    // ── Loja ───────────────────────────────────────────────────────────────
-    $('btn-shop').addEventListener('click', () => {
-      renderShop();
-      showScreen('shop');
-    });
-    $('btn-shop-back').addEventListener('click', () => showScreen('start'));
 
     // Abas loja
     document.querySelectorAll('#screen-shop .shop-tab').forEach(tab => {
@@ -1095,11 +1097,27 @@ const Game = (() => {
     _hideLinePath();
     setTalkbackSilent(false);
     state = 'IDLE';
-    // Limpa label e announcer para não vazar informação de jogo no menu
     setLabel('');
     const ann = $('announcer');
     if (ann) ann.textContent = '';
-    showScreen('start');
+    // Se veio do modo história, volta pro hub; pesca livre volta pro menu principal
+    if (gameMode === 'normal') {
+      showStoryHub();
+    } else {
+      showScreen('start');
+    }
+  }
+
+  /** Exibe o hub da história atualizando o card do mapa atual */
+  function showStoryHub() {
+    const map = getActiveMap();
+    const nameEl  = $('hub-map-name');
+    const emojiEl = $('hub-map-emoji');
+    const coinsEl = $('hub-coins');
+    if (nameEl)  nameEl.textContent  = I18n.t(map.nameKey) || map.id;
+    if (emojiEl) emojiEl.textContent = map.emoji || '🏞️';
+    if (coinsEl) coinsEl.textContent = Inventory.coins();
+    showScreen('storyHub');
   }
 
   // ── Loja / Inventário ─────────────────────────────────────────────────────
