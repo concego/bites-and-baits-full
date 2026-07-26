@@ -485,12 +485,14 @@ const Game = (() => {
     try {
       gameMode = mode;
 
-      const ok = await Sensors.requestPermission();
-      if (!ok) {
-        speak(I18n.t('speak_no_sensor'));
-        Sensors.enableDesktopFallback();
-      }
-      // Inicia áudio sem bloquear — se demorar não trava a transição de tela
+      // Permissão de sensor: pede mas não bloqueia a transição de tela
+      Sensors.requestPermission().then(ok => {
+        if (!ok) {
+          speak(I18n.t('speak_no_sensor'));
+          Sensors.enableDesktopFallback();
+        }
+      });
+      // Inicia áudio sem bloquear
       Audio.init().catch(e => console.warn('[Audio.init]', e));
       showScreen('game');
 
