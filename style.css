@@ -1113,3 +1113,126 @@ html, body {
   padding: 0;
   overflow: hidden;
 }
+
+
+/* ===== MODE-TABS (Comprar / Vender) ===== */
+.shop-mode-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px 0;
+  border-bottom: 2px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.2);
+}
+.shop-mode-tab {
+  flex: 1;
+  padding: 10px 6px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.shop-mode-tab.active,
+.shop-mode-tab[aria-selected="true"] {
+  color: #fff;
+  border-bottom-color: var(--accent, #4fa3e0);
+}
+.shop-mode-tab:hover { color: #fff; }
+
+.shop-mode-panel { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.shop-mode-panel.hidden { display: none !important; }
+
+/* ===== LAYOUT DE AÇÃO DOS ITENS ===== */
+.inv-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.sell-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ===== CAMPO DE QUANTIDADE NA LOJA ===== */
+.shop-qty-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255,255,255,0.75);
+  font-size: 0.9rem;
+}
+.shop-qty-input {
+  width: 64px;
+  padding: 6px 8px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+}
+.shop-qty-input:focus {
+  outline: 2px solid var(--accent, #4fa3e0);
+  background: rgba(255,255,255,0.15);
+}
+
+.shop-unit-price {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.shop-total-preview {
+  color: #a8e063;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-height: 1.2em;
+}
+.shop-card-buy-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0 4px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 6px;
+}
+
+/* Botão vender todos na lista de peixes */
+.shop-sell-all-btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Badges no inventário */
+.inv-badge-protect,
+.inv-badge-equip {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+.inv-badge-equip { color: #a8e063; }
+
+/* Botão perigo (descartar) */
+.btn-danger {
+  padding: 6px 12px;
+  background: rgba(220, 60, 60, 0.7);
+  border: 1px solid rgba(255,100,100,0.5);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+.btn-danger:hover { background: rgba(220,60,60,0.9); }
+.btn-danger:focus { outline: 2px solid #ff6b6b; }
