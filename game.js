@@ -785,6 +785,7 @@ const Game = (() => {
     let _staticTicks     = 0;  // ticks consecutivos sem o jogador puxar
     let _fishFatigue     = 0;  // acúmulo de cansaço por inércia do jogador
     let _pulling         = false; // sinalizado por pullFish() a cada tick
+    let _pullGraceTicks  = 0;  // janela de tolerância após último pull
 
     tensionLoop = setInterval(() => {
       if (state !== 'REELING') { clearInterval(tensionLoop); return; }
@@ -813,6 +814,10 @@ const Game = (() => {
         _staticTicks = 0;
         _fishFatigue = 0;
         _pulling = false; // reset até próximo pullFish()
+        _pullGraceTicks = 4; // janela de tolerância: 4 ticks (~480ms) após último pull
+      } else if (_pullGraceTicks > 0) {
+        // Ainda dentro da janela de graça — não penaliza
+        _pullGraceTicks--;
       } else {
         _staticTicks++;
 
@@ -842,7 +847,7 @@ const Game = (() => {
         }
 
         // Punição por inércia total — peixe perde a paciência e escapa
-        const patience = currentFish.escapePatience ?? 30;
+        const patience = currentFish.escapePatience ?? 50;
         if (_staticTicks >= patience) {
           clearInterval(tensionLoop);
           enterState('ESCAPED');
@@ -902,7 +907,8 @@ const Game = (() => {
   // ── Cansaço do peixe ──────────────────────────────────────────────────────
   function scheduleFishTired() {
     const jitter = Math.random() * 0.3 - 0.15;
-    const ms = currentFish.tiredBase * (1 + jitter) * A11y.timeScale();
+    const base = currentFish.tiredBase ?? 5000;
+    const ms = base * (1 + jitter) * A11y.timeScale();
     tiredTimer = setTimeout(() => {
       if (state === 'REELING') {
         fishTired = true;
