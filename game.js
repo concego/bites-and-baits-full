@@ -490,7 +490,8 @@ const Game = (() => {
         speak(I18n.t('speak_no_sensor'));
         Sensors.enableDesktopFallback();
       }
-      await Audio.init();
+      // Inicia áudio sem bloquear — se demorar não trava a transição de tela
+      Audio.init().catch(e => console.warn('[Audio.init]', e));
       showScreen('game');
 
       // HUDs: score só no Free Fishing; normal-hud só no modo normal
@@ -513,10 +514,9 @@ const Game = (() => {
       Audio.startAmbient();
       enterState('IDLE');
     } catch (err) {
-      // Captura qualquer erro silencioso e volta pro hub/menu sem travar
+      // Anuncia o erro via leitor de tela para diagnóstico
       console.error('[startGame] erro:', err);
-      if (mode === 'normal') showStoryHub();
-      else showScreen('start');
+      announce('Erro ao iniciar: ' + (err && err.message ? err.message : String(err)));
     }
   }
 
