@@ -1287,6 +1287,17 @@ const Game = (() => {
 
   /* ── INVENTÁRIO ──────────────────────────────────────────────────────── */
   function renderInventory() {
+    // Controla elementos que só existem no modo história
+    const isStory = (gameMode === 'normal');
+    const sellAllBar = document.querySelector('.inv-sell-all-bar');
+    if (sellAllBar) sellAllBar.classList.toggle('hidden', !isStory);
+    const invBack = $('btn-inv-back');
+    if (invBack) {
+      invBack.classList.toggle('hidden', !isStory);
+      invBack.setAttribute('data-i18n', 'btn_back_hub');
+      I18n.apply(invBack);
+    }
+
     $('inv-coins').textContent = Inventory.coins();
     const fbEl   = $('inv-feedback');
     const equip  = Inventory.getEquip();
