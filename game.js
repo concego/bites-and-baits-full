@@ -1454,5 +1454,8 @@ const Game = (() => {
   }
 
   document.addEventListener('DOMContentLoaded', init);
-  return { state: () => state };
+  return {
+    state:       () => state,
+    startNormal: () => startGame('normal'),
+  };
 })();
