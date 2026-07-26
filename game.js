@@ -482,35 +482,42 @@ const Game = (() => {
 
   // ── Inicia jogo ───────────────────────────────────────────────────────────
   async function startGame(mode = 'normal') {
-    gameMode = mode;
+    try {
+      gameMode = mode;
 
-    const ok = await Sensors.requestPermission();
-    if (!ok) {
-      speak(I18n.t('speak_no_sensor'));
-      Sensors.enableDesktopFallback();
+      const ok = await Sensors.requestPermission();
+      if (!ok) {
+        speak(I18n.t('speak_no_sensor'));
+        Sensors.enableDesktopFallback();
+      }
+      await Audio.init();
+      showScreen('game');
+
+      // HUDs: score só no Free Fishing; normal-hud só no modo normal
+      const scoreHud = $('score-hud');
+      if (scoreHud) scoreHud.classList.toggle('hidden', gameMode !== 'free');
+      if (ui.normalHud) ui.normalHud.classList.toggle('hidden', gameMode !== 'normal');
+
+      // "Pescar de novo" só existe no modo normal (tela de resultado)
+      const btnContinue = $('btn-continue');
+      if (btnContinue) btnContinue.classList.toggle('hidden', gameMode === 'free');
+
+      // Inicializa indicador de isca
+      if (gameMode === 'normal') refreshBaitHud();
+
+      score = 0;
+      updateScore();
+      fishEls = [];
+      spawnBackgroundFish();
+      Sensors.start();
+      Audio.startAmbient();
+      enterState('IDLE');
+    } catch (err) {
+      // Captura qualquer erro silencioso e volta pro hub/menu sem travar
+      console.error('[startGame] erro:', err);
+      if (mode === 'normal') showStoryHub();
+      else showScreen('start');
     }
-    await Audio.init();
-    showScreen('game');
-
-    // HUDs: score só no Free Fishing; normal-hud só no modo normal
-    const scoreHud = $('score-hud');
-    if (scoreHud) scoreHud.classList.toggle('hidden', gameMode !== 'free');
-    if (ui.normalHud) ui.normalHud.classList.toggle('hidden', gameMode !== 'normal');
-
-    // "Pescar de novo" só existe no modo normal (tela de resultado)
-    const btnContinue = $('btn-continue');
-    if (btnContinue) btnContinue.classList.toggle('hidden', gameMode === 'free');
-
-    // Inicializa indicador de isca
-    if (gameMode === 'normal') refreshBaitHud();
-
-    score = 0;
-    updateScore();
-    fishEls = [];
-    spawnBackgroundFish();
-    Sensors.start();
-    Audio.startAmbient();
-    enterState('IDLE');
   }
 
   // ── Silencia TalkBack via aria-hidden no screen-game ─────────────────────
