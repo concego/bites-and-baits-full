@@ -76,7 +76,6 @@ const Game = (() => {
 
   // ── Inicialização ─────────────────────────────────────────────────────────
   function init() {
-    console.log('[BB] init() start');
     screens = {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
@@ -89,11 +88,6 @@ const Game = (() => {
       shop:         $('screen-shop'),
     };
 
-    // Verifica telas nulas (debug)
-    Object.entries(screens).forEach(([key, s]) => {
-      if (!s) console.error('[BB] TELA NAO ENCONTRADA:', key);
-    });
-
     // Garante que só screen-lang está ativa no carregamento inicial
     Object.entries(screens).forEach(([key, s]) => {
       if (key !== 'lang' && s) {
@@ -101,7 +95,6 @@ const Game = (() => {
         s.setAttribute('inert', '');
       }
     });
-    console.log('[BB] screens OK, registrando listeners...');
     ui = {
       announcer:      $('announcer'),
       stateLabel:     $('state-label'),
@@ -488,7 +481,6 @@ const Game = (() => {
 
   // ── Inicia jogo ───────────────────────────────────────────────────────────
   async function startGame(mode = 'normal') {
-    console.log('[BB] startGame() chamado mode=', mode);
     try {
       gameMode = mode;
 
@@ -1372,8 +1364,9 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
-    // Desativa e bloqueia TODAS as telas conhecidas (incluindo lang)
+    // Desativa e bloqueia TODAS as telas conhecidas
     Object.entries(screens).forEach(([, s]) => {
+      if (!s) return;
       s.classList.remove('active');
       s.setAttribute('inert', '');
     });
