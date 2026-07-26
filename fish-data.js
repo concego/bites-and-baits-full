@@ -48,13 +48,13 @@ const FISH_CATALOG = {
     spriteW: 52, spriteH: 26,
     size: 1,
     special: false,
-    pull: 1.5,
-    pullNeeded: 40,
+    pull: 1.8,
+    pullNeeded: 65,
     biteWindow: 4500,
     tiredBase: 3000,
-    stamina: 8,          // cansa rápido — peixe pequeno
-    recovery: 3000,      // recupera em 3s — mas pouca força de qualquer jeito
-    escapePatience: 20,  // pouca paciência — foge rápido se ignorado
+    stamina: 6,          // cansa rápido — peixe pequeno
+    recovery: 4000,      // recupera em 4s — mas pouca força de qualquer jeito
+    escapePatience: 12,  // pouca paciência — foge rápido se ignorado
     habitat: 'freshwater',
     weightRange: [0.02, 0.12],
     baits: ['worm', 'cricket'],
@@ -67,13 +67,13 @@ const FISH_CATALOG = {
     spriteW: 60, spriteH: 30,
     size: 1.5,
     special: false,
-    pull: 3,
-    pullNeeded: 60,
+    pull: 3.5,
+    pullNeeded: 95,
     biteWindow: 3500,
     tiredBase: 4500,
-    stamina: 12,         // resistência média
-    recovery: 4000,      // janela de 4s para aproveitar
-    escapePatience: 28,  // um pouco mais paciente que o lambari
+    stamina: 8,          // resistência média
+    recovery: 5500,      // janela de 5.5s para aproveitar
+    escapePatience: 16,  // um pouco mais paciente que o lambari
     habitat: 'freshwater',
     weightRange: [0.3, 2.5],
     baits: ['worm', 'live_bait', 'cricket'],
@@ -86,13 +86,13 @@ const FISH_CATALOG = {
     spriteW: 68, spriteH: 28,
     size: 2,
     special: false,
-    pull: 5,
-    pullNeeded: 80,
+    pull: 5.5,
+    pullNeeded: 125,
     biteWindow: 3000,
     tiredBase: 6000,
-    stamina: 15,         // boa resistência
-    recovery: 5000,      // janela de 5s
-    escapePatience: 32,
+    stamina: 14,         // boa resistência
+    recovery: 5500,      // janela de 5.5s
+    escapePatience: 28,
     habitat: 'freshwater',
     weightRange: [0.5, 4.0],
     baits: ['fly', 'spoon', 'worm'],
@@ -105,13 +105,13 @@ const FISH_CATALOG = {
     spriteW: 76, spriteH: 34,
     size: 2.5,
     special: true,
-    pull: 7,
-    pullNeeded: 110,
+    pull: 6.5,
+    pullNeeded: 140,
     biteWindow: 2500,
     tiredBase: 9000,
-    stamina: 20,         // difícil de cansar
-    recovery: 6500,      // janela generosa, mas força é alta
-    escapePatience: 38,
+    stamina: 18,         // difícil de cansar
+    recovery: 7000,      // janela de 7s — aproveite o cansaço
+    escapePatience: 34,
     habitat: 'freshwater',
     weightRange: [2.0, 20.0],
     baits: ['live_bait', 'spoon', 'jig'],
@@ -124,13 +124,13 @@ const FISH_CATALOG = {
     spriteW: 96, spriteH: 40,
     size: 4,
     special: true,
-    pull: 10,
-    pullNeeded: 150,
+    pull: 7.0,
+    pullNeeded: 170,
     biteWindow: 2000,
     tiredBase: 14000,
-    stamina: 25,         // resistência máxima — quase não cansa
-    recovery: 8000,      // janela de 8s, mas se recuperar a força é brutal
-    escapePatience: 45,  // muito paciente — mas quando resolve ir, vai
+    stamina: 22,         // resistência máxima — quase não cansa
+    recovery: 9000,      // janela de 9s — mas ESPERTO ainda consegue
+    escapePatience: 40,  // muito paciente — mas quando resolve ir, vai
     habitat: 'freshwater',
     weightRange: [20.0, 200.0],
     baits: ['live_bait', 'jig'],
