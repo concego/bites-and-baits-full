@@ -1921,7 +1921,11 @@ const Game = (() => {
     Audio.stopReel();
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
   return {
     state:       () => state,
     startNormal: () => startGame('normal'),
