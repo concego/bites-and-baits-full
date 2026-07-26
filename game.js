@@ -1444,7 +1444,10 @@ const Game = (() => {
     Audio.stopReel();
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', () => {
+    try { init(); }
+    catch(e) { alert('[init ERROR] ' + (e && e.message ? e.message : String(e))); }
+  });
   return {
     state:       () => state,
     startNormal: () => startGame('normal'),
