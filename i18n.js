@@ -325,6 +325,24 @@ const I18n = (() => {
       size_large:  'enorme',
 
       // Nomes dos peixes
+
+      // Mapa 1 — Margem do Lago
+      fish_cara:                    'Cará',
+      fish_traira:                  'Traíra',
+      fish_piau:                    'Piau',
+      fish_curimbata:               'Curimbatá',
+      fish_tucunare:                'Tucunaré',
+      fish_peixe_dourado_ornamental:'Peixe-Dourado Ornamental',
+      map_lago_margem:              'Margem do Lago',
+
+      // Map 1 — Lake Shore
+      fish_cara:                    'Cará Cichlid',
+      fish_traira:                  'Traíra',
+      fish_piau:                    'Piau',
+      fish_curimbata:               'Curimbatá',
+      fish_tucunare:                'Tucunaré Bass',
+      fish_peixe_dourado_ornamental:'Golden Ornamental Fish',
+      map_lago_margem:              'Lake Shore',
       fish_lambari:  'Lambari',
       fish_tilapia:  'Tilápia',
       fish_truta:    'Truta',
@@ -642,6 +660,24 @@ const I18n = (() => {
       size_large:  'enormous',
 
       // Fish names
+
+      // Mapa 1 — Margem do Lago
+      fish_cara:                    'Cará',
+      fish_traira:                  'Traíra',
+      fish_piau:                    'Piau',
+      fish_curimbata:               'Curimbatá',
+      fish_tucunare:                'Tucunaré',
+      fish_peixe_dourado_ornamental:'Peixe-Dourado Ornamental',
+      map_lago_margem:              'Margem do Lago',
+
+      // Map 1 — Lake Shore
+      fish_cara:                    'Cará Cichlid',
+      fish_traira:                  'Traíra',
+      fish_piau:                    'Piau',
+      fish_curimbata:               'Curimbatá',
+      fish_tucunare:                'Tucunaré Bass',
+      fish_peixe_dourado_ornamental:'Golden Ornamental Fish',
+      map_lago_margem:              'Lake Shore',
       fish_lambari:  'Lambari',
       fish_tilapia:  'Tilapia',
       fish_truta:    'Trout',
