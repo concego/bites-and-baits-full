@@ -1,4 +1,3 @@
-console.log("[BB] game.js carregado");
 /**
  * game.js — Bites & Baits (branch: full)
  * Máquina de estados principal
@@ -13,10 +12,10 @@ console.log("[BB] game.js carregado");
  *   SNAPPED    → linha arrebentou
  */
 
-console.log("[BB] IIFE iniciando");
 const Game = (() => {
 
   const $ = id => document.getElementById(id);
+  const t = (key, ...args) => I18n.t(key, ...args);
 
   let screens = {};
   let ui      = {};
@@ -82,8 +81,7 @@ const Game = (() => {
 
   // ── Inicialização ─────────────────────────────────────────────────────────
   function init() {
-    console.log("[BB] init() iniciou");
-    screens = {
+        screens = {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
       storyHub:     $('screen-story-hub'),
@@ -161,7 +159,7 @@ const Game = (() => {
     // ── Hub da História ────────────────────────────────────────────────────
     $('btn-hub-fish').addEventListener('click',   () => startGame('normal'));
     $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); });
-    $('btn-hub-shop').addEventListener('click',   () => { console.log('[BB] btn-hub-shop clicado'); try { renderShop(); } catch(e) { console.error('[BB] renderShop erro:', e); } try { showScreen('shop'); } catch(e) { console.error('[BB] showScreen erro:', e); } });
+    $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop'); });
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
 
     // ── Loja (acesso via hub) ──────────────────────────────────────────────
