@@ -1117,6 +1117,9 @@ const Game = (() => {
     setLabel('');
     const ann = $('announcer');
     if (ann) ann.textContent = '';
+    // Esconde a barra inferior ao sair do jogo
+    const bar = $('game-bottom-bar');
+    if (bar) bar.classList.add('hidden');
     // Se veio do modo história, volta pro hub; pesca livre volta pro menu principal
     if (gameMode === 'normal') {
       showStoryHub();
@@ -1368,6 +1371,13 @@ const Game = (() => {
       s.setAttribute('inert', '');
     });
 
+    // Barra inferior só fica visível dentro da tela de jogo (modo normal)
+    // Fora do jogo, garante que não intercepta cliques em nenhuma outra tela
+    if (name !== 'game') {
+      const bar = $('game-bottom-bar');
+      if (bar) bar.classList.add('hidden');
+    }
+
     // Ativa só a tela pedida
     const target = screens[name];
     if (!target) return;
@@ -1444,10 +1454,7 @@ const Game = (() => {
     Audio.stopReel();
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    try { init(); }
-    catch(e) { alert('[init ERROR] ' + (e && e.message ? e.message : String(e))); }
-  });
+  document.addEventListener('DOMContentLoaded', init);
   return {
     state:       () => state,
     startNormal: () => startGame('normal'),
