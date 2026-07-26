@@ -16,10 +16,19 @@ const I18n = (() => {
 
       // Menu
       btn_start:        'Pescar',
+      btn_story:        'História',
       btn_free:         'Pesca Livre',
       btn_free_desc:    'Com pontuação',
       btn_inventory:    '🎒 Inventário',
       btn_shop:         '🏪 Loja',
+      // Hub da História
+      story_hub_title:    'Modo História',
+      story_current_map:  'Localização atual',
+      btn_hub_fish:       '🎣 Pescar aqui',
+      btn_hub_travel:     '🗺️ Viajar',
+      btn_hub_shop:       '🏪 Loja',
+      btn_back_hub:       '← Hub',
+      btn_back_main:      '← Menu Principal',
       btn_instructions: 'Como jogar',
       credits_by:       'Por',
       credits_brand:    'Eu Concego Jogar',
@@ -268,6 +277,9 @@ const I18n = (() => {
       fish_truta:    'Truta',
       fish_dourado:  'Dourado',
       fish_pirarucu: 'Pirarucu',
+
+      // Nomes dos mapas
+      map_rio_doce: 'Rio Doce',
     },
 
     en: {
@@ -276,11 +288,19 @@ const I18n = (() => {
       lang_subtitle:    'Escolha o idioma',
 
       // Menu
-      btn_start:        'Fish',
+      btn_story:        'Story',
       btn_free:         'Free Fishing',
       btn_free_desc:    'With scoring',
       btn_inventory:    '🎒 Inventory',
       btn_shop:         '🏪 Shop',
+      // Story Hub
+      story_hub_title:    'Story Mode',
+      story_current_map:  'Current location',
+      btn_hub_fish:       '🎣 Fish here',
+      btn_hub_travel:     '🗺️ Travel',
+      btn_hub_shop:       '🏪 Shop',
+      btn_back_hub:       '← Hub',
+      btn_back_main:      '← Main Menu',
       btn_instructions: 'How to play',
       credits_by:       'By',
       credits_brand:    'Eu Concego Jogar',
@@ -524,6 +544,9 @@ const I18n = (() => {
       fish_truta:    'Trout',
       fish_dourado:  'Dourado',
       fish_pirarucu: 'Pirarucu',
+
+      // Map names
+      map_rio_doce: 'Doce River',
     },
   };
 
