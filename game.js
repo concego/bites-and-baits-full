@@ -1136,6 +1136,9 @@ const Game = (() => {
       ui.resultTitle.textContent = I18n.t('result_snapped');
       ui.resultDesc.textContent  = I18n.t('result_snapped_desc');
     }
+    if (typeof GameTime !== 'undefined' && gameMode === 'normal') {
+      GameTime.advance('fish');
+    }
     showScreen('result');
   }
 
@@ -1162,10 +1165,22 @@ const Game = (() => {
     }
   }
 
-  /** Exibe o hub da cidade */
-  function showStoryHub() {
+  /** Atualiza o HUD de moedas + tempo no hub da cidade */
+  function _refreshHubHUD() {
     const coinsEl = $('hub-coins');
     if (coinsEl) coinsEl.textContent = Inventory.coins();
+    if (typeof GameTime !== 'undefined') {
+      const hud = GameTime.formatHUD();
+      const dateEl  = $('hub-date');
+      const clockEl = $('hub-clock');
+      if (dateEl)  dateEl.textContent  = hud.date;
+      if (clockEl) clockEl.textContent = hud.time;
+    }
+  }
+
+  /** Exibe o hub da cidade */
+  function showStoryHub() {
+    _refreshHubHUD();
     showScreen('storyHub');
   }
 
