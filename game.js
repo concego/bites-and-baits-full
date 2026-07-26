@@ -81,7 +81,6 @@ const Game = (() => {
 
   // ── Inicialização ─────────────────────────────────────────────────────────
   function init() {
-    console.log('[BB] init() called, readyState:', document.readyState);
         screens = {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
@@ -152,7 +151,7 @@ const Game = (() => {
     $('btn-lang-en').addEventListener('click', () => selectLang('en'));
 
     // ── Menu Principal ─────────────────────────────────────────────────────
-    $('btn-story').addEventListener('click', () => { console.log('[BB] btn-story clicked, gameMode=normal'); gameMode = 'normal'; showStoryHub(); });
+    $('btn-story').addEventListener('click', () => { gameMode = 'normal'; showStoryHub(); });
     $('btn-free').addEventListener('click',  () => startGame('free'));
     $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
     $('btn-back').addEventListener('click',  () => showScreen('start'));
@@ -522,8 +521,9 @@ const Game = (() => {
       // Texto do botão voltar — depende do modo
       const btnMenuEl = $('btn-menu');
       if (btnMenuEl) {
-        btnMenuEl.setAttribute('data-i18n', gameMode === 'free' ? 'btn_back_main' : 'btn_back_hub');
-        I18n.apply(btnMenuEl);
+        const _bk = gameMode === 'free' ? 'btn_back_main' : 'btn_back_hub';
+        btnMenuEl.setAttribute('data-i18n', _bk);
+        btnMenuEl.textContent = I18n.t(_bk);
       }
 
       score = 0;
@@ -1302,8 +1302,7 @@ const Game = (() => {
     const invBack = $('btn-inv-back');
     if (invBack) {
       invBack.classList.toggle('hidden', !isStory);
-      invBack.setAttribute('data-i18n', 'btn_back_hub');
-      I18n.apply(invBack);
+
     }
 
     $('inv-coins').textContent = Inventory.coins();
@@ -1831,7 +1830,7 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
-    console.log('[BB] showScreen:', name, 'target:', screens[name], 'keys:', Object.keys(screens));
+    console.log('[BB] showScreen:', name);
     // Desativa e bloqueia TODAS as telas conhecidas
     Object.entries(screens).forEach(([, s]) => {
       if (!s) return;
