@@ -153,7 +153,7 @@ const Game = (() => {
 
     // ── Hub da História ────────────────────────────────────────────────────
     $('btn-hub-fish').addEventListener('click',   () => startGame('normal'));
-    $('btn-hub-travel').addEventListener('click', () => { /* TODO: tela de mapa */ announce(t('story_hub_title')); });
+    $('btn-hub-travel').addEventListener('click', () => { speak(t('story_hub_title')); });
     $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop'); });
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
 
@@ -484,27 +484,25 @@ const Game = (() => {
     try {
       gameMode = mode;
 
-      // Permissão de sensor: pede mas não bloqueia a transição de tela
-      Sensors.requestPermission().then(ok => {
-        if (!ok) {
-          speak(I18n.t('speak_no_sensor'));
-          Sensors.enableDesktopFallback();
-        }
-      });
-      // Inicia áudio sem bloquear
-      Audio.init().catch(e => console.warn('[Audio.init]', e));
+      // 1. Troca de tela PRIMEIRO — imediato, sem await
       showScreen('game');
 
-      // HUDs: score só no Free Fishing; normal-hud só no modo normal
+      // 2. Sensores e áudio: fire-and-forget, nunca bloqueiam
+      Sensors.requestPermission().then(ok => {
+        if (!ok) Sensors.enableDesktopFallback();
+      }).catch(() => Sensors.enableDesktopFallback());
+      Audio.init().catch(() => {});
+
+      // 3. HUDs
       const scoreHud = $('score-hud');
       if (scoreHud) scoreHud.classList.toggle('hidden', gameMode !== 'free');
       if (ui.normalHud) ui.normalHud.classList.toggle('hidden', gameMode !== 'normal');
 
-      // "Pescar de novo" só existe no modo normal (tela de resultado)
+      // "Pescar de novo" só no modo normal
       const btnContinue = $('btn-continue');
       if (btnContinue) btnContinue.classList.toggle('hidden', gameMode === 'free');
 
-      // Inicializa indicador de isca
+      // Indicador de isca
       if (gameMode === 'normal') refreshBaitHud();
 
       score = 0;
@@ -515,9 +513,8 @@ const Game = (() => {
       Audio.startAmbient();
       enterState('IDLE');
     } catch (err) {
-      // Anuncia o erro via leitor de tela para diagnóstico
-      console.error('[startGame] erro:', err);
-      announce('Erro ao iniciar: ' + (err && err.message ? err.message : String(err)));
+      console.error('[startGame]', err);
+      if (ui && ui.announcer) speak(String(err && err.message ? err.message : err));
     }
   }
 
@@ -1390,7 +1387,7 @@ const Game = (() => {
     });
   }
 
-  function setLabel(text)  { ui.stateLabel.textContent = text; }
+  function setLabel(text)  { if (ui.stateLabel) ui.stateLabel.textContent = text; }
 
   /** Vibra apenas se háptica estiver ativada nas preferências */
   function _vibrate(pattern) { if (A11y.get('haptic')) Audio.vibrate(pattern); }
@@ -1399,6 +1396,7 @@ const Game = (() => {
   function _play(id) { if (A11y.get('sound')) Audio.play(id); }
 
   function speak(text) {
+    if (!ui.announcer) return;
     ui.announcer.textContent = '';
     requestAnimationFrame(() => requestAnimationFrame(() => {
       ui.announcer.textContent = text;
