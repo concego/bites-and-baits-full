@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Diagnostico BB</title></head>
+<body>
+<h1>Diagnostico</h1>
+<button id="btndiag">Rodar diagnostico</button>
+<pre id="out"></pre>
+<script src="a11y.js"></script>
+<script src="i18n.js"></script>
+<script src="fish-data.js"></script>
+<script src="creature-profile.js"></script>
+<script src="map-data.js"></script>
+<script src="score-system.js"></script>
+<script src="inventory.js"></script>
+<script src="shop-data.js"></script>
+<script src="audio.js"></script>
+<script src="sensors.js"></script>
+<script src="game.js"></script>
+<script>
+document.getElementById('btndiag').addEventListener('click', function() {
+  var out = document.getElementById('out');
+  var results = [];
+  var ids = ['screen-lang','screen-start','screen-story-hub','screen-game','screen-result','screen-instructions','screen-options','screen-inventory','screen-shop'];
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) { results.push(id + ': NAO ENCONTRADO'); return; }
+    results.push(id + ': active=' + el.classList.contains('active') + ' inert=' + el.hasAttribute('inert'));
+  });
+  var btn = document.getElementById('btn-hub-fish');
+  if (btn) {
+    results.push('btn-hub-fish: inert=' + btn.hasAttribute('inert'));
+    var el = btn.parentElement;
+    while (el) {
+      if (el.hasAttribute('inert')) results.push('  ANCESTRAL INERT: ' + (el.id || el.tagName));
+      el = el.parentElement;
+    }
+    results.push('onclick attr: ' + btn.getAttribute('onclick'));
+  }
+  out.textContent = results.join('\n');
+});
+</script>
+</body>
+</html>
