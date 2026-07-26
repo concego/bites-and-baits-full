@@ -175,9 +175,9 @@ const Game = (() => {
     $('btn-sell-all').addEventListener('click', () => {
       const result = Inventory.sellAll();
       renderInventory();
-      if (result.sold > 0) {
+      if (result.ok && result.count > 0) {
         const lbl = t('inv_total_label');
-        const msg = (typeof lbl === 'function' ? lbl(result.sold, result.coins) : `${result.sold} peixes → ${result.coins} 🪙`) + ' vendidos!';
+        const msg = (typeof lbl === 'function' ? lbl(result.count, result.earned) : `${result.count} peixes → ${result.earned} 🪙`) + ' vendidos!';
         _shopFeedback($('inv-feedback'), msg, true);
       }
     });
