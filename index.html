@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Bites &amp; Baits</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="shop.css" />
 </head>
 <body>
 
@@ -139,6 +140,10 @@
       <button id="btn-free"         class="btn-secondary btn-with-desc" data-i18n="btn_free">
         <span class="menu-mode-desc" data-i18n="btn_free_desc" aria-hidden="true"></span>
       </button>
+      <div class="menu-row-pair">
+        <button id="btn-inventory" class="btn-secondary btn-half" data-i18n="btn_inventory"></button>
+        <button id="btn-shop"      class="btn-secondary btn-half" data-i18n="btn_shop"></button>
+      </div>
       <button id="btn-instructions" class="btn-secondary" data-i18n="btn_instructions"></button>
       <button id="btn-options"      class="btn-secondary" data-i18n="btn_options"></button>
 
@@ -474,6 +479,78 @@
 
   </div>
 
+  <!-- ── Tela de Inventário (vender peixes) ────────────────────────────── -->
+  <div id="screen-inventory" class="screen">
+    <div class="shop-dialog">
+      <header class="shop-header">
+        <button id="btn-inv-back" class="btn-back-shop" data-i18n="btn_back" aria-label="Voltar"></button>
+        <h2 data-i18n="inv_title"></h2>
+        <div class="coins-display" aria-live="polite">
+          <span aria-hidden="true">🪙</span>
+          <span id="inv-coins"></span>
+        </div>
+      </header>
+
+      <div class="shop-tabs" role="tablist">
+        <button class="shop-tab active" role="tab" aria-selected="true"
+                data-tab="fish" data-i18n="inv_tab_fish"></button>
+        <button class="shop-tab" role="tab" aria-selected="false"
+                data-tab="baits" data-i18n="inv_tab_baits"></button>
+      </div>
+
+      <!-- Aba: Peixes capturados -->
+      <div id="inv-tab-fish" class="shop-tab-content">
+        <div id="inv-fish-empty" class="shop-empty hidden" data-i18n="inv_empty_fish"></div>
+        <ul id="inv-fish-list" class="inv-list" role="list"></ul>
+        <div class="inv-sell-all-bar">
+          <span id="inv-total-label" class="inv-total-label"></span>
+          <button id="btn-sell-all" class="btn-primary" data-i18n="inv_sell_all"></button>
+        </div>
+      </div>
+
+      <!-- Aba: Iscas em estoque -->
+      <div id="inv-tab-baits" class="shop-tab-content hidden">
+        <div id="inv-baits-empty" class="shop-empty hidden" data-i18n="inv_empty_baits"></div>
+        <ul id="inv-baits-list" class="inv-list" role="list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tela da Loja ───────────────────────────────────────────────────── -->
+  <div id="screen-shop" class="screen">
+    <div class="shop-dialog">
+      <header class="shop-header">
+        <button id="btn-shop-back" class="btn-back-shop" data-i18n="btn_back" aria-label="Voltar"></button>
+        <h2 data-i18n="shop_title"></h2>
+        <div class="coins-display" aria-live="polite">
+          <span aria-hidden="true">🪙</span>
+          <span id="shop-coins"></span>
+        </div>
+      </header>
+
+      <div class="shop-tabs" role="tablist">
+        <button class="shop-tab active" role="tab" aria-selected="true"
+                data-tab="baits" data-i18n="equip_cat_baits"></button>
+        <button class="shop-tab" role="tab" aria-selected="false"
+                data-tab="rods" data-i18n="shop_tab_rods"></button>
+        <button class="shop-tab" role="tab" aria-selected="false"
+                data-tab="lines" data-i18n="shop_tab_lines"></button>
+        <button class="shop-tab" role="tab" aria-selected="false"
+                data-tab="hooks" data-i18n="shop_tab_hooks"></button>
+        <button class="shop-tab" role="tab" aria-selected="false"
+                data-tab="floats" data-i18n="shop_tab_floats"></button>
+      </div>
+
+      <div id="shop-tab-baits"  class="shop-tab-content"></div>
+      <div id="shop-tab-rods"   class="shop-tab-content hidden"></div>
+      <div id="shop-tab-lines"  class="shop-tab-content hidden"></div>
+      <div id="shop-tab-hooks"  class="shop-tab-content hidden"></div>
+      <div id="shop-tab-floats" class="shop-tab-content hidden"></div>
+
+      <div id="shop-feedback" class="shop-feedback hidden" aria-live="assertive"></div>
+    </div>
+  </div>
+
   <script src="a11y.js"></script>
   <script src="i18n.js"></script>
   <script src="fish-data.js"></script>
@@ -481,6 +558,7 @@
   <script src="map-data.js"></script>
   <script src="score-system.js"></script>
   <script src="inventory.js"></script>
+  <script src="shop-data.js"></script>
   <script src="audio.js"></script>
   <script src="sensors.js"></script>
   <script src="game.js"></script>
