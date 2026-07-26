@@ -151,7 +151,7 @@ const Game = (() => {
     $('btn-lang-en').addEventListener('click', () => selectLang('en'));
 
     // ── Menu Principal ─────────────────────────────────────────────────────
-    $('btn-story').addEventListener('click', () => showStoryHub());
+    $('btn-story').addEventListener('click', () => { gameMode = 'normal'; showStoryHub(); });
     $('btn-free').addEventListener('click',  () => startGame('free'));
     $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
     $('btn-back').addEventListener('click',  () => showScreen('start'));
@@ -517,6 +517,13 @@ const Game = (() => {
 
       // Indicador de isca
       if (gameMode === 'normal') refreshBaitHud();
+
+      // Texto do botão voltar — depende do modo
+      const btnMenuEl = $('btn-menu');
+      if (btnMenuEl) {
+        btnMenuEl.setAttribute('data-i18n', gameMode === 'free' ? 'btn_back_main' : 'btn_back_hub');
+        I18n.apply(btnMenuEl);
+      }
 
       score = 0;
       updateScore();
