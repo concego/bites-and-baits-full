@@ -207,3 +207,30 @@
   color: #fbbf24;
   font-weight: 600;
 }
+
+/* ===== HUB DA HISTÓRIA ===== */
+.story-hub-header {
+  display: flex; align-items: center; gap: 10px; padding: 20px 20px 12px;
+}
+.story-hub-header h2 { flex: 1; margin: 0; font-size: 1.2rem; }
+.story-hub-coins { font-size: 1rem; font-weight: 700; color: #fbbf24; }
+.hub-map-card {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(255,255,255,0.06); border-radius: 12px;
+  margin: 0 20px 20px; padding: 14px 16px;
+}
+.hub-map-emoji { font-size: 2.2rem; line-height: 1; }
+.hub-map-info  { display: flex; flex-direction: column; gap: 3px; }
+.hub-map-label { font-size: 0.72rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: .05em; }
+.hub-map-name  { font-size: 1rem; font-weight: 700; }
+.btn-ghost {
+  background: none; border: none; color: rgba(255,255,255,0.4);
+  font-size: 0.9rem; cursor: pointer; padding: 12px;
+  min-height: 44px; width: 100%; max-width: 340px;
+  margin: 4px auto 0; display: block; transition: color .15s;
+}
+.btn-ghost:hover, .btn-ghost:focus { color: rgba(255,255,255,0.75); }
+#screen-story-hub .btn-primary,
+#screen-story-hub .btn-secondary {
+  display: block; width: 100%; max-width: 340px; margin: 0 auto 10px;
+}
