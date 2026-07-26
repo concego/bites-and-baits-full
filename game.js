@@ -83,6 +83,8 @@ const Game = (() => {
       result:       $('screen-result'),
       instructions: $('screen-instructions'),
       options:      $('screen-options'),
+      inventory:    $('screen-inventory'),
+      shop:         $('screen-shop'),
     };
 
     // Garante que só screen-lang está ativa no carregamento inicial
@@ -146,6 +148,40 @@ const Game = (() => {
     $('btn-back').addEventListener('click',  () => showScreen('start'));
     $('btn-options').addEventListener('click', () => { _syncToggles(); showScreen('options'); });
     $('btn-options-back').addEventListener('click', () => showScreen('start'));
+
+    // ── Inventário ─────────────────────────────────────────────────────────
+    $('btn-inventory').addEventListener('click', () => {
+      renderInventory();
+      showScreen('inventory');
+    });
+    $('btn-inv-back').addEventListener('click', () => showScreen('start'));
+    $('btn-sell-all').addEventListener('click', () => {
+      const result = Inventory.sellAll();
+      renderInventory();
+      if (result.sold > 0) {
+        _shopFeedback(
+          $('shop-feedback'),
+          t('inv_total_label', result.sold, result.coins) + ' vendidos!'
+        );
+      }
+    });
+
+    // Abas inventário
+    document.querySelectorAll('#screen-inventory .shop-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab('screen-inventory', tab.dataset.tab));
+    });
+
+    // ── Loja ───────────────────────────────────────────────────────────────
+    $('btn-shop').addEventListener('click', () => {
+      renderShop();
+      showScreen('shop');
+    });
+    $('btn-shop-back').addEventListener('click', () => showScreen('start'));
+
+    // Abas loja
+    document.querySelectorAll('#screen-shop .shop-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab('screen-shop', tab.dataset.tab));
+    });
     $('btn-opt-lang-pt').addEventListener('click', () => selectLang('pt'));
     $('btn-opt-lang-en').addEventListener('click', () => selectLang('en'));
     $('btn-menu').addEventListener('click',  () => goToMenu());
@@ -1064,6 +1100,228 @@ const Game = (() => {
     const ann = $('announcer');
     if (ann) ann.textContent = '';
     showScreen('start');
+  }
+
+  // ── Loja / Inventário ─────────────────────────────────────────────────────
+
+  function switchTab(screenId, tabName) {
+    const screen = document.getElementById(screenId);
+    screen.querySelectorAll('.shop-tab').forEach(btn => {
+      const active = btn.dataset.tab === tabName;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-selected', active);
+    });
+    screen.querySelectorAll('.shop-tab-content').forEach(pane => {
+      pane.classList.add('hidden');
+    });
+    const target = screen.querySelector(`#${screenId.replace('screen-','')==='inventory'?'inv':'shop'}-tab-${tabName}`);
+    if (target) target.classList.remove('hidden');
+  }
+
+  function _shopFeedback(el, msg, ok = true) {
+    el.textContent = msg;
+    el.classList.remove('hidden', 'feedback-ok', 'feedback-err');
+    el.classList.add(ok ? 'feedback-ok' : 'feedback-err');
+    clearTimeout(el._feedbackTimer);
+    el._feedbackTimer = setTimeout(() => el.classList.add('hidden'), 2500);
+  }
+
+  /* ── INVENTÁRIO ──────────────────────────────────────────────────────── */
+  function renderInventory() {
+    const coins = Inventory.coins();
+    $('inv-coins').textContent = coins;
+
+    // Aba peixes
+    const fishes   = Inventory.getAll();
+    const fishList = $('inv-fish-list');
+    const fishEmpty = $('inv-fish-empty');
+    fishList.innerHTML = '';
+
+    if (fishes.length === 0) {
+      fishEmpty.classList.remove('hidden');
+      $('inv-total-label').textContent = '';
+      $('btn-sell-all').setAttribute('disabled', '');
+    } else {
+      fishEmpty.classList.add('hidden');
+      $('btn-sell-all').removeAttribute('disabled');
+      const totalCoins = fishes.reduce((s, f) => s + f.value, 0);
+      const lbl = t('inv_total_label');
+      $('inv-total-label').textContent =
+        typeof lbl === 'function' ? lbl(fishes.length, totalCoins)
+                                  : `${fishes.length} peixes → ${totalCoins} 🪙`;
+
+      fishes.forEach(fish => {
+        const fishDef = FISH_CATALOG[fish.fishId] || {};
+        const symbol  = fishDef.symbol || fish.fishId;
+        const li = document.createElement('li');
+        li.className = 'inv-item';
+        li.setAttribute('role', 'listitem');
+        li.innerHTML = `
+          <div class="inv-item-icon" aria-hidden="true">
+            <svg width="60" height="30"><use href="#fish-${fish.fishId}"/></svg>
+          </div>
+          <div class="inv-item-info">
+            <span class="inv-item-name">${t(fish.nameKey) || fish.nameKey}</span>
+            <span class="inv-item-detail">${fish.weight.toFixed(2)} kg · ${fish.value} 🪙</span>
+          </div>
+          <button class="btn-sell-item btn-secondary"
+                  data-item-id="${fish.id}"
+                  aria-label="${t('inv_sell_one')} ${t(fish.nameKey) || fish.nameKey} (${fish.value} 🪙)">
+            ${t('inv_sell_one')} · ${fish.value} 🪙
+          </button>`;
+        li.querySelector('.btn-sell-item').addEventListener('click', e => {
+          const itemId = e.currentTarget.dataset.itemId;
+          Inventory.sellItem(itemId);
+          renderInventory();
+        });
+        fishList.appendChild(li);
+      });
+    }
+
+    // Aba iscas
+    const baits     = Inventory.getBaits();
+    const baitList  = $('inv-baits-list');
+    const baitEmpty = $('inv-baits-empty');
+    baitList.innerHTML = '';
+    const baitEntries = Object.entries(baits).filter(([,qty]) => qty > 0);
+
+    if (baitEntries.length === 0) {
+      baitEmpty.classList.remove('hidden');
+    } else {
+      baitEmpty.classList.add('hidden');
+      const equip = Inventory.getEquip();
+      baitEntries.forEach(([baitId, qty]) => {
+        const def = BAIT_CATALOG[baitId] || { emoji: '?', nameKey: baitId };
+        const isEquipped = equip.bait === baitId;
+        const li = document.createElement('li');
+        li.className = 'inv-item inv-bait-item';
+        li.innerHTML = `
+          <span class="inv-item-icon" aria-hidden="true">${def.emoji}</span>
+          <div class="inv-item-info">
+            <span class="inv-item-name">${t(def.nameKey) || def.nameKey}</span>
+            <span class="inv-item-detail">Estoque: ${qty}</span>
+          </div>
+          <button class="btn-equip-bait ${isEquipped ? 'btn-equipped' : 'btn-secondary'}"
+                  data-bait-id="${baitId}"
+                  aria-pressed="${isEquipped}"
+                  ${isEquipped ? 'disabled' : ''}>
+            ${isEquipped ? t('shop_equipped') : t('shop_equip')}
+          </button>`;
+        if (!isEquipped) {
+          li.querySelector('.btn-equip-bait').addEventListener('click', e => {
+            Inventory.equipBait(e.currentTarget.dataset.baitId);
+            renderInventory();
+          });
+        }
+        baitList.appendChild(li);
+      });
+    }
+  }
+
+  /* ── LOJA ────────────────────────────────────────────────────────────── */
+  function renderShop() {
+    $('shop-coins').textContent = Inventory.coins();
+    const fbEl = $('shop-feedback');
+    fbEl.classList.add('hidden');
+
+    const typeToTab = { bait:'baits', rod:'rods', line:'lines', hook:'hooks', float:'floats' };
+    const equip = Inventory.getEquip();
+    const baits = Inventory.getBaits();
+
+    // Limpa e reconstrói cada aba
+    Object.values(typeToTab).forEach(tab => {
+      $(`shop-tab-${tab}`).innerHTML = '';
+    });
+
+    SHOP_CATALOG.forEach(item => {
+      const tab = typeToTab[item.type];
+      if (!tab) return;
+      const container = $(`shop-tab-${tab}`);
+      const isBait    = item.type === 'bait';
+      const isEquip   = !isBait;
+      const baitId    = isBait ? item.id.replace('bait_','') : null;
+      const equipped  = isEquip && equip[item.type] === item.id;
+      const canAfford = Inventory.coins() >= item.price;
+      const stock     = item.stock;   // null = ilimitado
+
+      const card = document.createElement('div');
+      card.className = 'shop-card';
+      card.setAttribute('role', 'article');
+
+      let tierBadge = '';
+      if (isEquip) {
+        tierBadge = `<span class="shop-tier-badge">${t('shop_tier', item.tier)}</span>`;
+      }
+
+      let actionBtn = '';
+      if (isBait) {
+        actionBtn = `
+          <button class="btn-shop-buy btn-primary"
+                  data-item-id="${item.id}" data-item-type="bait"
+                  ${!canAfford ? 'disabled' : ''}
+                  aria-label="Comprar ${t(item.nameKey)||item.nameKey} por ${item.price} moedas">
+            ${t('shop_buy')} ${t('shop_item_qty', item.qty)} · ${t('shop_price', item.price)}
+          </button>`;
+      } else if (equipped) {
+        actionBtn = `<button class="btn-equipped" disabled>${t('shop_equipped')}</button>`;
+      } else {
+        actionBtn = `
+          <button class="btn-shop-buy btn-primary"
+                  data-item-id="${item.id}" data-item-type="${item.type}"
+                  ${!canAfford ? 'disabled' : ''}
+                  aria-label="Comprar e equipar ${t(item.nameKey)||item.nameKey} por ${item.price} moedas">
+            ${t('shop_buy')} · ${t('shop_price', item.price)}
+          </button>`;
+      }
+
+      card.innerHTML = `
+        <div class="shop-card-header">
+          <span class="shop-item-emoji" aria-hidden="true">${item.emoji}</span>
+          <div class="shop-item-meta">
+            <span class="shop-item-name">${t(item.nameKey) || item.nameKey} ${tierBadge}</span>
+            <span class="shop-item-desc">${t(item.descKey) || ''}</span>
+          </div>
+        </div>
+        ${actionBtn}`;
+
+      card.querySelector('.btn-shop-buy')?.addEventListener('click', e => {
+        const id   = e.currentTarget.dataset.itemId;
+        const type = e.currentTarget.dataset.itemType;
+        _handleShopBuy(id, type, fbEl);
+      });
+
+      container.appendChild(card);
+    });
+  }
+
+  function _handleShopBuy(itemId, itemType, fbEl) {
+    const item = getShopItem(itemId);
+    if (!item) return;
+
+    if (!Inventory.spendCoins(item.price)) {
+      _shopFeedback(fbEl, t('shop_no_coins'), false);
+      // Atualiza saldo visível
+      $('shop-coins').textContent = Inventory.coins();
+      return;
+    }
+
+    if (itemType === 'bait') {
+      const baitId = itemId.replace('bait_','');
+      Inventory.addBaits(baitId, item.qty);
+    } else {
+      // Equipamento: aplica modificadores e persiste no equip
+      const equip = Inventory.getEquip();
+      equip[itemType] = itemId;
+      // Salva modificadores no localStorage para o game loop ler
+      const mods = JSON.parse(localStorage.getItem('bb_gear_mods') || '{}');
+      Object.assign(mods, item.modifiers || {});
+      localStorage.setItem('bb_gear_mods', JSON.stringify(mods));
+      localStorage.setItem('bb_equip', JSON.stringify(equip));
+    }
+
+    $('shop-coins').textContent = Inventory.coins();
+    _shopFeedback(fbEl, t('shop_bought', t(item.nameKey) || item.nameKey), true);
+    renderShop(); // recarrega para atualizar estados dos botões
   }
 
   // ── UI helpers ────────────────────────────────────────────────────────────
