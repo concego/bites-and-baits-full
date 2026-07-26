@@ -176,10 +176,9 @@ const Game = (() => {
       const result = Inventory.sellAll();
       renderInventory();
       if (result.sold > 0) {
-        _shopFeedback(
-          $('shop-feedback'),
-          t('inv_total_label', result.sold, result.coins) + ' vendidos!'
-        );
+        const lbl = t('inv_total_label');
+        const msg = (typeof lbl === 'function' ? lbl(result.sold, result.coins) : `${result.sold} peixes → ${result.coins} 🪙`) + ' vendidos!';
+        _shopFeedback($('inv-feedback'), msg, true);
       }
     });
     $('btn-opt-lang-pt').addEventListener('click', () => selectLang('pt'));
