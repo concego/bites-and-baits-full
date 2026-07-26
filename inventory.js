@@ -381,6 +381,16 @@ const Inventory = (() => {
   /** Retorna array de ids de equipamentos possuídos. */
   function getOwnedEquip() { return _loadOwnedEquip(); }
 
+
+  /** Remove um item de um slot específico (rod/line/hook/float/bait). Slot fica null. */
+  function unequipSlot(slot) {
+    const equip = _loadEquip();
+    if (!(slot in equip)) return false;
+    equip[slot] = null;
+    _saveEquip(equip);
+    return true;
+  }
+
   return {
     addFish,
     getAll,
@@ -401,6 +411,7 @@ const Inventory = (() => {
     equipBait,
     consumeBait,
     addBaits,
+    unequipSlot,
     // Proteção
     isProtected,
     toggleProtect,
