@@ -488,3 +488,4 @@ const Audio = (() => {
            startReel, setReelMode, stopReel, fishResist,
            fishApproach, fishRetreat, tensionAlert,
            fishEscaped, fishTiredSound, fishRecoveredSound };
+})();
