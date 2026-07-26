@@ -54,7 +54,7 @@ const FISH_CATALOG = {
     tiredBase: 3000,
     stamina: 6,          // cansa rápido — peixe pequeno
     recovery: 4000,      // recupera em 4s — mas pouca força de qualquer jeito
-    escapePatience: 12,  // pouca paciência — foge rápido se ignorado
+    escapePatience: 35,  // ~4s de inércia tolerada
     habitat: 'freshwater',
     weightRange: [0.02, 0.12],
     baits: ['worm', 'cricket'],
@@ -73,7 +73,7 @@ const FISH_CATALOG = {
     tiredBase: 4500,
     stamina: 8,          // resistência média
     recovery: 5500,      // janela de 5.5s para aproveitar
-    escapePatience: 16,  // um pouco mais paciente que o lambari
+    escapePatience: 45,  // ~5.4s
     habitat: 'freshwater',
     weightRange: [0.3, 2.5],
     baits: ['worm', 'live_bait', 'cricket'],
@@ -92,7 +92,7 @@ const FISH_CATALOG = {
     tiredBase: 6000,
     stamina: 14,         // boa resistência
     recovery: 5500,      // janela de 5.5s
-    escapePatience: 28,
+    escapePatience: 55,  // ~6.6s
     habitat: 'freshwater',
     weightRange: [0.5, 4.0],
     baits: ['fly', 'spoon', 'worm'],
@@ -111,7 +111,7 @@ const FISH_CATALOG = {
     tiredBase: 9000,
     stamina: 18,         // difícil de cansar
     recovery: 7000,      // janela de 7s — aproveite o cansaço
-    escapePatience: 34,
+    escapePatience: 65,  // ~7.8s
     habitat: 'freshwater',
     weightRange: [2.0, 20.0],
     baits: ['live_bait', 'spoon', 'jig'],
@@ -129,8 +129,8 @@ const FISH_CATALOG = {
     biteWindow: 2000,
     tiredBase: 14000,
     stamina: 22,         // resistência máxima — quase não cansa
-    recovery: 9000,      // janela de 9s — mas ESPERTO ainda consegue
-    escapePatience: 40,  // muito paciente — mas quando resolve ir, vai
+    recovery: 9000,      // janela de 9s
+    escapePatience: 80,  // ~9.6s — muito paciente mas implacável
     habitat: 'freshwater',
     weightRange: [20.0, 200.0],
     baits: ['live_bait', 'jig'],
