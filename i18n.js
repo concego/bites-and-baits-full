@@ -23,6 +23,21 @@ const I18n = (() => {
       btn_shop:         '🏪 Loja',
       // Hub da História
       story_hub_title:    'Modo História',
+      // Hub da Cidade
+      city_hub_title:     '🏙️ Cidade',
+      btn_hub_home:       '🏠 Casa / Terreno',
+      btn_hub_vessel:     '⛵ Estaleiro',
+      // btn_hub_shop já existe
+      // btn_hub_inv já existe
+      // btn_hub_travel já existe (nova rota)
+      travel_title:       '🗺️ Ir Pescar',
+      travel_dest_label:  'Destinos disponíveis',
+      travel_fish_here:   '🎣 Pescar aqui',
+      travel_locked:      '🔒 Embarcação necessária',
+      vessel_title:       '⛵ Estaleiro',
+      coming_soon:        '🚧 Em breve...',
+      btn_back:           '← Voltar',
+
       story_current_map:  'Localização atual',
       btn_hub_fish:       '🎣 Pescar aqui',
       btn_hub_inv:        '🎒 Inventário',
@@ -333,6 +348,18 @@ const I18n = (() => {
       btn_shop:         '🏪 Shop',
       // Story Hub
       story_hub_title:    'Story Mode',
+      // City Hub
+      city_hub_title:     '🏙️ City',
+      btn_hub_home:       '🏠 Home / Land',
+      btn_hub_vessel:     '⛵ Boatyard',
+      travel_title:       '🗺️ Go Fishing',
+      travel_dest_label:  'Available destinations',
+      travel_fish_here:   '🎣 Fish here',
+      travel_locked:      '🔒 Vessel required',
+      vessel_title:       '⛵ Boatyard',
+      coming_soon:        '🚧 Coming soon...',
+      btn_back:           '← Back',
+
       story_current_map:  'Current location',
       btn_hub_fish:       '🎣 Fish here',
       btn_hub_inv:        '🎒 Inventory',
