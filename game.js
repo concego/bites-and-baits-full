@@ -189,12 +189,21 @@ const Game = (() => {
     $('btn-menu').addEventListener('click',  () => goToMenu());
     $('btn-menu2').addEventListener('click', () => goToMenu());
     $('btn-continue').addEventListener('click', () => {
-      // "Pescar de novo" — reinicia a sessão no mesmo modo
       startGame(gameMode);
     });
 
-    // Painel de equipamento (modo normal)
-    $('btn-equip').addEventListener('click', () => openEquipPanel());
+    // ── Barra inferior (modo história) ────────────────────────────────────
+    $('btn-bar-equip').addEventListener('click', () => openEquipPanel());
+    $('btn-bar-shop').addEventListener('click',  () => {
+      // Pausa o jogo se estiver em combate, depois abre loja
+      const wasPlaying = (state !== 'IDLE' && state !== 'WAITING');
+      if (wasPlaying) Sensors.stop();
+      renderShop();
+      showScreen('shop');
+    });
+    $('btn-bar-hub').addEventListener('click',   () => goToMenu());
+
+    // Painel de equipamento
     $('btn-equip-close').addEventListener('click', () => closeEquipPanel());
 
     // Navegação interna do painel
@@ -536,8 +545,9 @@ const Game = (() => {
         if (screens.game && screens.game.classList.contains('active')) {
           sayKey('ready');
         }
-        // Botão de equipamento: visível só no IDLE e no modo normal
-        { const be = $('btn-equip'); if (be) be.classList.toggle('hidden', gameMode !== 'normal'); }
+        // Barra inferior: visível só no modo história
+        { const bar = $('game-bottom-bar'); if (bar) bar.classList.toggle('hidden', gameMode !== 'normal'); }
+        { const btnM = $('btn-menu'); if (btnM) btnM.classList.toggle('hidden', gameMode === 'normal'); }
         break;
 
       case 'CASTING':
@@ -552,8 +562,8 @@ const Game = (() => {
           refreshBaitHud();
         }
 
-        // Esconde botão de equipamento fora do IDLE
-        { const be = $('btn-equip'); if (be) be.classList.add('hidden'); }
+        // Esconde barra inferior durante o cast/combate
+        { const bar = $('game-bottom-bar'); if (bar) bar.classList.add('hidden'); }
 
         setTalkbackSilent(true);
         setLabel(I18n.t('state_casting'));
@@ -963,7 +973,9 @@ const Game = (() => {
 
   function closeEquipPanel() {
     ui.equipPanel.classList.add('hidden');
-    $('btn-equip').focus();
+    // Retorna foco ao botão de equipamento na barra inferior
+    const target = $('btn-bar-equip') || $('btn-menu');
+    if (target) target.focus();
   }
 
   /** Alterna entre a vista de categorias e a de iscas */
