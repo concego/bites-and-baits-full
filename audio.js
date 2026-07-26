@@ -24,7 +24,15 @@ const Audio = (() => {
   };
 
   function init() {
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Reutiliza o contexto existente se já criado (evita erro de múltiplos AudioContext)
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    // Se os buffers já foram carregados, não busca de novo
+    if (Object.keys(buffers).length === Object.keys(FILES).length) {
+      return Promise.resolve();
+    }
     return Promise.all(
       Object.entries(FILES).map(([key, url]) =>
         fetch(url)
