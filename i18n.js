@@ -104,6 +104,14 @@ const I18n = (() => {
       inv_total_label:    (n, coins) => `${n} peixe${n!==1?'s':''} → ${coins} 🪙`,
       // Inventário — novas chaves
       inv_tab_equip:      'Equipamentos',
+      // Inventário — equipar/desequipar
+      inv_equip_btn:      'Equipar',
+      inv_unequip_btn:    'Desequipar',
+      inv_slot_empty_rod:   'Sem vara equipada. Equipe uma vara antes de pescar.',
+      inv_slot_empty_line:  'Sem linha equipada. Equipe uma linha antes de pescar.',
+      inv_slot_empty_hook:  'Sem anzol equipado. Equipe um anzol antes de pescar.',
+      inv_slot_empty_float: 'Sem boia equipada. Equipe uma boia antes de pescar.',
+
       inv_empty_equip:    'Nenhum equipamento no inventário.',
       inv_examine:        'Examinar',
       inv_discard:        'Descartar',
@@ -406,6 +414,14 @@ const I18n = (() => {
       inv_total_label:    (n, coins) => `${n} fish → ${coins} 🪙`,
       // Inventory — new keys
       inv_tab_equip:      'Equipment',
+      // Inventory — equip/unequip
+      inv_equip_btn:      'Equip',
+      inv_unequip_btn:    'Unequip',
+      inv_slot_empty_rod:   'No rod equipped. Equip a rod before fishing.',
+      inv_slot_empty_line:  'No line equipped. Equip a line before fishing.',
+      inv_slot_empty_hook:  'No hook equipped. Equip a hook before fishing.',
+      inv_slot_empty_float: 'No float equipped. Equip a float before fishing.',
+
       inv_empty_equip:    'No equipment in inventory.',
       inv_examine:        'Examine',
       inv_discard:        'Discard',
