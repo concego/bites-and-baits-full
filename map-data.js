@@ -12,6 +12,7 @@ const MAP_CATALOG = {
   rio_doce: {
     id: 'rio_doce',
     nameKey: 'map_rio_doce',
+    emoji:   '🏞️',
     sceneClass: 'map-rio-doce',
     fish: [
       { id: 'lambari',  weight: 0.40 },
