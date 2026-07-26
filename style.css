@@ -1104,3 +1104,12 @@ html, body {
 .a11y-high-contrast .shop-tab.active { background: #111; color: #fff; border-color: #fff; }
 .a11y-high-contrast .coins-display { background: #000; border-color: #ffd700; }
 .a11y-high-contrast .btn-shop-buy  { border: 2px solid #fff; }
+
+/* ── Telas de Inventário e Loja ── */
+#screen-inventory,
+#screen-shop {
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--water-top) 60%, var(--water-bot) 100%);
+  justify-content: flex-start;
+  padding: 0;
+  overflow: hidden;
+}
