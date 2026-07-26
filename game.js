@@ -80,6 +80,7 @@ const Game = (() => {
 
   // ── Inicialização ─────────────────────────────────────────────────────────
   function init() {
+    console.log("[BB] init() iniciou");
     screens = {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
@@ -158,7 +159,7 @@ const Game = (() => {
     // ── Hub da História ────────────────────────────────────────────────────
     $('btn-hub-fish').addEventListener('click',   () => startGame('normal'));
     $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); });
-    $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop'); });
+    $('btn-hub-shop').addEventListener('click',   () => { console.log('[BB] btn-hub-shop clicado'); try { renderShop(); } catch(e) { console.error('[BB] renderShop erro:', e); } try { showScreen('shop'); } catch(e) { console.error('[BB] showScreen erro:', e); } });
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
 
     // ── Loja (acesso via hub) ──────────────────────────────────────────────
@@ -1264,6 +1265,7 @@ const Game = (() => {
 
   /* ── LOJA ────────────────────────────────────────────────────────────── */
   function renderShop() {
+    console.log('[BB] renderShop chamado, coins:', Inventory.coins());
     $('shop-coins').textContent = Inventory.coins();
     const fbEl = $('shop-feedback');
     fbEl.classList.add('hidden');
@@ -1370,6 +1372,7 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
+    console.log('[BB] showScreen:', name, 'target:', screens[name]);
     // Desativa e bloqueia TODAS as telas conhecidas
     Object.entries(screens).forEach(([, s]) => {
       if (!s) return;
