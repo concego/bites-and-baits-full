@@ -1603,9 +1603,12 @@ const Game = (() => {
           btn.textContent = '🗺️ Ir';
           (function(mapId) {
             btn.addEventListener('click', function() {
-              document.title = 'BTN_GO:' + mapId;
+              var _mc = window.MAP_CATALOG || MAP_CATALOG;
+              var dest = _mc ? _mc[mapId] : null;
+              var dbgEl = document.getElementById('dbg');
+              if(dbgEl) dbgEl.textContent = 'BTN_GO=' + mapId + ' dest=' + (dest?'OK':'NULL') + ' req=' + (dest?dest.requiredBoat:'N/A');
+              document.title = 'BTN_GO:' + mapId + ':' + (dest && dest.requiredBoat ? 'boat' : 'noboat');
               setActiveMap(mapId);
-              var dest = MAP_CATALOG[mapId];
               if (dest && dest.requiredBoat) { showBoatNav(mapId); }
               else { showScreen('travel'); renderTravel(); }
             });
