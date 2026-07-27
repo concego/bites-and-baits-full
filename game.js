@@ -2273,12 +2273,21 @@ const Game = (() => {
     Audio.stopReel();
   }
 
-  // Modo de teste: ?testcoins=N injeta moedas no localStorage
+  // Modo de teste: ?testcoins=N injeta moedas | ?testboat=canoe compra barco
   (function() {
-    const p = new URLSearchParams(window.location.search).get('testcoins');
-    if (p) {
-      const n = parseInt(p);
+    const params = new URLSearchParams(window.location.search);
+    const coins  = params.get('testcoins');
+    const boat   = params.get('testboat');
+    if (coins) {
+      const n = parseInt(coins);
       if (!isNaN(n)) localStorage.setItem('bb_coins', String(n));
+    }
+    if (boat) {
+      // Garante que o barco está na lista de possuídos e equipado
+      let boats = [];
+      try { boats = JSON.parse(localStorage.getItem('bb_boats') || '[]'); } catch {}
+      if (!boats.includes(boat)) { boats.push(boat); localStorage.setItem('bb_boats', JSON.stringify(boats)); }
+      localStorage.setItem('bb_boat_eq', boat);
     }
   })();
 
