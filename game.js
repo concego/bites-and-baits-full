@@ -161,14 +161,14 @@ const Game = (() => {
 
     // ── Hub da História ────────────────────────────────────────────────────
     // Hub da cidade
-    $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop'); });
-    $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); });
-    $('btn-hub-travel').addEventListener('click', () => { renderTravel(); showScreen('travel'); });
+    $('btn-hub-shop').addEventListener('click',   () => { showScreen('shop'); renderShop(); });
+    $('btn-hub-inv').addEventListener('click',    () => { showScreen('inventory'); renderInventory(); });
+    $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); renderTravel(); });
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
     // Tela de viagem
     $('btn-travel-back').addEventListener('click',() => showStoryHub());
     // Estaleiro
-    $('btn-hub-vessel').addEventListener('click', () => { renderVessel(); showScreen('vessel'); });
+    $('btn-hub-vessel').addEventListener('click', () => { showScreen('vessel'); renderVessel(); });
     $('btn-vessel-back').addEventListener('click',() => showStoryHub());
     // Navegação do barco
     $('btn-boat-return').addEventListener('click', () => returnToHubFromBoat());
