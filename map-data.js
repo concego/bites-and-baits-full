@@ -23,6 +23,51 @@ const MAP_CATALOG = {
     ],
   },
 
+
+  lago_central: {
+    id: 'lago_central',
+    nameKey: 'map_lago_central',
+    emoji: '🚣',
+    requiredBoat: 'canoe',          // barco mínimo para acessar
+    zones: [
+      { id: 'raso',       nameKey: 'zone_raso',       emoji: '🌊' },
+      { id: 'meio',       nameKey: 'zone_meio',       emoji: '🌀' },
+      { id: 'fundo',      nameKey: 'zone_fundo',      emoji: '🌑' },
+    ],
+    // pool por zona + período (dawn | morning | afternoon | evening)
+    fishByZonePeriod: {
+      raso: {
+        dawn:      [ { id: 'lambari', weight: 0.45 }, { id: 'tilapia',  weight: 0.30 }, { id: 'cara',    weight: 0.15 }, { id: 'piau',    weight: 0.10 } ],
+        morning:   [ { id: 'lambari', weight: 0.40 }, { id: 'tilapia',  weight: 0.35 }, { id: 'cara',    weight: 0.15 }, { id: 'piau',    weight: 0.10 } ],
+        afternoon: [ { id: 'tilapia', weight: 0.40 }, { id: 'cara',     weight: 0.30 }, { id: 'lambari', weight: 0.20 }, { id: 'piau',    weight: 0.10 } ],
+        evening:   [ { id: 'cara',    weight: 0.40 }, { id: 'lambari',  weight: 0.30 }, { id: 'traira',  weight: 0.20 }, { id: 'tilapia', weight: 0.10 } ],
+      },
+      meio: {
+        dawn:      [ { id: 'curimbata', weight: 0.30 }, { id: 'piau',     weight: 0.25 }, { id: 'tilapia',  weight: 0.20 }, { id: 'traira',   weight: 0.15 }, { id: 'tucunare', weight: 0.10 } ],
+        morning:   [ { id: 'piau',      weight: 0.30 }, { id: 'curimbata',weight: 0.25 }, { id: 'tilapia',  weight: 0.20 }, { id: 'tucunare', weight: 0.15 }, { id: 'traira',   weight: 0.10 } ],
+        afternoon: [ { id: 'tilapia',   weight: 0.35 }, { id: 'curimbata',weight: 0.25 }, { id: 'piau',     weight: 0.20 }, { id: 'tucunare', weight: 0.12 }, { id: 'traira',   weight: 0.08 } ],
+        evening:   [ { id: 'traira',    weight: 0.35 }, { id: 'tucunare', weight: 0.25 }, { id: 'curimbata',weight: 0.20 }, { id: 'piau',     weight: 0.12 }, { id: 'lambari',  weight: 0.08 } ],
+      },
+      fundo: {
+        dawn:      [ { id: 'tucunare',      weight: 0.35 }, { id: 'traira',           weight: 0.25 }, { id: 'curimbata',         weight: 0.20 }, { id: 'peixe_dourado', weight: 0.12 }, { id: 'piau',    weight: 0.08 } ],
+        morning:   [ { id: 'traira',        weight: 0.30 }, { id: 'tucunare',         weight: 0.30 }, { id: 'curimbata',         weight: 0.20 }, { id: 'peixe_dourado', weight: 0.12 }, { id: 'cara',    weight: 0.08 } ],
+        afternoon: [ { id: 'curimbata',     weight: 0.35 }, { id: 'traira',           weight: 0.25 }, { id: 'tucunare',          weight: 0.20 }, { id: 'peixe_dourado', weight: 0.10 }, { id: 'tilapia', weight: 0.10 } ],
+        evening:   [ { id: 'peixe_dourado', weight: 0.30 }, { id: 'tucunare',         weight: 0.30 }, { id: 'traira',            weight: 0.25 }, { id: 'curimbata',     weight: 0.10 }, { id: 'cara',    weight: 0.05 } ],
+      },
+    },
+    // fallback genérico (caso zona/período não resolvam)
+    fish: [
+      { id: 'lambari',      weight: 0.20 },
+      { id: 'tilapia',      weight: 0.18 },
+      { id: 'cara',         weight: 0.16 },
+      { id: 'piau',         weight: 0.14 },
+      { id: 'curimbata',    weight: 0.12 },
+      { id: 'traira',       weight: 0.10 },
+      { id: 'tucunare',     weight: 0.06 },
+      { id: 'peixe_dourado',weight: 0.04 },
+    ],
+  },
+
   lago_margem: {
     id: 'lago_margem',
     nameKey: 'map_lago_margem',
@@ -85,115 +130,7 @@ const MAP_CATALOG = {
   //   id, nameKey, sceneClass,
   //   fish: [{ id, weight }, ...]
   // }
-
-  lago_central: {
-    id: 'lago_central',
-    nameKey: 'map_lago_central',
-    emoji:   '🌊',
-    sceneClass: 'map-lago-central',
-    requiredVessel: 'canoe',   // mínimo: canoa
-    // Este mapa usa zonas de pesca — cada zona tem seu próprio fishByPeriod
-    zones: [
-      {
-        id: 'raso',
-        nameKey: 'zone_raso',
-        emoji: '🪨',
-        distanceSteps: 2,   // passos de remo até chegar
-        fishByPeriod: {
-          dawn:      [
-            { id: 'cara',      weight: 0.45 },
-            { id: 'lambari',   weight: 0.35 },
-            { id: 'tilapia',   weight: 0.20 },
-          ],
-          morning:   [
-            { id: 'lambari',   weight: 0.40 },
-            { id: 'tilapia',   weight: 0.35 },
-            { id: 'cara',      weight: 0.25 },
-          ],
-          afternoon: [
-            { id: 'tilapia',   weight: 0.50 },
-            { id: 'lambari',   weight: 0.30 },
-            { id: 'cara',      weight: 0.20 },
-          ],
-          evening:   [
-            { id: 'cara',      weight: 0.50 },
-            { id: 'traira',    weight: 0.30 },
-            { id: 'lambari',   weight: 0.20 },
-          ],
-        },
-      },
-      {
-        id: 'meio',
-        nameKey: 'zone_meio',
-        emoji: '🌀',
-        distanceSteps: 4,
-        fishByPeriod: {
-          dawn:      [
-            { id: 'traira',    weight: 0.35 },
-            { id: 'curimbata', weight: 0.30 },
-            { id: 'piau',      weight: 0.20 },
-            { id: 'tilapia',   weight: 0.15 },
-          ],
-          morning:   [
-            { id: 'curimbata', weight: 0.35 },
-            { id: 'piau',      weight: 0.30 },
-            { id: 'tilapia',   weight: 0.20 },
-            { id: 'traira',    weight: 0.15 },
-          ],
-          afternoon: [
-            { id: 'piau',      weight: 0.40 },
-            { id: 'curimbata', weight: 0.30 },
-            { id: 'tilapia',   weight: 0.20 },
-            { id: 'cara',      weight: 0.10 },
-          ],
-          evening:   [
-            { id: 'traira',    weight: 0.40 },
-            { id: 'piau',      weight: 0.30 },
-            { id: 'curimbata', weight: 0.20 },
-            { id: 'tucunare',  weight: 0.10 },
-          ],
-        },
-      },
-      {
-        id: 'fundo',
-        nameKey: 'zone_fundo',
-        emoji: '🌑',
-        distanceSteps: 6,
-        fishByPeriod: {
-          dawn:      [
-            { id: 'tucunare',               weight: 0.40 },
-            { id: 'traira',                 weight: 0.30 },
-            { id: 'peixe_dourado_ornamental', weight: 0.30 },
-          ],
-          morning:   [
-            { id: 'tucunare',               weight: 0.35 },
-            { id: 'peixe_dourado_ornamental', weight: 0.35 },
-            { id: 'traira',                 weight: 0.30 },
-          ],
-          afternoon: [
-            { id: 'peixe_dourado_ornamental', weight: 0.45 },
-            { id: 'tucunare',               weight: 0.35 },
-            { id: 'curimbata',              weight: 0.20 },
-          ],
-          evening:   [
-            { id: 'tucunare',               weight: 0.50 },
-            { id: 'peixe_dourado_ornamental', weight: 0.35 },
-            { id: 'traira',                 weight: 0.15 },
-          ],
-        },
-      },
-    ],
-    // pool genérico fallback (caso sem zona ativa)
-    fish: [
-      { id: 'lambari',   weight: 0.20 },
-      { id: 'tilapia',   weight: 0.20 },
-      { id: 'curimbata', weight: 0.20 },
-      { id: 'piau',      weight: 0.15 },
-      { id: 'traira',    weight: 0.12 },
-      { id: 'tucunare',  weight: 0.08 },
-      { id: 'peixe_dourado_ornamental', weight: 0.05 },
-    ],
-  },};
+};
 
 /** Array ordenado de mapas para UI (renderTravel, etc.) */
 const MAPS = Object.values(MAP_CATALOG);
@@ -213,19 +150,6 @@ function _getPool(mapObj) {
   return _mapPools[mapObj.id];
 }
 
-/** Sorteia um peixe da zona de barco ativa */
-function pickFishFromZone(zone) {
-  if (!zone) return null;
-  const period     = (typeof GameTime !== 'undefined') ? GameTime.period() : 'morning';
-  const poolSource = zone.fishByPeriod?.[period] || zone.fishByPeriod?.morning || [];
-  if (!poolSource.length) return null;
-  const cacheKey = 'zone_' + zone.id + '_' + period;
-  if (!_mapPools[cacheKey]) {
-    const profiles = poolSource.map(e => ({ ...FISH_CATALOG[e.id], weight: e.weight }));
-    _mapPools[cacheKey] = CreatureProfile.createPool(profiles);
-  }
-  return _mapPools[cacheKey].roll();
-}
 /** Retorna o objeto de mapa ativo (padrão: rio_doce) */
 function getActiveMap() {
   const saved = localStorage.getItem('bb_map') || 'lago_margem';
@@ -236,17 +160,25 @@ function getActiveMap() {
  *  Se o mapa tiver fishByPeriod e o sistema de tempo estiver ativo,
  *  usa o pool do período atual; caso contrário usa o pool genérico (fish).
  */
-function pickFishFromMap(mapObj) {
+/**
+ * Sorteia um peixe do mapa.
+ * @param {object} mapObj  - entrada do MAP_CATALOG
+ * @param {string} [zoneId] - zona ativa (apenas mapas com barco)
+ */
+function pickFishFromMap(mapObj, zoneId) {
   let poolSource = mapObj.fish;
-  if (mapObj.fishByPeriod && typeof GameTime !== 'undefined') {
-    const period = GameTime.period();            // 'dawn'|'morning'|'afternoon'|'evening'
+  const period = (typeof GameTime !== 'undefined') ? GameTime.period() : 'morning';
+
+  if (mapObj.fishByZonePeriod && zoneId) {
+    // Mapa com barco: pool por zona + período
+    const zonePool = mapObj.fishByZonePeriod[zoneId];
+    if (zonePool) poolSource = zonePool[period] || zonePool.morning || mapObj.fish;
+  } else if (mapObj.fishByPeriod) {
+    // Mapa sem barco: pool só por período
     poolSource = mapObj.fishByPeriod[period] || mapObj.fish;
   }
-  // Gera chave de cache incluindo o período
-  const cacheKey = mapObj.id + '_' + (
-    (mapObj.fishByPeriod && typeof GameTime !== 'undefined')
-      ? GameTime.period() : 'default'
-  );
+
+  const cacheKey = mapObj.id + '_' + (zoneId || 'nozone') + '_' + period;
   if (!_mapPools[cacheKey]) {
     const profiles = poolSource.map(entry => ({
       ...FISH_CATALOG[entry.id],
