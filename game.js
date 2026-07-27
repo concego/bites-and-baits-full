@@ -169,6 +169,7 @@ const Game = (() => {
     const _screenTravel = $('screen-travel');
     if (_screenTravel) {
       _screenTravel.addEventListener('click', e => {
+        e.preventDefault();
         window._tclick2 = 'JS:' + e.target.tagName;
         document.title = 'TRAVEL_CLICK:' + e.target.tagName;
         const goEl   = e.target.closest('[data-action="go"]');
@@ -1588,6 +1589,7 @@ const Game = (() => {
       if (actionsDiv) {
         if (isActive) {
           const btn = document.createElement('button');
+          btn.type = 'button';
           btn.className = 'btn-primary btn-sm';
           btn.setAttribute('aria-label', (I18n.t('travel_fish_here') || '🎣') + ' — ' + (I18n.t(m.nameKey) || m.id));
           btn.setAttribute('data-action', 'fish');
@@ -1595,13 +1597,12 @@ const Game = (() => {
           btn.textContent = I18n.t('travel_fish_here') || '🎣 Pescar aqui';
           actionsDiv.appendChild(btn);
         } else if (hasVessel) {
-          const btn = document.createElement('a');
+          const btn = document.createElement('button');
+          btn.type = 'button';
           btn.className = 'btn-secondary btn-sm';
-          btn.setAttribute('href', '#go-' + m.id);
           btn.setAttribute('aria-label', 'Ir para ' + (I18n.t(m.nameKey) || m.id));
           btn.setAttribute('data-action', 'go');
           btn.setAttribute('data-map-id', m.id);
-          btn.setAttribute('role', 'button');
           btn.textContent = '🗺️ Ir';
           actionsDiv.appendChild(btn);
         } else {
