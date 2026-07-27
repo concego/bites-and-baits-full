@@ -1368,24 +1368,19 @@ const Game = (() => {
 
   /** Abre a tela de navegação para o mapa selecionado */
   function showBoatNav(mapId) {
-    try {
-      const map = MAP_CATALOG[mapId];
-      if (!map) { console.error('[showBoatNav] mapa não encontrado:', mapId); return; }
-      _boatState = { mapId, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
-      Inventory.clearHold();
-
-      // Zona padrão: primeira do mapa
-      const firstZone = map.zones && map.zones[0];
-      if (firstZone) _selectZone(firstZone.id, true);
-
-      _updateHoldHUD();
-      _updateBoatNavUI();
-      console.log('[showBoatNav] chamando showScreen boatNav, screens:', Object.keys(screens));
-      showScreen('boatNav');
-      console.log('[showBoatNav] showScreen chamado');
-    } catch(err) {
-      console.error('[showBoatNav] erro:', err);
-    }
+    const map = MAP_CATALOG[mapId];
+    if (!map) { document.title = 'ERR:no_map:' + mapId; return; }
+    document.title = 'showBoatNav:' + mapId;
+    _boatState = { mapId, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
+    Inventory.clearHold();
+    const firstZone = map.zones && map.zones[0];
+    document.title = 'firstZone:' + (firstZone ? firstZone.id : 'NONE');
+    if (firstZone) _selectZone(firstZone.id, true);
+    _updateHoldHUD();
+    _updateBoatNavUI();
+    document.title = 'calling_showScreen_boatNav';
+    showScreen('boatNav');
+    document.title = 'after_showScreen_boatNav';
   }
 
   function _selectZone(zoneId, immediate) {
