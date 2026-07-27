@@ -93,6 +93,7 @@ const Game = (() => {
       shop:         $('screen-shop'),
       travel:       $('screen-travel'),
       vessel:       $('screen-vessel'),
+      boatNav:      $('screen-boat-nav'),
     };
 
     // Garante que só screen-lang está ativa no carregamento inicial
@@ -1527,7 +1528,6 @@ const Game = (() => {
 
     // Barco do jogador — vem do Inventory
     const _ownedBoats = Inventory.getBoats();
-    console.log('[Travel] boats:', _ownedBoats);
     MAPS.forEach(m => {
       const isActive  = m.id === map.id;
       // Mapa com requiredBoat: verificar se jogador tem algum barco que acessa este mapa
