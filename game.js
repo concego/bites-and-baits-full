@@ -2218,6 +2218,7 @@ const Game = (() => {
       return;
     }
     target.classList.add('active');
+    const dbg = document.getElementById('dbg'); if(dbg) dbg.textContent = 'screen=' + name + ' target=' + (target ? target.id : 'NULL');
 
     requestAnimationFrame(() => {
       const heading = target.querySelector('h2');
