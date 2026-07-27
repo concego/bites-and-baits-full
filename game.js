@@ -167,33 +167,7 @@ const Game = (() => {
     $('btn-hub-inv').addEventListener('click',    () => { showScreen('inventory'); renderInventory(); });
     $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); renderTravel(); });
 
-    // Listener no screen-travel (elemento HTML estático, inert gerenciado pelo showScreen)
-    const _screenTravel = $('screen-travel');
-    if (_screenTravel) {
-      _screenTravel.addEventListener('click', e => {
-        e.preventDefault();
-        window._tclick2 = 'JS:' + e.target.tagName;
-        document.title = 'TRAVEL_CLICK:' + e.target.tagName;
-        const goEl   = e.target.closest('[data-action="go"]');
-        const fishEl = e.target.closest('[data-action="fish"]');
-        if (goEl) {
-          const id = goEl.getAttribute('data-map-id');
-          const mDest = MAP_CATALOG ? MAP_CATALOG[id] : null;
-          const dbg2 = document.getElementById('dbg');
-          if (dbg2) dbg2.textContent = 'id=' + id + ' MAP_CATALOG=' + (typeof MAP_CATALOG) + ' mDest=' + (mDest ? 'OK' : 'NULL') + ' req=' + (mDest ? mDest.requiredBoat : 'N/A');
-          setActiveMap(id);
-          if (mDest && mDest.requiredBoat) {
-            showBoatNav(id);
-          }
-          else { showScreen('travel'); renderTravel(); }
-        }
-        if (fishEl) {
-          const mActive = getActiveMap();
-          if (mActive && mActive.requiredBoat) { showBoatNav(mActive.id); }
-          else { startGame('normal'); }
-        }
-      });
-    }
+    // screen-travel: listeners registrados diretamente nos botões em renderTravel()
 
 
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
