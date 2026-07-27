@@ -1594,6 +1594,8 @@ const Game = (() => {
           btn.className = 'btn-secondary btn-sm';
           btn.setAttribute('aria-label', 'Ir para ' + (I18n.t(m.nameKey) || m.id));
           btn.setAttribute('data-travel-go', m.id);
+          // onclick inline como fallback absoluto:
+          btn.setAttribute('onclick', `window.__bb&&(window.__bb.setActiveMap('${m.id}'),window.__bb.showBoatNav?window.__bb.showBoatNav('${m.id}'):window.__bb.showScreen('boatNav'));`);
           btn.textContent = '🗺️ Ir';
           actionsDiv.appendChild(btn);
         } else {
@@ -2297,6 +2299,9 @@ const Game = (() => {
   } else {
     init();
   }
+  // Expor funções críticas globalmente para onclick inline
+  window.__bb = { showBoatNav, setActiveMap, renderTravel, startGame, showScreen };
+
   return {
     state:       () => state,
     startNormal: () => startGame('normal'),
