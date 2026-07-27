@@ -178,13 +178,12 @@ const Game = (() => {
         const fishEl = e.target.closest('[data-action="fish"]');
         if (goEl) {
           const id = goEl.getAttribute('data-map-id');
-          const mDest = MAP_CATALOG[id];
+          const mDest = MAP_CATALOG ? MAP_CATALOG[id] : null;
+          const dbg2 = document.getElementById('dbg');
+          if (dbg2) dbg2.textContent = 'id=' + id + ' MAP_CATALOG=' + (typeof MAP_CATALOG) + ' mDest=' + (mDest ? 'OK' : 'NULL') + ' req=' + (mDest ? mDest.requiredBoat : 'N/A');
           setActiveMap(id);
-          document.title = 'goEl:' + id + ':req=' + (mDest ? mDest.requiredBoat : 'NO_MAP');
           if (mDest && mDest.requiredBoat) {
-            document.title = 'FORCING_boatNav';
-            showScreen('boatNav');
-            document.title = 'AFTER_boatNav';
+            showBoatNav(id);
           }
           else { showScreen('travel'); renderTravel(); }
         }
