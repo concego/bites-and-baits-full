@@ -169,7 +169,7 @@ const Game = (() => {
     const _travelList = $('travel-dest-list');
     if (_travelList) {
       _travelList.addEventListener('click', e => {
-        console.log('[travelList] click target:', e.target.tagName, e.target.className);
+        document.title = 'LIST_CLICK:' + e.target.tagName + ':' + e.target.className;
         const goEl   = e.target.closest('[data-action="go"]');
         const fishEl = e.target.closest('[data-action="fish"]');
         if (goEl) {
@@ -1547,6 +1547,7 @@ const Game = (() => {
 
   /** Renderiza a tela de seleção de destino */
   function renderTravel() {
+    document.title = 'renderTravel@' + Date.now();
     const map     = getActiveMap();
     const nameEl  = $('travel-current-name');
     const emojiEl = $('travel-current-emoji');
