@@ -1348,7 +1348,10 @@ const Game = (() => {
 
   /** Abre a tela de navegação para o mapa selecionado */
   function showBoatNav(mapId) {
+    // DIAGNÓSTICO: modificar h2 da travel para mostrar checkpoint
+    const _h2 = document.querySelector('#screen-travel h2');
     const _d = s => {
+      if(_h2) _h2.textContent = 'BN:' + s;
       document.title = 'BN:' + s;
       const el = document.getElementById('dbg');
       if(el) { el.textContent = 'BN:' + s; el.setAttribute('data-bn', s); }
