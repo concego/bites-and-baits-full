@@ -1613,6 +1613,10 @@ const Game = (() => {
 
       list.appendChild(li);
     });
+
+    // Garantir que nenhum filho do list tem inert residual
+    list.querySelectorAll('[inert]').forEach(el => el.removeAttribute('inert'));
+    console.log('[renderTravel] renderizado', list.children.length, 'destinos, inert limpos');
   }
 
   // ── Loja / Inventário ─────────────────────────────────────────────────────
