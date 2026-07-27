@@ -200,92 +200,88 @@
       <button id="btn-travel-back" class="btn-ghost" data-i18n="btn_back"></button>
     </div>
 
-    <!-- ── Estaleiro (stub) ───────────────────────────────────────────── -->
+    <!-- ── Estaleiro ────────────────────────────────────────────────── -->
     <div id="screen-vessel" class="screen" role="dialog" aria-modal="true"
          aria-labelledby="vessel-title">
       <header class="panel-header">
         <h2 id="vessel-title" data-i18n="vessel_title"></h2>
+        <div class="hub-hud-coins" aria-live="polite">
+          <span aria-hidden="true">🪙</span>
+          <span id="vessel-coins">0</span>
+        </div>
       </header>
 
-      <!-- Embarcação atual do jogador -->
-      <section class="vessel-owned" aria-label="Embarcação atual">
-        <p class="vessel-owned-label" data-i18n="vessel_owned_label"></p>
-        <div id="vessel-current" class="vessel-current-card">
-          <!-- preenchido por renderVessel() -->
-        </div>
-      </section>
-
-      <!-- Lista de embarcações disponíveis para compra -->
-      <section class="vessel-shop" aria-label="Comprar embarcação">
-        <ul id="vessel-list" class="vessel-list" aria-label="Embarcações disponíveis">
-          <!-- preenchido por renderVessel() -->
+      <!-- Suas embarcações -->
+      <section aria-labelledby="vessel-owned-lbl">
+        <h3 id="vessel-owned-lbl" data-i18n="vessel_owned_title" class="section-label"></h3>
+        <ul id="vessel-owned-list" class="vessel-list" role="list">
+          <!-- preenchido por JS -->
         </ul>
       </section>
 
-      <div id="vessel-msg" class="shop-msg" aria-live="polite" aria-atomic="true"></div>
+      <!-- Comprar embarcações -->
+      <section aria-labelledby="vessel-buy-lbl">
+        <h3 id="vessel-buy-lbl" data-i18n="vessel_buy_title" class="section-label"></h3>
+        <ul id="vessel-buy-list" class="vessel-list" role="list">
+          <!-- preenchido por JS -->
+        </ul>
+      </section>
+
       <button id="btn-vessel-back" class="btn-ghost" data-i18n="btn_back"></button>
     </div>
 
-    <!-- ── Tela de Navegação de Barco ────────────────────────────────────── -->
-    <div id="screen-boat-nav" class="screen" role="main"
+    <!-- ── Navegação do Barco ─────────────────────────────────────────── -->
+    <div id="screen-boat-nav" class="screen" role="dialog" aria-modal="true"
          aria-labelledby="boat-nav-title">
-      <header class="panel-header boat-nav-header">
+      <header class="panel-header">
         <h2 id="boat-nav-title" data-i18n="boat_nav_title"></h2>
-        <!-- HUD do porão -->
-        <div class="boat-hold-hud" aria-label="Porão">
-          <span data-i18n="boat_hold_label"></span>
-          <span id="boat-hold-count">0</span>
-          <span>/</span>
-          <span id="boat-hold-max">0</span>
+        <!-- HUD porão -->
+        <div class="hold-hud" aria-live="polite" aria-label="Porão">
+          <span aria-hidden="true">📦</span>
+          <span id="hold-hud-used">0</span>/<span id="hold-hud-cap">0</span>
         </div>
       </header>
 
       <!-- Zona atual -->
-      <div class="boat-zone-display" aria-live="polite">
-        <p class="boat-zone-label" data-i18n="boat_zone_label"></p>
-        <p id="boat-zone-name" class="boat-zone-name"></p>
+      <div class="boat-zone-info" aria-live="polite">
+        <span class="boat-zone-label" data-i18n="boat_nav_current_zone"></span>
+        <span id="boat-current-zone-name" class="boat-zone-name">—</span>
       </div>
 
       <!-- Sonar / Radar -->
-      <div id="boat-sonar" class="boat-sonar" aria-label="Sonar" aria-hidden="true">
-        <div class="sonar-ring sonar-ring--3"></div>
-        <div class="sonar-ring sonar-ring--2"></div>
-        <div class="sonar-ring sonar-ring--1"></div>
-        <div id="sonar-blip" class="sonar-blip"></div>
+      <div id="boat-sonar" class="boat-sonar" aria-hidden="true">
+        <div class="sonar-ring sonar-ring-3"></div>
+        <div class="sonar-ring sonar-ring-2"></div>
+        <div class="sonar-ring sonar-ring-1"></div>
+        <div class="sonar-dot"></div>
       </div>
+      <p id="boat-sonar-msg" class="boat-sonar-msg" aria-live="assertive"></p>
 
-      <!-- Feedback de remada -->
-      <p id="boat-row-status" class="boat-row-status" aria-live="assertive" aria-atomic="true"></p>
+      <!-- Status de navegação -->
+      <p id="boat-nav-status" class="boat-nav-status" aria-live="polite"></p>
 
-      <!-- Ações -->
+      <!-- Botões de ação -->
       <div class="boat-actions">
-        <button id="btn-boat-zones" class="btn-secondary" data-i18n="boat_zones_btn"></button>
-        <button id="btn-boat-cast"  class="btn-primary"   data-i18n="boat_cast_hint" disabled></button>
-        <button id="btn-boat-hub"   class="btn-ghost"     data-i18n="boat_return_hub"></button>
+        <button id="btn-boat-zones" class="btn-primary" data-i18n="boat_nav_zones_btn"></button>
+        <button id="btn-boat-cast" class="btn-primary hidden" data-i18n="travel_fish_here"></button>
+        <button id="btn-boat-return" class="btn-ghost" data-i18n="boat_nav_return"></button>
       </div>
 
-      <!-- Modal: lista de zonas -->
-      <div id="boat-zones-modal" class="modal-overlay hidden" role="dialog"
-           aria-modal="true" aria-labelledby="zones-modal-title">
-        <div class="modal-box">
-          <h3 id="zones-modal-title" data-i18n="boat_zones_btn"></h3>
-          <ul id="zones-list" class="zones-list"></ul>
-          <button id="btn-zones-close" class="btn-ghost" data-i18n="btn_back"></button>
-        </div>
+      <!-- Modal de seleção de zona -->
+      <div id="boat-zone-modal" class="zone-modal hidden" role="dialog"
+           aria-modal="true" aria-labelledby="boat-zone-modal-title">
+        <h3 id="boat-zone-modal-title" data-i18n="boat_nav_zones_title"></h3>
+        <ul id="boat-zone-list" class="zone-list" role="list"></ul>
+        <button id="btn-zone-modal-close" class="btn-ghost" data-i18n="btn_back"></button>
       </div>
 
-      <!-- Modal: porão cheio -->
-      <div id="boat-hold-full-modal" class="modal-overlay hidden" role="dialog"
+      <!-- Modal de porão cheio -->
+      <div id="hold-full-modal" class="zone-modal hidden" role="dialog"
            aria-modal="true" aria-labelledby="hold-full-title">
-        <div class="modal-box">
-          <h3 id="hold-full-title" data-i18n="boat_hold_full"></h3>
-          <p data-i18n="boat_discard_prompt"></p>
-          <div id="hold-discard-info" class="hold-discard-info"></div>
-          <div class="modal-actions">
-            <button id="btn-hold-discard" class="btn-primary"   data-i18n="boat_discard_confirm"></button>
-            <button id="btn-hold-keep"    class="btn-ghost"     data-i18n="boat_discard_cancel"></button>
-          </div>
-        </div>
+        <h3 id="hold-full-title" data-i18n="hold_full"></h3>
+        <p data-i18n="hold_discard_prompt"></p>
+        <ul id="hold-discard-list" class="zone-list" role="list"></ul>
+        <button id="btn-hold-return" class="btn-ghost" data-i18n="hold_keep_btn"></button>
       </div>
     </div>
 
