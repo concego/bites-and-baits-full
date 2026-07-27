@@ -1609,14 +1609,26 @@ const Game = (() => {
           btn.textContent = '🗺️ Ir';
           (function(mapId) {
             btn.addEventListener('click', function() {
-              var _mc = window.MAP_CATALOG || MAP_CATALOG;
-              var dest = _mc ? _mc[mapId] : null;
               var dbgEl = document.getElementById('dbg');
-              if(dbgEl) dbgEl.textContent = 'BTN_GO=' + mapId + ' dest=' + (dest?'OK':'NULL') + ' req=' + (dest?dest.requiredBoat:'N/A');
-              document.title = 'BTN_GO:' + mapId + ':' + (dest && dest.requiredBoat ? 'boat' : 'noboat');
+              if(dbgEl) dbgEl.textContent = 'INLINE_GO=' + mapId;
+              document.title = 'INLINE_GO:' + mapId;
               setActiveMap(mapId);
-              if (dest && dest.requiredBoat) { showBoatNav(mapId); }
-              else { showScreen('travel'); renderTravel(); }
+              // Inline do showBoatNav para diagnóstico:
+              var _map = MAP_CATALOG[mapId];
+              if(dbgEl) dbgEl.textContent = 'INLINE_map=' + (_map ? 'OK' : 'NULL');
+              if (!_map) { showScreen('travel'); renderTravel(); return; }
+              _boatState = { mapId: mapId, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
+              if(dbgEl) dbgEl.textContent = 'INLINE_state_set';
+              Inventory.clearHold();
+              var _fz = _map.zones && _map.zones[0];
+              if(dbgEl) dbgEl.textContent = 'INLINE_fz=' + (_fz ? _fz.id : 'NONE');
+              if (_fz) _selectZone(_fz.id, true);
+              if(dbgEl) dbgEl.textContent = 'INLINE_after_selectZone';
+              _updateHoldHUD();
+              _updateBoatNavUI();
+              if(dbgEl) dbgEl.textContent = 'INLINE_calling_showScreen';
+              showScreen('boatNav');
+              if(dbgEl) dbgEl.textContent = 'INLINE_done';
             });
           }(m.id));
           actionsDiv.appendChild(btn);
