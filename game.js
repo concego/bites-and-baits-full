@@ -169,6 +169,7 @@ const Game = (() => {
     const _screenTravel = $('screen-travel');
     if (_screenTravel) {
       _screenTravel.addEventListener('click', e => {
+        window._tclick2 = 'JS:' + e.target.tagName;
         document.title = 'TRAVEL_CLICK:' + e.target.tagName;
         const goEl   = e.target.closest('[data-action="go"]');
         const fishEl = e.target.closest('[data-action="fish"]');
