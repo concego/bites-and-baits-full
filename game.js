@@ -163,18 +163,17 @@ const Game = (() => {
     // Hub da cidade
     $('btn-hub-shop').addEventListener('click',   () => { showScreen('shop'); renderShop(); });
     $('btn-hub-inv').addEventListener('click',    () => { showScreen('inventory'); renderInventory(); });
-    $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); setTimeout(renderTravel, 50); });
+    $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); renderTravel(); });
 
-    // Listener ESTÁTICO no travel-dest-list para botões de ir/pescar
-    const _travelList = $('travel-dest-list');
-    if (_travelList) {
-      _travelList.addEventListener('click', e => {
-        document.title = 'LIST_CLICK:' + e.target.tagName + ':' + e.target.className;
+    // Listener no screen-travel (elemento HTML estático, inert gerenciado pelo showScreen)
+    const _screenTravel = $('screen-travel');
+    if (_screenTravel) {
+      _screenTravel.addEventListener('click', e => {
+        document.title = 'TRAVEL_CLICK:' + e.target.tagName;
         const goEl   = e.target.closest('[data-action="go"]');
         const fishEl = e.target.closest('[data-action="fish"]');
         if (goEl) {
           const id = goEl.getAttribute('data-map-id');
-          console.log('[travelList] go id=', id);
           const mDest = MAP_CATALOG[id];
           setActiveMap(id);
           if (mDest && mDest.requiredBoat) { showBoatNav(id); }
@@ -1547,7 +1546,6 @@ const Game = (() => {
 
   /** Renderiza a tela de seleção de destino */
   function renderTravel() {
-    document.title = 'renderTravel@' + Date.now();
     const map     = getActiveMap();
     const nameEl  = $('travel-current-name');
     const emojiEl = $('travel-current-emoji');
