@@ -45,8 +45,6 @@ const Inventory = (() => {
   const BAITS_VERSION = '1';   // incrementar aqui força reset do estoque
   const STORAGE_KEY_EQUIP    = 'bb_equip';     // { bait:'worm', rod:'rod_basic', ... }
   const STORAGE_KEY_PROTECTED = 'bb_protected'; // Set de ids de peixes protegidos
-  const STORAGE_KEY_VESSEL   = 'bb_vessel';
-  const STORAGE_KEY_HOLD     = 'bb_hold';
 
   // Estoque inicial generoso para testes
   const DEFAULT_BAITS = {
@@ -110,7 +108,7 @@ const Inventory = (() => {
    * Adiciona um peixe pescado ao inventário.
    * Retorna o item criado { weight, value, ... }.
    */
-  function addFish(fish, dryRun = false) {
+  function addFish(fish) {
     const weight = rollWeight(fish);
     const value  = calcValue(fish, weight);
     const item   = {
@@ -122,11 +120,9 @@ const Inventory = (() => {
       special:  fish.special ?? false,
       caughtAt: Date.now(),
     };
-    if (!dryRun) {
-      const items = _load();
-      items.push(item);
-      _save(items);
-    }
+    const items = _load();
+    items.push(item);
+    _save(items);
     return item;
   }
 
@@ -395,6 +391,123 @@ const Inventory = (() => {
     return true;
   }
 
+
+  // ══════════════════════════════════════════════════════════════════════
+  // BARCOS
+  // ══════════════════════════════════════════════════════════════════════
+
+  /** Catálogo de barcos disponíveis no jogo */
+  const BOAT_CATALOG = {
+    canoe: {
+      id: 'canoe',
+      nameKey: 'boat_canoe',
+      emoji: '🛶',
+      holdCapacity: 8,      // slots de peixe no porão
+      unlocks: ['lago_central'],
+    },
+    rowboat: {
+      id: 'rowboat',
+      nameKey: 'boat_rowboat',
+      emoji: '⛵',
+      holdCapacity: 15,
+      unlocks: ['lago_central'],
+    },
+  };
+
+  const STORAGE_KEY_BOATS    = 'bb_boats';     // array de ids de barcos possuídos
+  const STORAGE_KEY_BOAT_EQ  = 'bb_boat_eq';   // id do barco equipado
+  const STORAGE_KEY_HOLD     = 'bb_hold';      // array de peixes no porão (sessão atual)
+
+  function _loadBoats()   { try { return JSON.parse(localStorage.getItem(STORAGE_KEY_BOATS)  || '[]'); } catch { return []; } }
+  function _saveBoats(b)  { try { localStorage.setItem(STORAGE_KEY_BOATS,  JSON.stringify(b)); } catch {} }
+  function _loadBoatEq()  { try { return localStorage.getItem(STORAGE_KEY_BOAT_EQ) || null; } catch { return null; } }
+  function _saveBoatEq(id){ try { localStorage.setItem(STORAGE_KEY_BOAT_EQ, id || ''); } catch {} }
+  function _loadHold()    { try { return JSON.parse(localStorage.getItem(STORAGE_KEY_HOLD)   || '[]'); } catch { return []; } }
+  function _saveHold(h)   { try { localStorage.setItem(STORAGE_KEY_HOLD,   JSON.stringify(h)); } catch {} }
+
+  /** Lista de ids de barcos que o jogador possui */
+  function getBoats() { return _loadBoats(); }
+
+  /** Retorna true se o jogador possui o barco */
+  function hasBoat(id) { return _loadBoats().includes(id); }
+
+  /** Compra um barco (desconta moedas). Retorna { ok, reason? } */
+  function buyBoat(id, price) {
+    if (!BOAT_CATALOG[id])       return { ok: false, reason: 'unknown' };
+    if (hasBoat(id))             return { ok: false, reason: 'already_owned' };
+    const c = coins();
+    if (c < price)               return { ok: false, reason: 'no_coins' };
+    _saveCoins(c - price);
+    const boats = _loadBoats();
+    boats.push(id);
+    _saveBoats(boats);
+    // Equipar automaticamente se for o primeiro barco
+    if (boats.length === 1) _saveBoatEq(id);
+    return { ok: true };
+  }
+
+  /** Retorna o id do barco equipado (ou null) */
+  function getEquippedBoat() { return _loadBoatEq() || null; }
+
+  /** Equipa um barco que o jogador já possui */
+  function equipBoat(id) {
+    if (!hasBoat(id)) return false;
+    _saveBoatEq(id);
+    return true;
+  }
+
+  /** Dados completos do barco equipado (ou null) */
+  function getBoatData(id) {
+    const bid = id || _loadBoatEq();
+    return BOAT_CATALOG[bid] || null;
+  }
+
+  // ── PORÃO ──────────────────────────────────────────────────────────
+
+  /** Retorna os peixes atualmente no porão */
+  function getHold() { return _loadHold(); }
+
+  /** Capacidade máxima do porão do barco equipado (0 se sem barco) */
+  function holdCapacity() {
+    const boat = getBoatData(_loadBoatEq());
+    return boat ? boat.holdCapacity : 0;
+  }
+
+  /** Adiciona um peixe ao porão. Retorna { ok, full } */
+  function addToHold(fish) {
+    const hold = _loadHold();
+    const cap  = holdCapacity();
+    if (hold.length >= cap) return { ok: false, reason: 'hold_full' };
+    hold.push(fish);
+    _saveHold(hold);
+    return { ok: true, full: hold.length >= cap, used: hold.length, cap };
+  }
+
+  /** Remove um peixe do porão pelo uid. Retorna true se removeu */
+  function removeFromHold(uid) {
+    const hold = _loadHold();
+    const idx  = hold.findIndex(f => f.uid === uid);
+    if (idx === -1) return false;
+    hold.splice(idx, 1);
+    _saveHold(hold);
+    return true;
+  }
+
+  /** Descarrega o porão inteiro no inventário geral. Limpa o porão. */
+  function unloadHold() {
+    const hold = _loadHold();
+    if (hold.length === 0) return { count: 0 };
+    const items = _load();
+    hold.forEach(f => items.push(f));
+    _save(items);
+    _saveHold([]);
+    return { count: hold.length };
+  }
+
+  /** Limpa o porão sem transferir (usado ao descartar sessão) */
+  function clearHold() { _saveHold([]); }
+
+
   return {
     addFish,
     getAll,
@@ -423,29 +536,22 @@ const Inventory = (() => {
     sellBaits,
     sellEquip,
     // Equipamentos possuídos
-
-  // ── EMBARCAÇÕES ──────────────────────────────────────────────────────────
-  function ownedVessel() { return localStorage.getItem(STORAGE_KEY_VESSEL) || null; }
-  function buyVessel(id) { localStorage.setItem(STORAGE_KEY_VESSEL, id); }
-  function canAccessMap(req) {
-    if (!req) return true;
-    const o = ownedVessel();
-    if (!o) return false;
-    const R = { canoe:1, rowboat:2, motorboat:3 };
-    return (R[o]??0) >= (R[req]??99);
-  }
-  // ── PORÃO ─────────────────────────────────────────────────────────────────
-  function holdItems() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY_HOLD)||'[]'); } catch{return[];} }
-  function _saveHold(a) { localStorage.setItem(STORAGE_KEY_HOLD, JSON.stringify(a)); }
-  function addToHold(fish) { const a=holdItems(); a.push(fish); _saveHold(a); return {ok:true}; }
-  function removeFromHold(i) { const a=holdItems(); if(i<0||i>=a.length) return false; a.splice(i,1); _saveHold(a); return true; }
-  function unloadHold() { const a=holdItems(); a.forEach(f=>addItem(f)); _saveHold([]); return a; }
-  function clearHold() { _saveHold([]); }
-
     addEquip,
     getOwnedEquip,
-    // Vessel + Hold
-    ownedVessel, buyVessel, canAccessMap,
-    holdItems, addToHold, removeFromHold, unloadHold, clearHold,
+    // Barcos
+    BOAT_CATALOG,
+    getBoats,
+    hasBoat,
+    buyBoat,
+    getEquippedBoat,
+    equipBoat,
+    getBoatData,
+    // Porão
+    getHold,
+    holdCapacity,
+    addToHold,
+    removeFromHold,
+    unloadHold,
+    clearHold,
   };
 })();
