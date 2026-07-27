@@ -1349,6 +1349,7 @@ const Game = (() => {
   /** Abre a tela de navegação para o mapa selecionado */
   function showBoatNav(mapId) {
     const _d = s => {
+      document.title = 'BN:' + s;
       const el = document.getElementById('dbg');
       if(el) { el.textContent = 'BN:' + s; el.setAttribute('data-bn', s); }
     };
@@ -1372,8 +1373,10 @@ const Game = (() => {
       showScreen('boatNav');
       _d('BN9:done');
     } catch(err) {
+      document.title = 'BN_ERR:' + err.message + ':' + err.stack;
       const _dbg2 = document.getElementById('dbg');
       if(_dbg2) _dbg2.textContent = 'BN_ERR:' + err.message;
+      else document.body.setAttribute('data-bnerr', err.message);
     }
   }
 
