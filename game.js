@@ -102,7 +102,7 @@ const Game = (() => {
     Object.entries(screens).forEach(([key, s]) => {
       if (key !== 'lang' && s) {
         s.classList.remove('active');
-        s.setAttribute('inert', '');
+        // SEM inert — só CSS via .screen.active controla visibilidade
       }
     });
     ui = {
@@ -2198,32 +2198,27 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
-    // Setar data-screen no body para CSS e debugging
     document.body.dataset.screen = name;
 
-    // Desativa e bloqueia TODAS as telas conhecidas
+    // Ocultar TODAS — sem inert, só CSS via active
     Object.entries(screens).forEach(([, s]) => {
       if (!s) return;
       s.classList.remove('active');
-      s.setAttribute('inert', '');
+      s.removeAttribute('inert');     // sem inert — só CSS controla visibilidade
     });
 
-    // Barra inferior só fica visível dentro da tela de jogo (modo normal)
     if (name !== 'game') {
       const bar = $('game-bottom-bar');
       if (bar) bar.classList.add('hidden');
     }
 
-    // Ativa só a tela pedida
     const target = screens[name];
     if (!target) {
       document.body.dataset.screenError = 'NOT_FOUND:' + name;
       return;
     }
     target.classList.add('active');
-    target.removeAttribute('inert');
 
-    // Move foco para o h2 (ou primeiro botão) — leitor anuncia ao entrar
     requestAnimationFrame(() => {
       const heading = target.querySelector('h2');
       if (heading) {
