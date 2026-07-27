@@ -93,7 +93,6 @@ const Game = (() => {
       shop:         $('screen-shop'),
       travel:       $('screen-travel'),
       vessel:       $('screen-vessel'),
-      boatNav:      $('screen-boat-nav'),
     };
 
     // Garante que só screen-lang está ativa no carregamento inicial
@@ -168,8 +167,14 @@ const Game = (() => {
     // Tela de viagem
     $('btn-travel-back').addEventListener('click',() => showStoryHub());
     // Estaleiro
-    $('btn-vessel-back').addEventListener('click',() => showStoryHub());
     $('btn-hub-vessel').addEventListener('click', () => { renderVessel(); showScreen('vessel'); });
+    $('btn-vessel-back').addEventListener('click',() => showStoryHub());
+    // Navegação do barco
+    $('btn-boat-return').addEventListener('click', () => returnToHubFromBoat());
+    $('btn-boat-zones').addEventListener('click',  () => openZoneModal());
+    $('btn-zone-modal-close').addEventListener('click', () => closeZoneModal());
+    $('btn-boat-cast').addEventListener('click',   () => startGameFromBoat());
+    $('btn-hold-return').addEventListener('click', () => returnToHubFromBoat());
 
     // ── Loja (acesso via hub) ──────────────────────────────────────────────
     $('btn-shop-back').addEventListener('click', () => showStoryHub());
@@ -629,10 +634,7 @@ const Game = (() => {
         ui.rod.style.transform = 'translateX(-50%) rotate(-10deg)';
 
         // Sorteia o peixe agora para que ele já apareça nadando
-        currentFish = (gameMode === 'boat' && _boatZone)
-          ? pickFishFromZone(_boatZone)
-          : pickFishFromMap(activeMap);
-        if (!currentFish) currentFish = pickFishFromMap(activeMap); // fallback
+        currentFish = pickFishFromMap(activeMap);
         fishPull    = currentFish.pull;
         fishTired   = false;
         _fishStrengthMult = 1.0;
@@ -700,9 +702,24 @@ const Game = (() => {
         _hideLinePath();
         _destroyActiveFish();
 
-        // Modo normal: registra no inventário e calcula moedas
-        // Modo livre: não registra moedas nem inventário
-        const caughtItem = (gameMode !== 'free') ? Inventory.addFish(currentFish) : null;
+        // Modo normal: inventário geral | boat: porão | free: sem registro
+        let caughtItem = null;
+        if (gameMode === 'boat') {
+          // Tenta adicionar ao porão
+          const holdRes = Inventory.addToHold(
+            { ...currentFish, uid: Date.now() + Math.random().toString(36).slice(2) }
+          );
+          if (holdRes.ok) {
+            caughtItem = { ...currentFish, weight: (currentFish.size * 0.3 + Math.random() * 0.2).toFixed(2) };
+            _updateHoldHUD();
+            if (holdRes.full) _showHoldFullModal();
+          } else {
+            // Porão cheio — mostrar modal antes de registrar
+            _showHoldFullModal();
+          }
+        } else if (gameMode !== 'free') {
+          caughtItem = Inventory.addFish(currentFish);
+        }
         _lastCaughtItem = caughtItem;
 
         setLabel(I18n.t('state_caught', fishName(currentFish)));
@@ -768,19 +785,6 @@ const Game = (() => {
   // ── Tilt ──────────────────────────────────────────────────────────────────
   function handleTilt(dir, beta, norm) {
     updateTiltIndicator(dir, norm);
-
-    // Modo barco: tilt lateral = remar; tilt forward com zona chegada = lançar
-    if (gameMode === 'boat' && screens.boatNav?.classList.contains('active')) {
-      if (dir === 'left' || dir === 'right') {
-        boatRow();
-        return;
-      }
-      if (dir === 'forward' && _boatAtZone) {
-        startGame('boat');
-        return;
-      }
-      return; // ignorar outros tilts na navegação
-    }
 
     // Atualiza posição Y da isca com base na inclinação (visual)
     if (state === 'REELING' || state === 'WAITING' || state === 'BITING') {
@@ -1183,12 +1187,8 @@ const Game = (() => {
     // Esconde a barra inferior ao sair do jogo
     const bar = $('game-bottom-bar');
     if (bar) bar.classList.add('hidden');
-    // Modo 'boat' volta para navegação; 'normal' para hub; 'free' para menu
-    if (gameMode === 'boat') {
-      showScreen('boatNav');
-      _updateBoatHUD();
-    } else if (gameMode === 'normal') {
-      GameTime.advance('fish');
+    // Se veio do modo história, volta pro hub; pesca livre volta pro menu principal
+    if (gameMode === 'normal') {
       showStoryHub();
     } else {
       showScreen('start');
@@ -1206,14 +1206,310 @@ const Game = (() => {
       if (dateEl)  dateEl.textContent  = hud.date;
       if (clockEl) clockEl.textContent = hud.time;
     }
+    // Estaleiro sempre acessível
+    const btnVessel = $('btn-hub-vessel');
+    if (btnVessel) btnVessel.disabled = false;
   }
+
+
+  // ══════════════════════════════════════════════════════════════════════
+  // ESTALEIRO
+  // ══════════════════════════════════════════════════════════════════════
+
+  function renderVessel() {
+    // Atualizar moedas no header do estaleiro
+    const coinsEl = $('vessel-coins');
+    if (coinsEl) coinsEl.textContent = Inventory.coins();
+
+    const ownedList = $('vessel-owned-list');
+    const buyList   = $('vessel-buy-list');
+    if (!ownedList || !buyList) return;
+
+    ownedList.innerHTML = '';
+    buyList.innerHTML   = '';
+
+    const owned      = Inventory.getBoats();
+    const equippedId = Inventory.getEquippedBoat();
+    const shopBoats  = getShopByType('boat');
+
+    // Seção: suas embarcações
+    if (owned.length === 0) {
+      ownedList.innerHTML = '<li class="vessel-item"><span style="opacity:.6">—</span></li>';
+    } else {
+      owned.forEach(boatId => {
+        const data  = Inventory.BOAT_CATALOG[boatId];
+        if (!data) return;
+        const shop  = shopBoats.find(s => s.id === boatId);
+        const li = document.createElement('li');
+        li.className = 'vessel-item';
+        const isEq = equippedId === boatId;
+        li.innerHTML = `
+          <span class="vessel-emoji" aria-hidden="true">${data.emoji}</span>
+          <div class="vessel-info">
+            <div class="vessel-name">${I18n.t(data.nameKey)}</div>
+            <div class="vessel-hold">📦 Porão: ${data.holdCapacity}</div>
+          </div>
+          ${isEq
+            ? `<span class="vessel-equipped">${I18n.t('vessel_equipped_label')}</span>`
+            : `<button class="btn-vessel-equip" data-boat-id="${boatId}">${I18n.t('vessel_equip')}</button>`
+          }`;
+        ownedList.appendChild(li);
+      });
+      // Listener equip
+      ownedList.querySelectorAll('.btn-vessel-equip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          Inventory.equipBoat(btn.dataset.boatId);
+          renderVessel();
+        });
+      });
+    }
+
+    // Seção: comprar
+    shopBoats.forEach(item => {
+      if (owned.includes(item.id)) return; // já tem
+      const li = document.createElement('li');
+      li.className = 'vessel-item';
+      li.innerHTML = `
+        <span class="vessel-emoji" aria-hidden="true">${item.emoji}</span>
+        <div class="vessel-info">
+          <div class="vessel-name">${I18n.t(item.nameKey)}</div>
+          <div class="vessel-desc">${I18n.t(item.descKey)}</div>
+        </div>
+        <button class="btn-vessel-buy" data-item-id="${item.id}" data-price="${item.price}">
+          🪙${item.price}
+        </button>`;
+      buyList.appendChild(li);
+    });
+
+    buyList.querySelectorAll('.btn-vessel-buy').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const res = Inventory.buyBoat(btn.dataset.itemId, parseInt(btn.dataset.price));
+        if (res.ok) {
+          renderVessel();
+          _refreshHubHUD();
+        } else {
+          // Feedback inline acessível
+          const orig = btn.textContent;
+          btn.textContent = res.reason === 'no_coins'
+            ? I18n.t('vessel_no_coins') : I18n.t('vessel_already_owned');
+          btn.disabled = true;
+          setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1800);
+        }
+      });
+    });
+
+    if (shopBoats.filter(b => !owned.includes(b.id)).length === 0) {
+      buyList.innerHTML = '<li class="vessel-item"><span style="opacity:.6">—</span></li>';
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // NAVEGAÇÃO DO BARCO
+  // ══════════════════════════════════════════════════════════════════════
+
+  /** Estado de navegação */
+  let _boatState = {
+    mapId:        null,
+    zoneId:       null,
+    targetZoneId: null,
+    rowProgress:  0,      // 0..100 — progresso em direção à zona alvo
+    arrived:      false,
+  };
+
+  function _updateSonar(progress) {
+    const sonar = $('boat-sonar');
+    const msg   = $('boat-sonar-msg');
+    if (!sonar || !msg) return;
+    sonar.classList.remove('near','arrived');
+    if (progress >= 100) {
+      sonar.classList.add('arrived');
+      msg.textContent = I18n.t('boat_nav_sonar_arrived');
+    } else if (progress >= 60) {
+      sonar.classList.add('near');
+      msg.textContent = I18n.t('boat_nav_sonar_near');
+    } else {
+      msg.textContent = progress > 0 ? I18n.t('boat_nav_sonar_far') : '';
+    }
+  }
+
+  function _updateHoldHUD() {
+    const used = $('hold-hud-used');
+    const cap  = $('hold-hud-cap');
+    if (used) used.textContent = Inventory.getHold().length;
+    if (cap)  cap.textContent  = Inventory.holdCapacity();
+  }
+
+  /** Abre a tela de navegação para o mapa selecionado */
+  function showBoatNav(mapId) {
+    const map = MAP_CATALOG[mapId];
+    if (!map) return;
+    _boatState = { mapId, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
+    Inventory.clearHold();
+
+    // Zona padrão: primeira do mapa
+    const firstZone = map.zones && map.zones[0];
+    if (firstZone) _selectZone(firstZone.id, true);
+
+    _updateHoldHUD();
+    _updateBoatNavUI();
+    showScreen('boatNav');
+  }
+
+  function _selectZone(zoneId, immediate) {
+    const map  = MAP_CATALOG[_boatState.mapId];
+    const zone = map && map.zones && map.zones.find(z => z.id === zoneId);
+    if (!zone) return;
+
+    _boatState.targetZoneId = zoneId;
+    _boatState.rowProgress  = immediate ? 100 : 0;
+    _boatState.arrived      = immediate;
+
+    const nameEl = $('boat-current-zone-name');
+    if (nameEl) nameEl.textContent = I18n.t(zone.nameKey);
+
+    const statusEl = $('boat-nav-status');
+    if (statusEl) statusEl.textContent = immediate
+      ? I18n.t('boat_nav_arrived')
+      : I18n.t('boat_nav_rowing');
+
+    _updateSonar(_boatState.rowProgress);
+    _updateBoatCastBtn();
+
+    if (!immediate) {
+      // Simular progresso de remo (3 passos de ~1s)
+      let step = 0;
+      const STEPS = 3;
+      const iv = setInterval(() => {
+        step++;
+        _boatState.rowProgress = Math.round((step / STEPS) * 100);
+        _updateSonar(_boatState.rowProgress);
+        if (step >= STEPS) {
+          clearInterval(iv);
+          _boatState.zoneId  = zoneId;
+          _boatState.arrived = true;
+          if (statusEl) statusEl.textContent = I18n.t('boat_nav_arrived');
+          _updateBoatCastBtn();
+        }
+      }, 1000);
+    } else {
+      _boatState.zoneId = zoneId;
+    }
+  }
+
+  function _updateBoatCastBtn() {
+    const castBtn   = $('btn-boat-cast');
+    const zonesBtn  = $('btn-boat-zones');
+    if (castBtn)  castBtn.classList.toggle('hidden', !_boatState.arrived);
+    if (zonesBtn) zonesBtn.classList.toggle('hidden',  _boatState.arrived && false); // sempre visível
+  }
+
+  function _updateBoatNavUI() {
+    const map = MAP_CATALOG[_boatState.mapId];
+    if (!map) return;
+    const zone = map.zones && map.zones.find(z => z.id === (_boatState.zoneId || ''));
+    const nameEl = $('boat-current-zone-name');
+    if (nameEl) nameEl.textContent = zone ? I18n.t(zone.nameKey) : '—';
+    _updateHoldHUD();
+  }
+
+
+  /** Exibe modal de porão cheio com lista de peixes para descartar */
+  function _showHoldFullModal() {
+    const modal    = $('hold-full-modal');
+    const discList = $('hold-discard-list');
+    if (!modal || !discList) return;
+
+    discList.innerHTML = '';
+    const hold = Inventory.getHold();
+    hold.forEach(fish => {
+      const li = document.createElement('li');
+      li.setAttribute('role','listitem');
+      li.innerHTML = `
+        <span aria-hidden="true">${fish.emoji || '🐟'}</span>
+        <span>${I18n.t(fish.nameKey) || fish.id}</span>
+        <button data-uid="${fish.uid}" class="btn-hold-discard">${I18n.t('hold_discard_btn')}</button>`;
+      discList.appendChild(li);
+    });
+
+    discList.querySelectorAll('.btn-hold-discard').forEach(btn => {
+      btn.addEventListener('click', () => {
+        Inventory.removeFromHold(btn.dataset.uid);
+        _updateHoldHUD();
+        closeHoldFullModal();
+      });
+    });
+
+    modal.classList.remove('hidden');
+    modal.removeAttribute('inert');
+  }
+
+  function closeHoldFullModal() {
+    const modal = $('hold-full-modal');
+    if (modal) { modal.classList.add('hidden'); modal.setAttribute('inert',''); }
+  }
+
+  function openZoneModal() {
+    const modal = $('boat-zone-modal');
+    const list  = $('boat-zone-list');
+    if (!modal || !list) return;
+    const map = MAP_CATALOG[_boatState.mapId];
+    if (!map || !map.zones) return;
+
+    list.innerHTML = '';
+    map.zones.forEach(zone => {
+      const li = document.createElement('li');
+      li.setAttribute('role','listitem');
+      const isCurrent = zone.id === _boatState.zoneId;
+      li.innerHTML = `
+        <span aria-hidden="true">${zone.emoji}</span>
+        <span>${I18n.t(zone.nameKey)}</span>
+        <button data-zone-id="${zone.id}" ${isCurrent ? 'disabled' : ''}>
+          ${isCurrent ? '📍' : I18n.t('travel_fish_here')}
+        </button>`;
+      list.appendChild(li);
+    });
+    list.querySelectorAll('button[data-zone-id]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        closeZoneModal();
+        _selectZone(btn.dataset.zoneId, false);
+      });
+    });
+    modal.classList.remove('hidden');
+    modal.removeAttribute('inert');
+  }
+
+  function closeZoneModal() {
+    const modal = $('boat-zone-modal');
+    if (modal) { modal.classList.add('hidden'); modal.setAttribute('inert',''); }
+  }
+
+  /** Inicia a pesca a partir do barco (usa zona + porão) */
+  function startGameFromBoat() {
+    if (!_boatState.arrived) return;
+    activeZone = _boatState.zoneId;
+    startGame('boat');
+  }
+
+  /** Retorna ao hub descarregando o porão */
+  function returnToHubFromBoat() {
+    const res = Inventory.unloadHold();
+    // Avança o tempo
+    if (typeof GameTime !== 'undefined') GameTime.advance('travel');
+    _boatState = { mapId: null, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
+    showStoryHub();
+    if (res.count > 0) {
+      const statusEl = $('hub-status-msg');
+      if (statusEl) {
+        statusEl.textContent = I18n.t('hold_unloaded');
+        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+      }
+    }
+  }
+
 
   /** Exibe o hub da cidade */
   function showStoryHub() {
     _refreshHubHUD();
-    // Habilitar Estaleiro sempre (modo história)
-    const bv = $('btn-hub-vessel');
-    if (bv) bv.removeAttribute('disabled');
     showScreen('storyHub');
   }
 
@@ -1229,12 +1525,16 @@ const Game = (() => {
     if (!list) return;
     list.innerHTML = '';
 
-    // Barco do jogador (futuramente virá do inventário; por ora 'canoe' padrão)
-    const playerVessel = localStorage.getItem('bb_vessel') || 'canoe';
-
+    // Barco do jogador — vem do Inventory
     MAPS.forEach(m => {
-      const isActive   = m.id === map.id;
-      const hasVessel  = !m.requiredVessel || m.requiredVessel === playerVessel;
+      const isActive  = m.id === map.id;
+      // Mapa com requiredBoat: verificar se jogador tem algum barco que acessa este mapa
+      const hasVessel = !m.requiredBoat || (
+        Inventory.getBoats().some(bid => {
+          const bdata = Inventory.BOAT_CATALOG[bid];
+          return bdata && bdata.unlocks && bdata.unlocks.includes(m.id);
+        })
+      );
       const li = document.createElement('li');
       li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
 
@@ -1242,8 +1542,8 @@ const Game = (() => {
         <span class="travel-item-emoji" aria-hidden="true">${m.emoji || '🏞️'}</span>
         <div class="travel-item-info">
           <span class="travel-item-name">${I18n.t(m.nameKey) || m.id}</span>
-          ${m.requiredVessel
-            ? `<span class="travel-item-vessel">⛵ ${m.requiredVessel}</span>`
+          ${m.requiredBoat
+            ? `<span class="travel-item-vessel">🛶 ${I18n.t('travel_locked')}</span>`
             : ''}
         </div>
         <div class="travel-item-actions">
@@ -1267,307 +1567,29 @@ const Game = (() => {
 
       // Pescar no mapa atual
       li.querySelector('.travel-btn-fish')?.addEventListener('click', () => {
-        startGame('normal');
+        const mActive = getActiveMap();
+        if (mActive.requiredBoat) {
+          showBoatNav(mActive.id);
+        } else {
+          startGame('normal');
+        }
       });
 
       // Viajar para outro mapa
       li.querySelector('.travel-btn-go')?.addEventListener('click', e => {
-        const id = e.currentTarget.dataset.mapId;
+        const id  = e.currentTarget.dataset.mapId;
+        const mDest = MAP_CATALOG[id];
         setActiveMap(id);
-        renderTravel(); // atualiza a lista
+        if (mDest && mDest.requiredBoat) {
+          // Mapa com barco: abrir navegação
+          showBoatNav(id);
+        } else {
+          renderTravel();
+        }
       });
 
       list.appendChild(li);
     });
-  }
-
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  ESTALEIRO — renderVessel()
-  // ══════════════════════════════════════════════════════════════════════════
-
-  function renderVessel() {
-    const owned   = Inventory.ownedVessel();
-    const currentEl = $('vessel-current');
-    const listEl    = $('vessel-list');
-    const msgEl     = $('vessel-msg');
-    if (msgEl) msgEl.textContent = '';
-
-    // Card da embarcação atual
-    if (currentEl) {
-      if (owned) {
-        const v = getVesselData(owned);
-        currentEl.innerHTML = v
-          ? `<span class="vessel-emoji">${v.emoji}</span>
-             <span class="vessel-name">${I18n.t(v.nameKey)}</span>
-             <span class="vessel-hold">🐟 ${I18n.t('vessel_hold_capacity')}: ${v.holdCapacity}</span>`
-          : `<span>${owned}</span>`;
-      } else {
-        currentEl.textContent = I18n.t('vessel_none');
-      }
-    }
-
-    // Lista de embarcações para comprar
-    if (!listEl) return;
-    listEl.innerHTML = '';
-    VESSEL_CATALOG.forEach(v => {
-      const isOwned   = owned === v.id;
-      const isUpgrade = !isOwned && !Inventory.canAccessMap(v.id); // nível superior
-      const li = document.createElement('li');
-      li.className = 'vessel-item' + (isOwned ? ' vessel-item--owned' : '');
-
-      li.innerHTML = `
-        <div class="vessel-item-info">
-          <span class="vessel-emoji">${v.emoji}</span>
-          <div class="vessel-item-text">
-            <strong class="vessel-name">${I18n.t(v.nameKey)}</strong>
-            <p class="vessel-desc">${I18n.t(v.descKey)}</p>
-            <span class="vessel-hold-tag">🐟 ${v.holdCapacity} · 🪙 ${v.price}</span>
-          </div>
-        </div>
-        <div class="vessel-item-action">
-          ${isOwned
-            ? `<span class="vessel-badge-owned">✅</span>`
-            : `<button class="btn-primary btn-sm vessel-btn-buy"
-                       data-vessel-id="${v.id}"
-                       data-vessel-price="${v.price}"
-                       aria-label="${I18n.t('vessel_buy')} ${I18n.t(v.nameKey)} — 🪙 ${v.price}">
-                 ${I18n.t('vessel_buy')} 🪙${v.price}
-               </button>`
-          }
-        </div>`;
-
-      li.querySelector('.vessel-btn-buy')?.addEventListener('click', e => {
-        const id    = e.currentTarget.dataset.vesselId;
-        const price = Number(e.currentTarget.dataset.vesselPrice);
-        if (Inventory.ownedVessel() === id) {
-          _vesselMsg(I18n.t('vessel_already_owned')); return;
-        }
-        if (!Inventory.spendCoins(price)) {
-          _vesselMsg(I18n.t('vessel_need_coins')); return;
-        }
-        Inventory.buyVessel(id);
-        _vesselMsg(I18n.t('vessel_purchased'));
-        _refreshHubHUD();
-        renderVessel();
-      });
-
-      listEl.appendChild(li);
-    });
-  }
-
-  function _vesselMsg(txt) {
-    const el = $('vessel-msg');
-    if (el) { el.textContent = txt; setTimeout(() => { if(el) el.textContent=''; }, 3000); }
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  NAVEGAÇÃO DE BARCO
-  // ══════════════════════════════════════════════════════════════════════════
-
-  // Estado da navegação
-  let _boatMap       = null;   // objeto do mapa atual
-  let _boatZone      = null;   // zona selecionada {id, nameKey, emoji, distanceSteps, fishByPeriod}
-  let _boatProgress  = 0;      // passos remados em direção à zona (0 = início, zone.distanceSteps = chegou)
-  let _boatAtZone    = false;  // chegou na zona atual?
-  let _boatHoldMax   = 0;      // capacidade do porão
-
-  /** Abre a tela de navegação para o mapa ativo */
-  function showBoatNav() {
-    _boatMap      = getActiveMap();
-    _boatZone     = null;
-    _boatProgress = 0;
-    _boatAtZone   = false;
-    Inventory.clearHold();
-
-    // Capacidade do porão vem do barco do jogador
-    const vesselId = Inventory.ownedVessel() || 'canoe';
-    const vesselData = getVesselData(vesselId);
-    _boatHoldMax = vesselData ? vesselData.holdCapacity : 8;
-
-    _updateBoatHUD();
-    _renderBoatZoneName();
-    _updateSonar(0, 1);   // sonar vazio
-    $('btn-boat-cast').setAttribute('disabled', '');
-    $('boat-row-status').textContent = '';
-    showScreen('boatNav');
-    _attachBoatListeners();
-  }
-
-  function _attachBoatListeners() {
-    // "Zonas Conhecidas" → abre modal
-    const btnZones = $('btn-boat-zones');
-    if (btnZones) {
-      btnZones.onclick = () => _openZonesModal();
-    }
-    // Lançar linha → inicia pesca normal (usa zona como pool de peixes)
-    const btnCast = $('btn-boat-cast');
-    if (btnCast) {
-      btnCast.onclick = () => {
-        if (_boatAtZone) startGame('boat');
-      };
-    }
-    // Retornar ao Hub → descarregar porão + voltar
-    const btnHub = $('btn-boat-hub');
-    if (btnHub) {
-      btnHub.onclick = () => _returnToHub();
-    }
-    // Fechar modal de zonas
-    const btnClose = $('btn-zones-close');
-    if (btnClose) btnClose.onclick = () => _closeZonesModal();
-    // Modal porão cheio
-    $('btn-hold-discard').onclick = () => _discardSmallest();
-    $('btn-hold-keep').onclick    = () => _returnToHub();
-  }
-
-  function _openZonesModal() {
-    const modal   = $('boat-zones-modal');
-    const listEl  = $('zones-list');
-    if (!modal || !listEl || !_boatMap?.zones) return;
-    listEl.innerHTML = '';
-    _boatMap.zones.forEach(zone => {
-      const li = document.createElement('li');
-      li.className = 'zone-item' + (_boatZone?.id === zone.id ? ' zone-item--active' : '');
-      li.innerHTML = `
-        <button class="btn-secondary zone-btn" data-zone-id="${zone.id}"
-                aria-label="${I18n.t(zone.nameKey)} — ${zone.distanceSteps} remadas">
-          <span class="zone-emoji">${zone.emoji}</span>
-          <span class="zone-name">${I18n.t(zone.nameKey)}</span>
-          <span class="zone-dist">🚣 ×${zone.distanceSteps}</span>
-        </button>`;
-      li.querySelector('.zone-btn').addEventListener('click', () => {
-        _selectZone(zone);
-        _closeZonesModal();
-      });
-      listEl.appendChild(li);
-    });
-    modal.classList.remove('hidden');
-    modal.removeAttribute('inert');
-    listEl.querySelector('button')?.focus();
-  }
-
-  function _closeZonesModal() {
-    const m = $('boat-zones-modal');
-    if (m) { m.classList.add('hidden'); m.setAttribute('inert',''); }
-  }
-
-  function _selectZone(zone) {
-    _boatZone     = zone;
-    _boatProgress = 0;
-    _boatAtZone   = false;
-    $('btn-boat-cast').setAttribute('disabled', '');
-    _renderBoatZoneName();
-    _updateSonar(0, zone.distanceSteps);
-    _setRowStatus(I18n.t('boat_rowing'));
-  }
-
-  /** Simula uma remada (chamado pelo sensor de tilt lateral) */
-  function boatRow() {
-    if (!_boatZone || _boatAtZone) return;
-    const vesselId = Inventory.ownedVessel() || 'canoe';
-    const speed    = (getVesselData(vesselId)?.speed) ?? 1;
-    _boatProgress  = Math.min(_boatProgress + speed, _boatZone.distanceSteps);
-    _updateSonar(_boatProgress, _boatZone.distanceSteps);
-
-    if (_boatProgress >= _boatZone.distanceSteps) {
-      _boatAtZone = true;
-      _setRowStatus(I18n.t('sonar_arrived'));
-      $('btn-boat-cast').removeAttribute('disabled');
-      $('btn-boat-cast').focus();
-      _announceSonar('arrived');
-    } else {
-      const pct = _boatProgress / _boatZone.distanceSteps;
-      const label = pct < 0.5 ? I18n.t('sonar_far') : I18n.t('sonar_near');
-      _setRowStatus(`${I18n.t('boat_rowing')} — ${label}`);
-      _announceSonar(pct < 0.5 ? 'far' : 'near');
-    }
-  }
-
-  function _updateBoatHUD() {
-    const countEl = $('boat-hold-count');
-    const maxEl   = $('boat-hold-max');
-    if (countEl) countEl.textContent = Inventory.holdItems().length;
-    if (maxEl)   maxEl.textContent   = _boatHoldMax;
-  }
-
-  function _renderBoatZoneName() {
-    const el = $('boat-zone-name');
-    if (!el) return;
-    el.textContent = _boatZone
-      ? `${_boatZone.emoji} ${I18n.t(_boatZone.nameKey)}`
-      : I18n.t('boat_no_zone');
-  }
-
-  function _setRowStatus(txt) {
-    const el = $('boat-row-status');
-    if (el) el.textContent = txt;
-  }
-
-  /** Atualiza o sonar visual: progress/max */
-  function _updateSonar(progress, max) {
-    const blip = $('sonar-blip');
-    if (!blip) return;
-    const pct = max > 0 ? progress / max : 0;
-    // O blip começa na borda (pct=0) e vai para o centro (pct=1)
-    const radius = (1 - pct) * 42;  // 42% = raio máximo (borda interna do anel externo)
-    blip.style.transform = `translate(-50%, -50%) translate(${radius}%, 0)`;
-    blip.classList.toggle('sonar-blip--arrived', pct >= 1);
-  }
-
-  /** Feedback sonoro/aria do sonar via audio.js (se disponível) */
-  function _announceSonar(state) {
-    if (typeof Audio !== 'undefined' && Audio.playUiSound) {
-      if (state === 'arrived') Audio.playUiSound('coin');  // som de chegada
-    }
-  }
-
-  /** Adiciona peixe capturado ao porão (chamado após captura no modo boat) */
-  function addFishToHold(fish) {
-    if (Inventory.holdItems().length >= _boatHoldMax) {
-      _showHoldFullModal(fish);
-      return false;
-    }
-    Inventory.addToHold(fish);
-    _updateBoatHUD();
-    return true;
-  }
-
-  function _showHoldFullModal(fish) {
-    const info = $('hold-discard-info');
-    if (info) {
-      const items = Inventory.holdItems();
-      const smallest = items.reduce((min, f, i) =>
-        f.value < (items[min]?.value ?? Infinity) ? i : min, 0);
-      const sf = items[smallest];
-      info.innerHTML = sf
-        ? `<p>🐟 Menor: <strong>${sf.name || sf.id}</strong> (🪙${sf.value})</p>`
-        : '';
-      info.dataset.smallestIdx = smallest;
-    }
-    const m = $('boat-hold-full-modal');
-    if (m) { m.classList.remove('hidden'); m.removeAttribute('inert'); }
-  }
-
-  function _discardSmallest() {
-    const info = $('hold-discard-info');
-    const idx  = Number(info?.dataset.smallestIdx ?? -1);
-    if (idx >= 0) Inventory.removeFromHold(idx);
-    const m = $('boat-hold-full-modal');
-    if (m) { m.classList.add('hidden'); m.setAttribute('inert',''); }
-    _updateBoatHUD();
-  }
-
-  /** Descarrega porão no inventário e volta ao hub */
-  function _returnToHub() {
-    const unloaded = Inventory.unloadHold();
-    const msg      = `${unloaded.length} ${I18n.t('boat_unload_done')}`;
-    GameTime.advance('fish');
-    showStoryHub();
-    // Breve anúncio de descarga (aria-live do hub HUD)
-    setTimeout(() => {
-      const el = $('hub-coins');
-      if (el) el.setAttribute('aria-label', msg);
-    }, 300);
   }
 
   // ── Loja / Inventário ─────────────────────────────────────────────────────
