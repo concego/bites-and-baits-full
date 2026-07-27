@@ -1575,31 +1575,34 @@ const Game = (() => {
           }
         </div>`;
 
-      list.appendChild(li);
-    });
+      // Listeners diretos nos botões do li recém-criado
+      const fishBtn2 = li.querySelector('.travel-btn-fish');
+      const goBtn2   = li.querySelector('.travel-btn-go');
 
-    // Delegation única no container
-    list.addEventListener('click', e => {
-      const fishBtn = e.target.closest('.travel-btn-fish');
-      const goBtn   = e.target.closest('.travel-btn-go');
-      if (fishBtn) {
-        const mActive = getActiveMap();
-        if (mActive && mActive.requiredBoat) {
-          showBoatNav(mActive.id);
-        } else {
-          startGame('normal');
-        }
+      if (fishBtn2) {
+        fishBtn2.addEventListener('click', () => {
+          const mActive = getActiveMap();
+          if (mActive && mActive.requiredBoat) {
+            showBoatNav(mActive.id);
+          } else {
+            startGame('normal');
+          }
+        });
       }
-      if (goBtn) {
-        const id    = goBtn.dataset.mapId;
-        const mDest = MAP_CATALOG[id];
-        setActiveMap(id);
-        if (mDest && mDest.requiredBoat) {
-          showBoatNav(id);
-        } else {
-          renderTravel();
-        }
+      if (goBtn2) {
+        goBtn2.addEventListener('click', () => {
+          const id    = goBtn2.dataset.mapId;
+          const mDest = MAP_CATALOG[id];
+          setActiveMap(id);
+          if (mDest && mDest.requiredBoat) {
+            showBoatNav(id);
+          } else {
+            renderTravel();
+          }
+        });
       }
+
+      list.appendChild(li);
     });
   }
 
