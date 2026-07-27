@@ -1374,8 +1374,10 @@ const Game = (() => {
 
   /** Abre a tela de navegação para o mapa selecionado */
   function showBoatNav(mapId) {
-    const _dbg = document.getElementById('dbg');
-    const _d = s => { if(_dbg) _dbg.textContent = s; };
+    const _d = s => {
+      const el = document.getElementById('dbg');
+      if(el) { el.textContent = 'BN:' + s; el.setAttribute('data-bn', s); }
+    };
     try {
       _d('BN1:map_lookup');
       const map = MAP_CATALOG[mapId];
