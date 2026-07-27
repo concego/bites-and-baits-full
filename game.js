@@ -1526,11 +1526,13 @@ const Game = (() => {
     list.innerHTML = '';
 
     // Barco do jogador — vem do Inventory
+    const _ownedBoats = Inventory.getBoats();
+    console.log('[Travel] boats:', _ownedBoats);
     MAPS.forEach(m => {
       const isActive  = m.id === map.id;
       // Mapa com requiredBoat: verificar se jogador tem algum barco que acessa este mapa
       const hasVessel = !m.requiredBoat || (
-        Inventory.getBoats().some(bid => {
+        _ownedBoats.some(bid => {
           const bdata = Inventory.BOAT_CATALOG[bid];
           return bdata && bdata.unlocks && bdata.unlocks.includes(m.id);
         })
@@ -1542,9 +1544,11 @@ const Game = (() => {
         <span class="travel-item-emoji" aria-hidden="true">${m.emoji || '🏞️'}</span>
         <div class="travel-item-info">
           <span class="travel-item-name">${I18n.t(m.nameKey) || m.id}</span>
-          ${m.requiredBoat
-            ? `<span class="travel-item-vessel">🛶 ${I18n.t('travel_locked')}</span>`
-            : ''}
+          ${(m.requiredBoat && !hasVessel)
+            ? `<span class="travel-item-vessel">${I18n.t('travel_locked')}</span>`
+            : (m.requiredBoat && hasVessel)
+              ? `<span class="travel-item-vessel" style="color:#81c784">🛶 ${I18n.t(Inventory.BOAT_CATALOG[Inventory.getEquippedBoat()]?.nameKey||'')}</span>`
+              : ''}
         </div>
         <div class="travel-item-actions">
           ${isActive
