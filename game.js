@@ -164,6 +164,24 @@ const Game = (() => {
     $('btn-hub-shop').addEventListener('click',   () => { showScreen('shop'); renderShop(); });
     $('btn-hub-inv').addEventListener('click',    () => { showScreen('inventory'); renderInventory(); });
     $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); renderTravel(); });
+
+    // Delegação global para botões de travel (evita problema de inert/listener)
+    document.addEventListener('click', e => {
+      const goBtn   = e.target.closest('[data-travel-go]');
+      const fishBtn = e.target.closest('[data-travel-fish]');
+      if (goBtn) {
+        const id = goBtn.getAttribute('data-travel-go');
+        const mDest = MAP_CATALOG[id];
+        setActiveMap(id);
+        if (mDest && mDest.requiredBoat) { showBoatNav(id); }
+        else { showScreen('travel'); renderTravel(); }
+      }
+      if (fishBtn) {
+        const mActive = getActiveMap();
+        if (mActive && mActive.requiredBoat) { showBoatNav(mActive.id); }
+        else { startGame('normal'); }
+      }
+    });
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
     // Tela de viagem
     $('btn-travel-back').addEventListener('click',() => showStoryHub());
@@ -1565,25 +1583,15 @@ const Game = (() => {
           const btn = document.createElement('button');
           btn.className = 'btn-primary btn-sm';
           btn.setAttribute('aria-label', (I18n.t('travel_fish_here') || '🎣') + ' — ' + (I18n.t(m.nameKey) || m.id));
+          btn.setAttribute('data-travel-fish', m.id);
           btn.textContent = I18n.t('travel_fish_here') || '🎣 Pescar aqui';
-          btn.addEventListener('click', () => {
-            const mActive = getActiveMap();
-            if (mActive && mActive.requiredBoat) { showBoatNav(mActive.id); }
-            else { startGame('normal'); }
-          });
           actionsDiv.appendChild(btn);
         } else if (hasVessel) {
           const btn = document.createElement('button');
           btn.className = 'btn-secondary btn-sm';
           btn.setAttribute('aria-label', 'Ir para ' + (I18n.t(m.nameKey) || m.id));
+          btn.setAttribute('data-travel-go', m.id);
           btn.textContent = '🗺️ Ir';
-          const capturedId = m.id;
-          btn.addEventListener('click', () => {
-            const mDest = MAP_CATALOG[capturedId];
-            setActiveMap(capturedId);
-            if (mDest && mDest.requiredBoat) { showBoatNav(capturedId); }
-            else { renderTravel(); }
-          });
           actionsDiv.appendChild(btn);
         } else {
           const span = document.createElement('span');
