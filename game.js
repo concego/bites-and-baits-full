@@ -95,6 +95,8 @@ const Game = (() => {
       vessel:       $('screen-vessel'),
       boatNav:      $('screen-boat-nav'),
     };
+    window.__screens_debug = screens;
+    window.__showScreen = showScreen;
 
     // Garante que só screen-lang está ativa no carregamento inicial
     Object.entries(screens).forEach(([key, s]) => {
@@ -2196,7 +2198,9 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
-    console.log('[BB] showScreen:', name);
+    // Setar data-screen no body para CSS e debugging
+    document.body.dataset.screen = name;
+
     // Desativa e bloqueia TODAS as telas conhecidas
     Object.entries(screens).forEach(([, s]) => {
       if (!s) return;
@@ -2205,7 +2209,6 @@ const Game = (() => {
     });
 
     // Barra inferior só fica visível dentro da tela de jogo (modo normal)
-    // Fora do jogo, garante que não intercepta cliques em nenhuma outra tela
     if (name !== 'game') {
       const bar = $('game-bottom-bar');
       if (bar) bar.classList.add('hidden');
@@ -2213,7 +2216,10 @@ const Game = (() => {
 
     // Ativa só a tela pedida
     const target = screens[name];
-    if (!target) return;
+    if (!target) {
+      document.body.dataset.screenError = 'NOT_FOUND:' + name;
+      return;
+    }
     target.classList.add('active');
     target.removeAttribute('inert');
 
