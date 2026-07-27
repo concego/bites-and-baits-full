@@ -137,6 +137,45 @@ const SHOP_CATALOG = [
   },
 ];
 
+
+// ── CATÁLOGO DE EMBARCAÇÕES (Estaleiro) ─────────────────────────────────────
+const VESSEL_CATALOG = [
+  {
+    id: 'canoe',
+    nameKey:  'vessel_canoe',
+    descKey:  'vessel_canoe_desc',
+    emoji:    '🛶',
+    price:    150,
+    holdCapacity: 8,       // max peixes no porão
+    unlocks:  ['lago_central'],
+    speed:    1,           // passos de remo por tilt
+  },
+  {
+    id: 'rowboat',
+    nameKey:  'vessel_rowboat',
+    descKey:  'vessel_rowboat_desc',
+    emoji:    '⛵',
+    price:    400,
+    holdCapacity: 16,
+    unlocks:  ['lago_central'],   // futuramente: novos mapas
+    speed:    2,
+  },
+  {
+    id: 'motorboat',
+    nameKey:  'vessel_motorboat',
+    descKey:  'vessel_motorboat_desc',
+    emoji:    '🚤',
+    price:    1200,
+    holdCapacity: 30,
+    unlocks:  ['lago_central'],   // futuramente: oceano, rios distantes
+    speed:    4,
+  },
+];
+
+function getVesselData(id) {
+  return VESSEL_CATALOG.find(v => v.id === id) ?? null;
+}
+
 /** Retorna um item do catálogo pelo id */
 function getShopItem(id) {
   return SHOP_CATALOG.find(i => i.id === id) ?? null;
