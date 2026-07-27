@@ -1374,19 +1374,31 @@ const Game = (() => {
 
   /** Abre a tela de navegação para o mapa selecionado */
   function showBoatNav(mapId) {
-    const map = MAP_CATALOG[mapId];
-    if (!map) { document.title = 'ERR:no_map:' + mapId; return; }
-    document.title = 'showBoatNav:' + mapId;
-    _boatState = { mapId, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
-    Inventory.clearHold();
-    const firstZone = map.zones && map.zones[0];
-    document.title = 'firstZone:' + (firstZone ? firstZone.id : 'NONE');
-    if (firstZone) _selectZone(firstZone.id, true);
-    _updateHoldHUD();
-    _updateBoatNavUI();
-    document.title = 'calling_showScreen_boatNav';
-    showScreen('boatNav');
-    document.title = 'after_showScreen_boatNav';
+    const _dbg = document.getElementById('dbg');
+    const _d = s => { if(_dbg) _dbg.textContent = s; };
+    try {
+      _d('BN1:map_lookup');
+      const map = MAP_CATALOG[mapId];
+      if (!map) { _d('ERR:no_map:' + mapId); return; }
+      _d('BN2:boatState');
+      _boatState = { mapId, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
+      _d('BN3:clearHold');
+      Inventory.clearHold();
+      _d('BN4:firstZone');
+      const firstZone = map.zones && map.zones[0];
+      _d('BN5:selectZone=' + (firstZone ? firstZone.id : 'NONE'));
+      if (firstZone) _selectZone(firstZone.id, true);
+      _d('BN6:updateHUD');
+      _updateHoldHUD();
+      _d('BN7:updateUI');
+      _updateBoatNavUI();
+      _d('BN8:showScreen');
+      showScreen('boatNav');
+      _d('BN9:done');
+    } catch(err) {
+      const _dbg2 = document.getElementById('dbg');
+      if(_dbg2) _dbg2.textContent = 'BN_ERR:' + err.message;
+    }
   }
 
   function _selectZone(zoneId, immediate) {
