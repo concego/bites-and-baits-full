@@ -1594,9 +1594,27 @@ const Game = (() => {
           btn.className = 'btn-secondary btn-sm';
           btn.setAttribute('aria-label', 'Ir para ' + (I18n.t(m.nameKey) || m.id));
           btn.setAttribute('data-travel-go', m.id);
-          // onclick inline como fallback absoluto:
-          btn.setAttribute('onclick', `window.__bb&&(window.__bb.setActiveMap('${m.id}'),window.__bb.showBoatNav?window.__bb.showBoatNav('${m.id}'):window.__bb.showScreen('boatNav'));`);
           btn.textContent = '🗺️ Ir';
+          // Listener direto no botão com log extensivo:
+          (function(capturedMapId, capturedBtn) {
+            capturedBtn.addEventListener('click', function(ev) {
+              try {
+                console.log('[TravelGo] click! mapId=', capturedMapId, 'target=', ev.target, 'current=', ev.currentTarget);
+                const mDest = MAP_CATALOG[capturedMapId];
+                console.log('[TravelGo] mDest=', mDest);
+                setActiveMap(capturedMapId);
+                if (mDest && mDest.requiredBoat) {
+                  console.log('[TravelGo] chamando showBoatNav');
+                  showBoatNav(capturedMapId);
+                } else {
+                  showScreen('travel');
+                  renderTravel();
+                }
+              } catch(e) {
+                console.error('[TravelGo] ERRO:', e);
+              }
+            }, true); // useCapture=true para garantir
+          })(m.id, btn);
           actionsDiv.appendChild(btn);
         } else {
           const span = document.createElement('span');
