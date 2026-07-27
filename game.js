@@ -165,10 +165,10 @@ const Game = (() => {
     $('btn-hub-inv').addEventListener('click',    () => { showScreen('inventory'); renderInventory(); });
     $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); renderTravel(); });
 
-    // Delegação global para botões de travel (evita problema de inert/listener)
+    // Delegação global para botões de travel
     document.addEventListener('click', e => {
-      if (e.target.tagName === 'BUTTON') {
-        document.title = 'CLICK:' + (e.target.getAttribute('data-travel-go') || e.target.textContent.slice(0,15));
+      if (e.target && e.target.getAttribute && e.target.getAttribute('data-travel-go')) {
+        alert('CLICOU GO: ' + e.target.getAttribute('data-travel-go'));
       }
       const goBtn   = e.target.closest('[data-travel-go]');
       const fishBtn = e.target.closest('[data-travel-fish]');
