@@ -1610,6 +1610,14 @@ const Game = (() => {
           btn.setAttribute('data-action', 'fish');
           btn.setAttribute('data-map-id', m.id);
           btn.textContent = I18n.t('travel_fish_here') || '🎣 Pescar aqui';
+          (function(mapId) {
+            btn.addEventListener('click', function() {
+              document.title = 'BTN_FISH:' + mapId;
+              var dest = MAP_CATALOG[mapId];
+              if (dest && dest.requiredBoat) { showBoatNav(mapId); }
+              else { startGame('normal'); }
+            });
+          }(m.id));
           actionsDiv.appendChild(btn);
         } else if (hasVessel) {
           const btn = document.createElement('button');
@@ -1619,6 +1627,15 @@ const Game = (() => {
           btn.setAttribute('data-action', 'go');
           btn.setAttribute('data-map-id', m.id);
           btn.textContent = '🗺️ Ir';
+          (function(mapId) {
+            btn.addEventListener('click', function() {
+              document.title = 'BTN_GO:' + mapId;
+              setActiveMap(mapId);
+              var dest = MAP_CATALOG[mapId];
+              if (dest && dest.requiredBoat) { showBoatNav(mapId); }
+              else { showScreen('travel'); renderTravel(); }
+            });
+          }(m.id));
           actionsDiv.appendChild(btn);
         } else {
           const span = document.createElement('span');
