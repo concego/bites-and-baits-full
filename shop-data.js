@@ -135,20 +135,6 @@ const SHOP_CATALOG = [
     emoji: '🎈', price: 130, qty: 1, stock: null, tier: 3,
     modifiers: { biteWindow: 1.9 },
   },
-
-  // ── BARCOS (Estaleiro) ──────────────────────────────────────────────
-  {
-    id: 'canoe',    type: 'boat', nameKey: 'boat_canoe',    descKey: 'shop_desc_canoe',
-    emoji: '🛶', price: 120, qty: 1, stock: null,
-    holdCapacity: 8,
-    unlocks: ['lago_central'],
-  },
-  {
-    id: 'rowboat',  type: 'boat', nameKey: 'boat_rowboat',  descKey: 'shop_desc_rowboat',
-    emoji: '⛵', price: 350, qty: 1, stock: null,
-    holdCapacity: 15,
-    unlocks: ['lago_central'],
-  },
 ];
 
 /** Retorna um item do catálogo pelo id */
