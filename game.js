@@ -178,7 +178,12 @@ const Game = (() => {
           const id = goEl.getAttribute('data-map-id');
           const mDest = MAP_CATALOG[id];
           setActiveMap(id);
-          if (mDest && mDest.requiredBoat) { showBoatNav(id); }
+          document.title = 'goEl:' + id + ':req=' + (mDest ? mDest.requiredBoat : 'NO_MAP');
+          if (mDest && mDest.requiredBoat) {
+            document.title = 'FORCING_boatNav';
+            showScreen('boatNav');
+            document.title = 'AFTER_boatNav';
+          }
           else { showScreen('travel'); renderTravel(); }
         }
         if (fishEl) {
