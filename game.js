@@ -1594,11 +1594,13 @@ const Game = (() => {
           btn.textContent = I18n.t('travel_fish_here') || '🎣 Pescar aqui';
           actionsDiv.appendChild(btn);
         } else if (hasVessel) {
-          const btn = document.createElement('button');
+          const btn = document.createElement('a');
           btn.className = 'btn-secondary btn-sm';
+          btn.setAttribute('href', '#go-' + m.id);
           btn.setAttribute('aria-label', 'Ir para ' + (I18n.t(m.nameKey) || m.id));
           btn.setAttribute('data-action', 'go');
           btn.setAttribute('data-map-id', m.id);
+          btn.setAttribute('role', 'button');
           btn.textContent = '🗺️ Ir';
           actionsDiv.appendChild(btn);
         } else {
