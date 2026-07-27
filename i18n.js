@@ -351,6 +351,47 @@ const I18n = (() => {
 
       // Nomes dos mapas
       map_rio_doce: 'Rio Doce',
+      // ── Lago Central / Barcos ─────────────────────────────
+      map_lago_central:        '🌊 Lago Central',
+      zone_raso:               '🪨 Raso',
+      zone_meio:               '🌀 Meio do Lago',
+      zone_fundo:              '🌑 Fundo',
+      // Estaleiro
+      vessel_title:            '⛵ Estaleiro',
+      vessel_owned_label:      'Sua embarcação',
+      vessel_none:             'Nenhuma embarcação',
+      vessel_buy:              'Comprar',
+      vessel_canoe:            'Canoa',
+      vessel_canoe_desc:       'Leve e silenciosa. Porão para 8 peixes.',
+      vessel_rowboat:          'Barco a Remo',
+      vessel_rowboat_desc:     'Mais estável. Porão para 16 peixes.',
+      vessel_motorboat:        'Barco a Motor',
+      vessel_motorboat_desc:   'Veloz e potente. Porão para 30 peixes.',
+      vessel_hold_capacity:    'Capacidade do porão',
+      vessel_unlocks:          'Desbloqueia',
+      vessel_already_owned:    'Você já possui esta embarcação.',
+      vessel_need_coins:       'Moedas insuficientes.',
+      vessel_purchased:        'Embarcação adquirida!',
+      // Navegação de barco
+      boat_nav_title:          '⛵ Navegando',
+      boat_zones_btn:          '🗺️ Zonas Conhecidas',
+      boat_zone_label:         'Zona atual',
+      boat_no_zone:            'Em aberto — selecione uma zona',
+      boat_rowing:             'Remando...',
+      boat_arrived:            'Chegou!',
+      boat_cast_hint:          'Incline para frente para lançar',
+      boat_hold_label:         'Porão',
+      boat_hold_full:          'Porão cheio!',
+      boat_discard_prompt:     'Descartar o menor peixe para continuar?',
+      boat_discard_confirm:    'Descartar',
+      boat_discard_cancel:     'Voltar ao Hub',
+      boat_unload_done:        'peixes descarregados no inventário.',
+      boat_return_hub:         '🏠 Retornar ao Hub',
+      // Sonar
+      sonar_far:               'Longe',
+      sonar_near:              'Próximo',
+      sonar_arrived:           'Chegou na zona!',
+
     },
 
     en: {
@@ -686,6 +727,47 @@ const I18n = (() => {
 
       // Map names
       map_rio_doce: 'Doce River',
+      // ── Lago Central / Boats ──────────────────────────────
+      map_lago_central:        '🌊 Central Lake',
+      zone_raso:               '🪨 Shallows',
+      zone_meio:               '🌀 Mid-Lake',
+      zone_fundo:              '🌑 Deep Water',
+      // Boatyard
+      vessel_title:            '⛵ Boatyard',
+      vessel_owned_label:      'Your vessel',
+      vessel_none:             'No vessel',
+      vessel_buy:              'Buy',
+      vessel_canoe:            'Canoe',
+      vessel_canoe_desc:       'Light and quiet. Hold for 8 fish.',
+      vessel_rowboat:          'Rowboat',
+      vessel_rowboat_desc:     'More stable. Hold for 16 fish.',
+      vessel_motorboat:        'Motorboat',
+      vessel_motorboat_desc:   'Fast and powerful. Hold for 30 fish.',
+      vessel_hold_capacity:    'Hold capacity',
+      vessel_unlocks:          'Unlocks',
+      vessel_already_owned:    'You already own this vessel.',
+      vessel_need_coins:       'Not enough coins.',
+      vessel_purchased:        'Vessel purchased!',
+      // Boat navigation
+      boat_nav_title:          '⛵ Navigating',
+      boat_zones_btn:          '🗺️ Known Zones',
+      boat_zone_label:         'Current zone',
+      boat_no_zone:            'Open water — select a zone',
+      boat_rowing:             'Rowing...',
+      boat_arrived:            'Arrived!',
+      boat_cast_hint:          'Tilt forward to cast',
+      boat_hold_label:         'Hold',
+      boat_hold_full:          'Hold full!',
+      boat_discard_prompt:     'Discard the smallest fish to continue?',
+      boat_discard_confirm:    'Discard',
+      boat_discard_cancel:     'Return to Hub',
+      boat_unload_done:        'fish unloaded to inventory.',
+      boat_return_hub:         '🏠 Return to Hub',
+      // Sonar
+      sonar_far:               'Far',
+      sonar_near:              'Close',
+      sonar_arrived:           'Arrived at zone!',
+
     },
   };
 
