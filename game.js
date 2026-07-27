@@ -163,7 +163,7 @@ const Game = (() => {
     // Hub da cidade
     $('btn-hub-shop').addEventListener('click',   () => { showScreen('shop'); renderShop(); });
     $('btn-hub-inv').addEventListener('click',    () => { showScreen('inventory'); renderInventory(); });
-    $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); renderTravel(); });
+    $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); setTimeout(renderTravel, 50); });
 
     // Listener ESTÁTICO no travel-dest-list para botões de ir/pescar
     const _travelList = $('travel-dest-list');
