@@ -1556,24 +1556,7 @@ const Game = (() => {
               ? `<span class="travel-item-vessel" style="color:#81c784">🛶 ${I18n.t(Inventory.BOAT_CATALOG[Inventory.getEquippedBoat()]?.nameKey||'')}</span>`
               : ''}
         </div>
-        <div class="travel-item-actions">
-          ${isActive
-            ? `<button class="btn-primary btn-sm travel-btn-fish"
-                       data-map-id="${m.id}"
-                       aria-label="${I18n.t('travel_fish_here')} — ${I18n.t(m.nameKey) || m.id}">
-                 ${I18n.t('travel_fish_here')}
-               </button>`
-            : hasVessel
-              ? `<button class="btn-secondary btn-sm travel-btn-go"
-                         data-map-id="${m.id}"
-                         aria-label="Ir para ${I18n.t(m.nameKey) || m.id}">
-                   🗺️ Ir
-                 </button>`
-              : `<span class="travel-locked" aria-label="${I18n.t('travel_locked')}">
-                   ${I18n.t('travel_locked')}
-                 </span>`
-          }
-        </div>`;
+        <div class="travel-item-actions"></div>`;
 
       // Listeners diretos nos botões do li recém-criado
       const fishBtn2 = li.querySelector('.travel-btn-fish');
