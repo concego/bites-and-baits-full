@@ -119,7 +119,7 @@ const GameTime = (() => {
   /** String formatada para o HUD: "Seg, 03 Mar  08:00" */
   function formatHUD(lang) {
     const t    = load();
-    const lang_= lang || (typeof I18n !== 'undefined' ? I18n.lang() : 'pt');
+    const lang_= lang || (typeof I18n !== 'undefined' && typeof I18n.getLang === 'function' ? I18n.getLang() : 'pt');
     const names = lang_ === 'en' ? MONTH_NAMES_EN : MONTH_NAMES_PT;
     const dnames= lang_ === 'en' ? DAY_NAMES_EN   : DAY_NAMES_PT;
     const wd   = dnames[_weekday(t)];
