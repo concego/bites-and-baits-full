@@ -165,26 +165,30 @@ const Game = (() => {
     $('btn-hub-inv').addEventListener('click',    () => { showScreen('inventory'); renderInventory(); });
     $('btn-hub-travel').addEventListener('click', () => { showScreen('travel'); renderTravel(); });
 
-    // Delegação global para botões de travel
-    document.addEventListener('click', e => {
-      if (e.target && e.target.getAttribute && e.target.getAttribute('data-travel-go')) {
-        alert('CLICOU GO: ' + e.target.getAttribute('data-travel-go'));
-      }
-      const goBtn   = e.target.closest('[data-travel-go]');
-      const fishBtn = e.target.closest('[data-travel-fish]');
-      if (goBtn) {
-        const id = goBtn.getAttribute('data-travel-go');
-        const mDest = MAP_CATALOG[id];
-        setActiveMap(id);
-        if (mDest && mDest.requiredBoat) { showBoatNav(id); }
-        else { showScreen('travel'); renderTravel(); }
-      }
-      if (fishBtn) {
-        const mActive = getActiveMap();
-        if (mActive && mActive.requiredBoat) { showBoatNav(mActive.id); }
-        else { startGame('normal'); }
-      }
-    });
+    // Listener ESTÁTICO no travel-dest-list para botões de ir/pescar
+    const _travelList = $('travel-dest-list');
+    if (_travelList) {
+      _travelList.addEventListener('click', e => {
+        console.log('[travelList] click target:', e.target.tagName, e.target.className);
+        const goEl   = e.target.closest('[data-action="go"]');
+        const fishEl = e.target.closest('[data-action="fish"]');
+        if (goEl) {
+          const id = goEl.getAttribute('data-map-id');
+          console.log('[travelList] go id=', id);
+          const mDest = MAP_CATALOG[id];
+          setActiveMap(id);
+          if (mDest && mDest.requiredBoat) { showBoatNav(id); }
+          else { showScreen('travel'); renderTravel(); }
+        }
+        if (fishEl) {
+          const mActive = getActiveMap();
+          if (mActive && mActive.requiredBoat) { showBoatNav(mActive.id); }
+          else { startGame('normal'); }
+        }
+      });
+    }
+
+
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
     // Tela de viagem
     $('btn-travel-back').addEventListener('click',() => showStoryHub());
@@ -1586,35 +1590,17 @@ const Game = (() => {
           const btn = document.createElement('button');
           btn.className = 'btn-primary btn-sm';
           btn.setAttribute('aria-label', (I18n.t('travel_fish_here') || '🎣') + ' — ' + (I18n.t(m.nameKey) || m.id));
-          btn.setAttribute('data-travel-fish', m.id);
+          btn.setAttribute('data-action', 'fish');
+          btn.setAttribute('data-map-id', m.id);
           btn.textContent = I18n.t('travel_fish_here') || '🎣 Pescar aqui';
           actionsDiv.appendChild(btn);
         } else if (hasVessel) {
           const btn = document.createElement('button');
           btn.className = 'btn-secondary btn-sm';
           btn.setAttribute('aria-label', 'Ir para ' + (I18n.t(m.nameKey) || m.id));
-          btn.setAttribute('data-travel-go', m.id);
+          btn.setAttribute('data-action', 'go');
+          btn.setAttribute('data-map-id', m.id);
           btn.textContent = '🗺️ Ir';
-          // Listener direto no botão com log extensivo:
-          (function(capturedMapId, capturedBtn) {
-            capturedBtn.addEventListener('click', function(ev) {
-              try {
-                console.log('[TravelGo] click! mapId=', capturedMapId, 'target=', ev.target, 'current=', ev.currentTarget);
-                const mDest = MAP_CATALOG[capturedMapId];
-                console.log('[TravelGo] mDest=', mDest);
-                setActiveMap(capturedMapId);
-                if (mDest && mDest.requiredBoat) {
-                  console.log('[TravelGo] chamando showBoatNav');
-                  showBoatNav(capturedMapId);
-                } else {
-                  showScreen('travel');
-                  renderTravel();
-                }
-              } catch(e) {
-                console.error('[TravelGo] ERRO:', e);
-              }
-            }, true); // useCapture=true para garantir
-          })(m.id, btn);
           actionsDiv.appendChild(btn);
         } else {
           const span = document.createElement('span');
