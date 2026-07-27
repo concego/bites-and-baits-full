@@ -1558,33 +1558,40 @@ const Game = (() => {
         </div>
         <div class="travel-item-actions"></div>`;
 
-      // Listeners diretos nos botões do li recém-criado
-      const fishBtn2 = li.querySelector('.travel-btn-fish');
-      const goBtn2   = li.querySelector('.travel-btn-go');
-
-      if (fishBtn2) {
-        fishBtn2.addEventListener('click', () => {
-          const mActive = getActiveMap();
-          if (mActive && mActive.requiredBoat) {
-            showBoatNav(mActive.id);
-          } else {
-            startGame('normal');
-          }
-        });
-      }
-      if (goBtn2) {
-        goBtn2.onclick = () => {
-          console.log('[Travel goBtn] onclick id=', goBtn2.dataset.mapId);
-          const id    = goBtn2.dataset.mapId;
-          const mDest = MAP_CATALOG[id];
-          setActiveMap(id);
-          if (mDest && mDest.requiredBoat) {
-            showBoatNav(id);
-          } else {
-            renderTravel();
-          }
-          return false;
-        };
+      // Criar botões via createElement (evita problema de listener em innerHTML+inert)
+      const actionsDiv = li.querySelector('.travel-item-actions');
+      if (actionsDiv) {
+        if (isActive) {
+          const btn = document.createElement('button');
+          btn.className = 'btn-primary btn-sm';
+          btn.setAttribute('aria-label', (I18n.t('travel_fish_here') || '🎣') + ' — ' + (I18n.t(m.nameKey) || m.id));
+          btn.textContent = I18n.t('travel_fish_here') || '🎣 Pescar aqui';
+          btn.addEventListener('click', () => {
+            const mActive = getActiveMap();
+            if (mActive && mActive.requiredBoat) { showBoatNav(mActive.id); }
+            else { startGame('normal'); }
+          });
+          actionsDiv.appendChild(btn);
+        } else if (hasVessel) {
+          const btn = document.createElement('button');
+          btn.className = 'btn-secondary btn-sm';
+          btn.setAttribute('aria-label', 'Ir para ' + (I18n.t(m.nameKey) || m.id));
+          btn.textContent = '🗺️ Ir';
+          const capturedId = m.id;
+          btn.addEventListener('click', () => {
+            const mDest = MAP_CATALOG[capturedId];
+            setActiveMap(capturedId);
+            if (mDest && mDest.requiredBoat) { showBoatNav(capturedId); }
+            else { renderTravel(); }
+          });
+          actionsDiv.appendChild(btn);
+        } else {
+          const span = document.createElement('span');
+          span.className = 'travel-locked';
+          span.setAttribute('aria-label', I18n.t('travel_locked'));
+          span.textContent = I18n.t('travel_locked') || '🔒';
+          actionsDiv.appendChild(span);
+        }
       }
 
       list.appendChild(li);
