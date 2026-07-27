@@ -1342,18 +1342,24 @@ const Game = (() => {
 
   /** Abre a tela de navegação para o mapa selecionado */
   function showBoatNav(mapId) {
-    const map = MAP_CATALOG[mapId];
-    if (!map) return;
-    _boatState = { mapId, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
-    Inventory.clearHold();
+    try {
+      const map = MAP_CATALOG[mapId];
+      if (!map) { console.error('[showBoatNav] mapa não encontrado:', mapId); return; }
+      _boatState = { mapId, zoneId: null, targetZoneId: null, rowProgress: 0, arrived: false };
+      Inventory.clearHold();
 
-    // Zona padrão: primeira do mapa
-    const firstZone = map.zones && map.zones[0];
-    if (firstZone) _selectZone(firstZone.id, true);
+      // Zona padrão: primeira do mapa
+      const firstZone = map.zones && map.zones[0];
+      if (firstZone) _selectZone(firstZone.id, true);
 
-    _updateHoldHUD();
-    _updateBoatNavUI();
-    showScreen('boatNav');
+      _updateHoldHUD();
+      _updateBoatNavUI();
+      console.log('[showBoatNav] chamando showScreen boatNav, screens:', Object.keys(screens));
+      showScreen('boatNav');
+      console.log('[showBoatNav] showScreen chamado');
+    } catch(err) {
+      console.error('[showBoatNav] erro:', err);
+    }
   }
 
   function _selectZone(zoneId, immediate) {
