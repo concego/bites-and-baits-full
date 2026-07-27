@@ -45,6 +45,8 @@ const Inventory = (() => {
   const BAITS_VERSION = '1';   // incrementar aqui força reset do estoque
   const STORAGE_KEY_EQUIP    = 'bb_equip';     // { bait:'worm', rod:'rod_basic', ... }
   const STORAGE_KEY_PROTECTED = 'bb_protected'; // Set de ids de peixes protegidos
+  const STORAGE_KEY_VESSEL   = 'bb_vessel';
+  const STORAGE_KEY_HOLD     = 'bb_hold';
 
   // Estoque inicial generoso para testes
   const DEFAULT_BAITS = {
@@ -108,7 +110,7 @@ const Inventory = (() => {
    * Adiciona um peixe pescado ao inventário.
    * Retorna o item criado { weight, value, ... }.
    */
-  function addFish(fish) {
+  function addFish(fish, dryRun = false) {
     const weight = rollWeight(fish);
     const value  = calcValue(fish, weight);
     const item   = {
@@ -120,9 +122,11 @@ const Inventory = (() => {
       special:  fish.special ?? false,
       caughtAt: Date.now(),
     };
-    const items = _load();
-    items.push(item);
-    _save(items);
+    if (!dryRun) {
+      const items = _load();
+      items.push(item);
+      _save(items);
+    }
     return item;
   }
 
@@ -419,7 +423,29 @@ const Inventory = (() => {
     sellBaits,
     sellEquip,
     // Equipamentos possuídos
+
+  // ── EMBARCAÇÕES ──────────────────────────────────────────────────────────
+  function ownedVessel() { return localStorage.getItem(STORAGE_KEY_VESSEL) || null; }
+  function buyVessel(id) { localStorage.setItem(STORAGE_KEY_VESSEL, id); }
+  function canAccessMap(req) {
+    if (!req) return true;
+    const o = ownedVessel();
+    if (!o) return false;
+    const R = { canoe:1, rowboat:2, motorboat:3 };
+    return (R[o]??0) >= (R[req]??99);
+  }
+  // ── PORÃO ─────────────────────────────────────────────────────────────────
+  function holdItems() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY_HOLD)||'[]'); } catch{return[];} }
+  function _saveHold(a) { localStorage.setItem(STORAGE_KEY_HOLD, JSON.stringify(a)); }
+  function addToHold(fish) { const a=holdItems(); a.push(fish); _saveHold(a); return {ok:true}; }
+  function removeFromHold(i) { const a=holdItems(); if(i<0||i>=a.length) return false; a.splice(i,1); _saveHold(a); return true; }
+  function unloadHold() { const a=holdItems(); a.forEach(f=>addItem(f)); _saveHold([]); return a; }
+  function clearHold() { _saveHold([]); }
+
     addEquip,
     getOwnedEquip,
+    // Vessel + Hold
+    ownedVessel, buyVessel, canAccessMap,
+    holdItems, addToHold, removeFromHold, unloadHold, clearHold,
   };
 })();
