@@ -1591,10 +1591,12 @@ const Game = (() => {
       }
       if (goBtn2) {
         goBtn2.addEventListener('click', () => {
+          console.log('[Travel goBtn] clicado! id=', goBtn2.dataset.mapId);
           const id    = goBtn2.dataset.mapId;
           const mDest = MAP_CATALOG[id];
           setActiveMap(id);
           if (mDest && mDest.requiredBoat) {
+            console.log('[Travel goBtn] abrindo boatNav para', id);
             showBoatNav(id);
           } else {
             renderTravel();
