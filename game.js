@@ -2257,6 +2257,15 @@ const Game = (() => {
     Audio.stopReel();
   }
 
+  // Modo de teste: ?testcoins=N injeta moedas no localStorage
+  (function() {
+    const p = new URLSearchParams(window.location.search).get('testcoins');
+    if (p) {
+      const n = parseInt(p);
+      if (!isNaN(n)) localStorage.setItem('bb_coins', String(n));
+    }
+  })();
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
