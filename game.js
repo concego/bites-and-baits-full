@@ -1569,30 +1569,31 @@ const Game = (() => {
           }
         </div>`;
 
-      // Pescar no mapa atual
-      li.querySelector('.travel-btn-fish')?.addEventListener('click', () => {
+      list.appendChild(li);
+    });
+
+    // Delegation única no container
+    list.addEventListener('click', e => {
+      const fishBtn = e.target.closest('.travel-btn-fish');
+      const goBtn   = e.target.closest('.travel-btn-go');
+      if (fishBtn) {
         const mActive = getActiveMap();
-        if (mActive.requiredBoat) {
+        if (mActive && mActive.requiredBoat) {
           showBoatNav(mActive.id);
         } else {
           startGame('normal');
         }
-      });
-
-      // Viajar para outro mapa
-      li.querySelector('.travel-btn-go')?.addEventListener('click', e => {
-        const id  = e.currentTarget.dataset.mapId;
+      }
+      if (goBtn) {
+        const id    = goBtn.dataset.mapId;
         const mDest = MAP_CATALOG[id];
         setActiveMap(id);
         if (mDest && mDest.requiredBoat) {
-          // Mapa com barco: abrir navegação
           showBoatNav(id);
         } else {
           renderTravel();
         }
-      });
-
-      list.appendChild(li);
+      }
     });
   }
 
