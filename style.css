@@ -1345,3 +1345,54 @@ html, body {
   font-weight: 700;
   letter-spacing: .04em;
 }
+
+
+/* === ESTALEIRO === */
+.vessel-owned{width:100%;max-width:480px;margin-bottom:16px;text-align:center}
+.vessel-owned-label{font-size:.85rem;color:var(--text-muted,#888);margin-bottom:6px}
+.vessel-current-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:1rem}
+.vessel-emoji{font-size:1.8rem}
+.vessel-name{font-weight:700}
+.vessel-hold{font-size:.8rem;color:var(--text-muted,#aaa);margin-left:auto}
+.vessel-shop{width:100%;max-width:480px}
+.vessel-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.vessel-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.vessel-item--owned{border-color:var(--accent,#4caf50)}
+.vessel-item-info{display:flex;align-items:center;gap:12px;flex:1}
+.vessel-item-text{display:flex;flex-direction:column;gap:3px}
+.vessel-desc{font-size:.8rem;color:var(--text-muted,#aaa);margin:0}
+.vessel-hold-tag{font-size:.75rem;color:var(--text-muted,#888)}
+.vessel-badge-owned{font-size:1.4rem}
+
+/* === NAVEGACAO DE BARCO === */
+#screen-boat-nav{gap:14px;padding:16px;background:linear-gradient(180deg,#0a1628 0%,#0d2b4a 50%,#112244 100%);color:#e8f4fd}
+.boat-nav-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:480px}
+.boat-hold-hud{display:flex;gap:4px;align-items:center;font-size:.9rem;background:rgba(0,0,0,.3);padding:4px 10px;border-radius:20px}
+.boat-zone-display{text-align:center}
+.boat-zone-label{font-size:.8rem;color:#8ab4c8;margin:0 0 4px}
+.boat-zone-name{font-size:1.3rem;font-weight:700;margin:0;min-height:1.6em}
+.boat-row-status{font-size:.9rem;color:#8ab4c8;min-height:1.4em;text-align:center;font-style:italic}
+.boat-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+
+/* === SONAR === */
+.boat-sonar{position:relative;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,#0a2a1e 0%,#041510 100%);border:2px solid #1a4a30;overflow:hidden;flex-shrink:0}
+.sonar-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(0,200,80,.25)}
+.sonar-ring--1{width:40%;height:40%}
+.sonar-ring--2{width:65%;height:65%}
+.sonar-ring--3{width:90%;height:90%}
+.boat-sonar::after{content:'';position:absolute;top:50%;left:50%;width:50%;height:2px;background:linear-gradient(90deg,rgba(0,220,80,0),rgba(0,220,80,.8));transform-origin:left center;animation:sonar-sweep 2s linear infinite}
+@keyframes sonar-sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.sonar-blip{position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:#00e050;box-shadow:0 0 6px #00e050;transform:translate(-50%,-50%) translate(42%,0);transition:transform .4s ease}
+.sonar-blip--arrived{background:#ffdd00;box-shadow:0 0 12px #ffdd00;animation:blip-ping .5s ease infinite alternate}
+@keyframes blip-ping{from{box-shadow:0 0 6px #ffdd00}to{box-shadow:0 0 20px #ffdd00}}
+
+/* === MODAL ZONAS === */
+.zones-list{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:8px}
+.zone-item{width:100%}
+.zone-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:inherit;cursor:pointer;font-size:1rem;transition:background .15s}
+.zone-emoji{font-size:1.5rem}
+.zone-name{flex:1;font-weight:600}
+.zone-dist{font-size:.8rem;color:#8ab4c8}
+.zone-item--active .zone-btn{border-color:#4caf50}
+.hold-discard-info{margin:8px 0;font-size:.9rem}
+.modal-actions{display:flex;gap:10px;flex-direction:column}
