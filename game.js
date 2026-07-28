@@ -1411,9 +1411,13 @@ const Game = (() => {
       if (!v) return;
       if (!Inventory.spendCoins(v.price)) return;
       Inventory.addEquip(v.id);
-      // Equipa automaticamente se for o primeiro barco
-      if (!Inventory.getActiveBoat()) Inventory.setActiveBoat(v.id);
+      // Garante que o barco comprado seja registrado como o ativo se for o primeiro
+      if (!Inventory.getActiveBoat()) {
+          Inventory.setActiveBoat(v.id);
+      }
+      // Força o salvamento e re-renderização
       renderVessel();
+      if (typeof _refreshHubHUD === 'function') _refreshHubHUD();
     };
 
     ownedList.onclick = e => {
@@ -1438,19 +1442,10 @@ const Game = (() => {
 
     // Barcos que o jogador possui (via bb_owned_equip)
     const ownedEquip = Inventory.getOwnedEquip();
-    const boatHierarchy = ['canoe', 'rowboat', 'lancha', 'veleiro', 'iate'];
-
     MAPS.forEach(m => {
       const isActive  = m.id === map.id;
-      // Verifica se o jogador tem o barco exigido ou um superior
-      let hasBoat = !m.requiredBoat;
-      if (m.requiredBoat) {
-        const reqIdx = boatHierarchy.indexOf(m.requiredBoat);
-        hasBoat = ownedEquip.some(id => {
-          const ownedIdx = boatHierarchy.indexOf(id);
-          return (ownedIdx !== -1) ? (ownedIdx >= reqIdx) : (id === m.requiredBoat);
-        });
-      }
+      // Cada mapa exige um barco específico (sem hierarquia)
+      const hasBoat = !m.requiredBoat || ownedEquip.includes(m.requiredBoat);
       const li = document.createElement('li');
       li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
 
