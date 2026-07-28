@@ -146,3 +146,28 @@ function getShopItem(id) {
 function getShopByType(type) {
   return SHOP_CATALOG.filter(i => i.type === type);
 }
+
+
+// ── EMBARCAÇÕES ────────────────────────────────────────────────────────────
+const VESSELS_CATALOG = [
+  {
+    id:          'canoe',
+    nameKey:     'boat_canoe',
+    descKey:     'shop_desc_canoe',
+    emoji:       '🛶',
+    price:       200,
+    holdCap:     8,   // peixes máximos no porão
+  },
+  {
+    id:          'rowboat',
+    nameKey:     'boat_rowboat',
+    descKey:     'shop_desc_rowboat',
+    emoji:       '⛵',
+    price:       500,
+    holdCap:     15,
+  },
+];
+
+function getVessel(id) {
+  return VESSELS_CATALOG.find(v => v.id === id) ?? null;
+}
