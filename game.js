@@ -92,6 +92,13 @@ const Game = (() => {
       const boatId = _qp.get('testboat') || 'canoe';
       Inventory.addEquip(boatId);
     }
+    if (_qp.has('testlang')) {
+      const langCode = _qp.get('testlang');
+      if (langCode) { I18n.setLang(langCode); }
+    }
+    if (_qp.has('testlang') || _qp.has('clearlang')) {
+      if (_qp.has('clearlang')) localStorage.removeItem('bb_lang');
+    }
     if (_qp.has('testzone')) {
       // ex: ?testzone=lago_central:raso,meio
       const [mapId, zonesStr] = _qp.get('testzone').split(':');
