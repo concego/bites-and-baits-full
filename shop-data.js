@@ -149,22 +149,68 @@ function getShopByType(type) {
 
 
 // ── EMBARCAÇÕES ────────────────────────────────────────────────────────────
+// category: 'portable' | 'garage' | 'dock'
+// dockFee: taxa/viagem para barcos de doca (quando sem doca privada na casa)
 const VESSELS_CATALOG = [
   {
-    id:          'canoe',
-    nameKey:     'boat_canoe',
-    descKey:     'shop_desc_canoe',
-    emoji:       '🛶',
-    price:       200,
-    holdCap:     8,   // peixes máximos no porão
+    id:       'canoe',
+    nameKey:  'boat_canoe',
+    descKey:  'shop_desc_canoe',
+    emoji:    '🛶',
+    price:    200,
+    holdCap:  8,
+    category: 'portable',
+    dockFee:  0,
   },
   {
-    id:          'rowboat',
-    nameKey:     'boat_rowboat',
-    descKey:     'shop_desc_rowboat',
-    emoji:       '⛵',
-    price:       500,
-    holdCap:     15,
+    id:       'rowboat',
+    nameKey:  'boat_rowboat',
+    descKey:  'shop_desc_rowboat',
+    emoji:    '⛵',
+    price:    500,
+    holdCap:  15,
+    category: 'portable',
+    dockFee:  0,
+  },
+  {
+    id:       'lancha',
+    nameKey:  'boat_lancha',
+    descKey:  'shop_desc_lancha',
+    emoji:    '🚤',
+    price:    1500,
+    holdCap:  30,
+    category: 'garage',
+    dockFee:  0,
+  },
+  {
+    id:       'veleiro',
+    nameKey:  'boat_veleiro',
+    descKey:  'shop_desc_veleiro',
+    emoji:    '⛵',
+    price:    3000,
+    holdCap:  50,
+    category: 'garage',
+    dockFee:  0,
+  },
+  {
+    id:       'iate',
+    nameKey:  'boat_iate',
+    descKey:  'shop_desc_iate',
+    emoji:    '🛥️',
+    price:    8000,
+    holdCap:  100,
+    category: 'dock',
+    dockFee:  300,
+  },
+  {
+    id:       'navio_pesca',
+    nameKey:  'boat_navio_pesca',
+    descKey:  'shop_desc_navio_pesca',
+    emoji:    '🚢',
+    price:    20000,
+    holdCap:  250,
+    category: 'dock',
+    dockFee:  700,
   },
 ];
 
