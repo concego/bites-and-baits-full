@@ -46,6 +46,7 @@ const Game = (() => {
   let best             = parseInt(localStorage.getItem('bb_best') || '0');
   let currentFish      = null;   // espécie ativa (do FISH_CATALOG)
   let activeMap        = null;   // mapa ativo (do MAP_CATALOG)
+  let activeZone       = null;   // zona ativa no mapa atual
   let _lastCaughtItem  = null;   // último item adicionado ao inventário
   let tension          = 0;      // 0..100
   let fishPull         = 0;
@@ -137,6 +138,11 @@ const Game = (() => {
     // Mapa inicial
     activeMap = getActiveMap();
     ui.scene.classList.add(activeMap.sceneClass);
+    // Garantir que o lago_margem já começa com zona 'margem' conhecida
+    if (activeMap.zones && activeMap.zones.length) {
+      Inventory.knowZone(activeMap.id, activeMap.zones[0].id);
+    }
+    activeZone = Inventory.getActiveZone(activeMap.id) || (activeMap.zones && activeMap.zones[0].id) || null;
 
     // Preferências de acessibilidade — carrega antes de tudo
     A11y.init();
@@ -210,6 +216,8 @@ const Game = (() => {
 
     // ── Barra inferior (modo história) ────────────────────────────────────
     $('btn-bar-equip').addEventListener('click', () => openEquipPanel());
+    $('btn-bar-zone')?.addEventListener('click', () => openZoneModal());
+    $('btn-zone-modal-back')?.addEventListener('click', () => closeZoneModal());
     $('btn-bar-hub').addEventListener('click', () => {
       Sensors.stop();
       goToMenu();
@@ -530,6 +538,7 @@ const Game = (() => {
       updateScore();
       fishEls = [];
       spawnBackgroundFish();
+      _updateZoneHud();
       Sensors.start();
       Audio.startAmbient();
       enterState('IDLE');
@@ -627,7 +636,7 @@ const Game = (() => {
         ui.rod.style.transform = 'translateX(-50%) rotate(-10deg)';
 
         // Sorteia o peixe agora para que ele já apareça nadando
-        currentFish = pickFishFromMap(activeMap);
+        currentFish = pickFishFromMap(activeMap, activeZone);
         fishPull    = currentFish.pull;
         fishTired   = false;
         _fishStrengthMult = 1.0;
@@ -1192,6 +1201,26 @@ const Game = (() => {
     showScreen('storyHub');
   }
 
+  /** Salva o mapa ativo e atualiza o estado interno */
+  function setActiveMap(mapId) {
+    const map = MAP_CATALOG[mapId];
+    if (!map) return;
+    localStorage.setItem('bb_map', mapId);
+    // Atualiza cena visual
+    if (activeMap) ui.scene.classList.remove(activeMap.sceneClass);
+    activeMap = map;
+    ui.scene.classList.add(activeMap.sceneClass);
+    // Revelar primeira zona se nunca visitado
+    if (activeMap.zones && activeMap.zones.length) {
+      const firstPublic = activeMap.zones.find(z => !z.hidden);
+      if (firstPublic) Inventory.knowZone(activeMap.id, firstPublic.id);
+    }
+    // Restaurar zona ativa
+    activeZone = Inventory.getActiveZone(activeMap.id)
+              || (activeMap.zones && activeMap.zones.find(z => !z.hidden)?.id)
+              || null;
+  }
+
   /** Renderiza a tela de seleção de destino */
   function renderTravel() {
     const map     = getActiveMap();
@@ -1204,41 +1233,42 @@ const Game = (() => {
     if (!list) return;
     list.innerHTML = '';
 
-    // Barco do jogador (futuramente virá do inventário; por ora 'canoe' padrão)
-    const playerVessel = localStorage.getItem('bb_vessel') || 'canoe';
+    // Barcos que o jogador possui (via bb_owned_equip)
+    const ownedEquip = Inventory.getOwnedEquip();
 
     MAPS.forEach(m => {
-      const isActive   = m.id === map.id;
-      const hasVessel  = !m.requiredVessel || m.requiredVessel === playerVessel;
+      const isActive  = m.id === map.id;
+      const hasBoat   = !m.requiredBoat || ownedEquip.includes(m.requiredBoat);
       const li = document.createElement('li');
       li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
+
+      let actionsHtml;
+      if (isActive) {
+        actionsHtml = `<button class="btn-primary btn-sm travel-btn-fish"
+                               data-map-id="${m.id}"
+                               aria-label="${I18n.t('travel_fish_here')} — ${I18n.t(m.nameKey) || m.id}">
+                         ${I18n.t('travel_fish_here')}
+                       </button>`;
+      } else if (hasBoat) {
+        actionsHtml = `<button class="btn-secondary btn-sm travel-btn-go"
+                               data-map-id="${m.id}"
+                               aria-label="${I18n.t('travel_go_to') || 'Ir para'} ${I18n.t(m.nameKey) || m.id}">
+                         🗺️ ${I18n.t('travel_go') || 'Ir'}
+                       </button>`;
+      } else {
+        const lockMsg = m.requiredBoat
+          ? `🚣 ${I18n.t('travel_need_boat') || 'Precisa de barco'}: ${I18n.t('boat_' + m.requiredBoat) || m.requiredBoat}`
+          : I18n.t('travel_locked') || '🔒';
+        actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
+      }
 
       li.innerHTML = `
         <span class="travel-item-emoji" aria-hidden="true">${m.emoji || '🏞️'}</span>
         <div class="travel-item-info">
           <span class="travel-item-name">${I18n.t(m.nameKey) || m.id}</span>
-          ${m.requiredVessel
-            ? `<span class="travel-item-vessel">⛵ ${m.requiredVessel}</span>`
-            : ''}
+          ${m.requiredBoat ? `<span class="travel-item-vessel" aria-hidden="true">🚣</span>` : ''}
         </div>
-        <div class="travel-item-actions">
-          ${isActive
-            ? `<button class="btn-primary btn-sm travel-btn-fish"
-                       data-map-id="${m.id}"
-                       aria-label="${I18n.t('travel_fish_here')} — ${I18n.t(m.nameKey) || m.id}">
-                 ${I18n.t('travel_fish_here')}
-               </button>`
-            : hasVessel
-              ? `<button class="btn-secondary btn-sm travel-btn-go"
-                         data-map-id="${m.id}"
-                         aria-label="Ir para ${I18n.t(m.nameKey) || m.id}">
-                   🗺️ Ir
-                 </button>`
-              : `<span class="travel-locked" aria-label="${I18n.t('travel_locked')}">
-                   ${I18n.t('travel_locked')}
-                 </span>`
-          }
-        </div>`;
+        <div class="travel-item-actions">${actionsHtml}</div>`;
 
       // Pescar no mapa atual
       li.querySelector('.travel-btn-fish')?.addEventListener('click', () => {
@@ -1247,13 +1277,85 @@ const Game = (() => {
 
       // Viajar para outro mapa
       li.querySelector('.travel-btn-go')?.addEventListener('click', e => {
-        const id = e.currentTarget.dataset.mapId;
-        setActiveMap(id);
-        renderTravel(); // atualiza a lista
+        const destId = e.currentTarget.dataset.mapId;
+        setActiveMap(destId);
+        showScreen('game');
+        startGame('normal');
       });
 
       list.appendChild(li);
     });
+  }
+
+  // ── Modal de Zonas de Pesca ──────────────────────────────────────────────
+
+  function openZoneModal() {
+    const modal = $('zone-modal');
+    const list  = $('zone-modal-list');
+    if (!modal || !list) return;
+
+    const map = activeMap;
+    if (!map || !map.zones) return;
+
+    list.innerHTML = '';
+    const known = Inventory.getKnownZones(map.id);
+
+    map.zones.forEach(zone => {
+      if (zone.hidden && !known.includes(zone.id)) return; // oculta e desconhecida
+      if (!known.includes(zone.id)) return;                // não revelada
+
+      const isCurrent = zone.id === activeZone;
+      const li = document.createElement('li');
+      li.setAttribute('role', 'listitem');
+      const btn = document.createElement('button');
+      btn.className = 'btn-zone-select' + (isCurrent ? ' btn-zone-select--active' : '');
+      btn.setAttribute('aria-pressed', String(isCurrent));
+      if (isCurrent) btn.setAttribute('disabled', '');
+      btn.innerHTML = `<span aria-hidden="true">${zone.emoji || '🎣'}</span> ${I18n.t(zone.nameKey) || zone.id}`;
+      btn.addEventListener('click', () => {
+        activeZone = zone.id;
+        Inventory.setActiveZone(map.id, zone.id);
+        closeZoneModal();
+        // Anunciar a mudança para leitores de tela
+        const ann = $('announcer');
+        if (ann) ann.textContent = (I18n.t('zone_changed') || 'Zona alterada para') + ': ' + (I18n.t(zone.nameKey) || zone.id);
+        // Atualizar label de zona no HUD
+        _updateZoneHud();
+      });
+      li.appendChild(btn);
+      list.appendChild(li);
+    });
+
+    modal.classList.remove('hidden');
+    modal.removeAttribute('inert');
+    list.querySelector('button:not([disabled])')?.focus();
+  }
+
+  function closeZoneModal() {
+    const modal = $('zone-modal');
+    if (modal) { modal.classList.add('hidden'); modal.setAttribute('inert', ''); }
+    $('btn-bar-zone')?.focus();
+  }
+
+  function _updateZoneHud() {
+    if (!activeMap) return;
+    const knownZones = Inventory.getKnownZones(activeMap.id);
+    // Apenas zonas visíveis (não hidden ou já conhecidas) contam para o UI
+    const visibleZones = (activeMap.zones || []).filter(z => !z.hidden || knownZones.includes(z.id));
+    const hasMultiZone = visibleZones.length >= 2;
+
+    // HUD de zona
+    const hudZone = $('zone-hud');
+    if (hudZone) hudZone.classList.toggle('hidden', !hasMultiZone);
+    const nameEl = $('hud-zone-name');
+    if (nameEl && activeZone) {
+      const zone = activeMap.zones && activeMap.zones.find(z => z.id === activeZone);
+      nameEl.textContent = zone ? (I18n.t(zone.nameKey) || zone.id) : '';
+    }
+
+    // Botão de zona na bottom bar
+    const btnZone = $('btn-bar-zone');
+    if (btnZone) btnZone.classList.toggle('hidden', !hasMultiZone);
   }
 
   // ── Loja / Inventário ─────────────────────────────────────────────────────
