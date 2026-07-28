@@ -1445,7 +1445,7 @@ const Game = (() => {
     MAPS.forEach(m => {
       const isActive  = m.id === map.id;
       // Cada mapa exige um barco específico (sem hierarquia)
-      const hasBoat = !m.requiredBoat || ownedEquip.includes(m.requiredBoat);
+      const hasBoat = !m.requiredBoat || ( !m.requiredBoat || ownedEquip.includes(m.requiredBoat) || (m.requiredBoat === 'canoe' && ownedEquip.includes('boat_canoe')) );
       const li = document.createElement('li');
       li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
 
