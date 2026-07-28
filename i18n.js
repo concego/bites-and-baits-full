@@ -942,8 +942,14 @@ const I18n = (() => {
   function getLang() { return _lang; }
 
   function t(key, ...args) {
-    const dict = STRINGS[_lang] || STRINGS['pt'];
-    const val  = dict[key];
+    // Cadeia de fallback: idioma ativo → EN → PT → key literal
+    const dict    = STRINGS[_lang] || {};
+    const fallback = STRINGS['en'] || {};
+    const base     = STRINGS['pt'] || {};
+    const val = (key in dict) ? dict[key]
+              : (key in fallback) ? fallback[key]
+              : (key in base)     ? base[key]
+              : key;
     if (typeof val === 'function') return val(...args);
     return val ?? key;
   }
