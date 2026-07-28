@@ -60,11 +60,20 @@ const Inventory = (() => {
 
   // Preço base por kg por espécie (expandir via shop-data.js futuramente)
   const BASE_PRICE_PER_KG = {
-    lambari:  2,
-    tilapia:  5,
-    truta:    8,
-    dourado:  12,
-    pirarucu: 18,
+    // Espécies comuns — valor baixo
+    lambari:                   4,   // isca viva, valor baixo mas volume alto
+    cara:                      3,
+    piau:                      4,
+    curimbata:                 5,
+    // Espécies de consumo médio
+    tilapia:                   6,
+    traira:                    7,
+    truta:                     9,
+    // Espécies nobres / especiais
+    tucunare:                  11,
+    dourado:                   14,
+    peixe_dourado_ornamental:  20,  // ornamental — raridade eleva o preço
+    pirarucu:                  18,
   };
 
   // ── Persistência ──────────────────────────────────────────────────────────
@@ -92,7 +101,13 @@ const Inventory = (() => {
   function rollWeight(fish) {
     const [min, max] = fish.weightRange ?? [0.1, 1.0];
     const raw = min + Math.random() * (max - min);
-    return Math.round(raw * 10) / 10;  // 1 casa decimal
+    // Precisão adaptativa: peixes leves (<0.5 kg max) exibem 2 casas;
+    // peixes médios (<5 kg max) exibem 1 casa; peixes grandes arredondam.
+    // Garante mínimo de 0.01 kg — nenhum peixe tem peso zero.
+    if (max <= 0.5)      return Math.max(0.01, Math.round(raw * 100) / 100); // 2 dec — peixes <500g
+    if (max <= 5.0)      return Math.max(0.1,  Math.round(raw * 10)  / 10);  // 1 dec — até 5 kg
+    if (max <= 25.0)     return Math.max(0.5,  Math.round(raw * 2)   / 2);   // 0.5 kg — até 25 kg
+    return Math.max(1,   Math.round(raw));                                    // inteiro — grandes
   }
 
   // ── Calcula valor em moedas ───────────────────────────────────────────────
