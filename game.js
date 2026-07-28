@@ -1275,9 +1275,9 @@ const Game = (() => {
       li.setAttribute('role', 'listitem');
       li.innerHTML =
         `<div class="vessel-card-info">
-           <span class="vessel-card-name">${v.emoji} ${I18n.t('boat_' + v.id) || v.id}</span>
+           <span class="vessel-card-name">${I18n.t('boat_' + v.id) || v.id}</span>
            <span class="vessel-card-desc">${I18n.t(v.descKey) || ''}</span>
-           <span class="vessel-card-price">${v.price} 🪙 · ${I18n.t('hold_used') || 'Porão'}: ${v.holdCap}</span>
+           <span class="vessel-card-price">${v.price} 🪙 · Porão: ${v.holdCap} peixes</span>
          </div>
          <div class="vessel-card-actions">
            <button class="btn-primary btn-buy-vessel"
@@ -1306,9 +1306,9 @@ const Game = (() => {
         li.setAttribute('role', 'listitem');
         li.innerHTML =
           `<div class="vessel-card-info">
-             <span class="vessel-card-name">${v.emoji} ${I18n.t('boat_' + v.id) || v.id}</span>
+             <span class="vessel-card-name">${I18n.t('boat_' + v.id) || v.id}</span>
              <span class="vessel-card-desc">${I18n.t(v.descKey) || ''}</span>
-             <span class="vessel-card-price">${I18n.t('hold_used') || 'Porão'}: ${v.holdCap}</span>
+             <span class="vessel-card-price">Porão: ${v.holdCap} peixes</span>
            </div>
            <div class="vessel-card-actions">
              ${isActive
