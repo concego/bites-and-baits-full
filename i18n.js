@@ -810,7 +810,9 @@ const I18n = (() => {
       fish_pirarucu: 'Pirarucu',
 
       // Map names
-    hu: {
+  },
+
+  hu: {
       // Nyelvválasztó képernyő
       lang_title:       'Válassz nyelvet',
       lang_subtitle:    'Escolha o idioma',
@@ -1135,10 +1137,7 @@ btn_story:        'Történet',
       vessel_no_coins:              'Nincs elég érem',
       vessel_equip:                 'Ezt használja',
       vessel_equipped_label:        '✅ Használatban',
-    },
-
       map_rio_doce: 'Doce River',
-
       // Maps & zones (inherits PT fallback for missing keys)
       map_lago_central:   'Központi-tó',
       zone_margem:        'Tópart',
@@ -1153,7 +1152,7 @@ btn_story:        'Történet',
       travel_go_to:       'Mehet ide',
       travel_need_boat:   'Csónak szükséges',
       boat_canoe:         'Kenu',
-    },
+  },
   };
 
   // ── Estado interno ───────────────────────────────────────────────────────
