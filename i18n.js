@@ -413,22 +413,6 @@ const I18n = (() => {
       boat_nav_sonar_arrived:       'Chegou à zona!',
 
 
-      // Map 1 — Lake Shore
-      fish_cara:                    'Cará Cichlid',
-      fish_traira:                  'Traíra',
-      fish_piau:                    'Piau',
-      fish_curimbata:               'Curimbatá',
-      fish_tucunare:                'Tucunaré Bass',
-      fish_peixe_dourado_ornamental:'Golden Ornamental Fish',
-      map_lago_margem:              'Lake Shore',
-      fish_lambari:  'Lambari',
-      fish_tilapia:  'Tilápia',
-      fish_truta:    'Truta',
-      fish_dourado:  'Dourado',
-      fish_pirarucu: 'Pirarucu',
-
-      // Nomes dos mapas
-      map_rio_doce: 'Rio Doce',
     },
 
     en: {
@@ -772,50 +756,6 @@ const I18n = (() => {
       size_small:  'medium',
       size_medium: 'large',
       size_large:  'enormous',
-
-      // Fish names
-
-      // Mapa 1 — Margem do Lago
-      fish_cara:                    'Cará',
-      fish_traira:                  'Traíra',
-      fish_piau:                    'Piau',
-      fish_curimbata:               'Curimbatá',
-      fish_tucunare:                'Tucunaré',
-      fish_peixe_dourado_ornamental:'Peixe-Dourado Ornamental',
-      map_lago_margem:              'Margem do Lago',
-
-      boat_rowboat:                 '⛵ Barco a Remo',
-      shop_desc_canoe:              'Embarcação simples. Acessa o Lago Central. Carga: 8 peixes.',
-      shop_desc_rowboat:            'Barco robusto. Mais carga. Carga: 15 peixes.',
-      // Navegação / porão
-      vessel_buy_title:             'Embarcações disponíveis',
-      vessel_owned_title:           'Suas embarcações',
-      vessel_btn_buy:               'Comprar',
-      vessel_already_owned:         'Você já possui',
-      vessel_no_coins:              'Moedas insuficientes',
-      vessel_equip:                 'Usar este barco',
-      vessel_equipped_label:        '✅ Em uso',
-      hold_title:                   '📦 Carga',
-      hold_used:                    'Ocupado',
-      hold_full:                    '🚨 Carga cheia!',
-      hold_discard_prompt:          'Descartar peixe para continuar?',
-      hold_discard_btn:             'Descartar',
-      hold_keep_btn:                'Voltar ao Hub',
-      hold_unloaded:                'Carga descarregada no inventário.',
-      // Tela de navegação do barco
-      boat_nav_title:               '🚣 Navegando',
-      boat_nav_zones_btn:           '🗺️ Zonas de Pesca Conhecidas',
-      boat_nav_zones_title:         'Zonas de Pesca',
-      boat_nav_current_zone:        'Zona atual',
-      boat_nav_rowing:              'Remando para a zona...',
-      boat_nav_arrived:             'Você chegou!',
-      boat_nav_cast_hint:           'Incline para frente para lançar',
-      boat_nav_return:              '⬅️ Voltar ao Hub',
-      boat_nav_sonar:               '🔊 Sonar',
-      boat_nav_sonar_far:           'Longe — continue remando',
-      boat_nav_sonar_near:          'Perto — quase lá!',
-      boat_nav_sonar_arrived:       'Chegou à zona!',
-
 
       // Map 1 — Lake Shore
       fish_cara:                    'Cará Cichlid',
@@ -1233,8 +1173,7 @@ btn_story:        'Történet',
       vessel_no_coins:              'Nincs elég érem',
       vessel_equip:                 'Ezt használja',
       vessel_equipped_label:        '✅ Használatban',
-      map_rio_doce: 'Doce River',
-      // Maps & zones (inherits PT fallback for missing keys)
+      // Maps & zones
       map_lago_central:   'Központi-tó',
       zone_margem:        'Tópart',
       zone_rio:           'Folyó',
