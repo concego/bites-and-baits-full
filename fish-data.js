@@ -56,7 +56,7 @@ const FISH_CATALOG = {
     recovery: 4000,      // recupera em 4s — mas pouca força de qualquer jeito
     escapePatience: 35,  // ~4s de inércia tolerada
     habitat: 'freshwater',
-    weightRange: [0.02, 0.12],
+    weightRange: [0.02, 0.15],  // lambari real: 20–150g
     baits: ['worm', 'cricket'],
     physics: { swimSpeed: 1.2, approachSpeed: 2.0, wobble: 4,  wobbleFreq: 0.18 },
   },
@@ -134,7 +134,7 @@ const FISH_CATALOG = {
     recovery: 4500,
     escapePatience: 38,
     habitat: 'freshwater',
-    weightRange: [0.05, 0.5],
+    weightRange: [0.08, 0.6],   // cara: 80g–600g
     baits: ['worm', 'cricket'],
     maps: ['lago_margem'],
     physics: { swimSpeed: 0.8, approachSpeed: 1.4, wobble: 4, wobbleFreq: 0.15 },
