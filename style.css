@@ -1537,3 +1537,85 @@ html, body {
   background: #4fc3f7;
   color: #000;
 }
+
+/* ── Zone HUD (indicador de zona ativa na tela de pesca) ─────────────── */
+.zone-hud {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,.45);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: .78rem;
+  color: #e0f7fa;
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 5;
+  pointer-events: none;
+}
+.zone-hud.hidden { display: none; }
+.zone-hud-icon { font-size: .85rem; }
+.zone-hud-name { font-weight: 600; letter-spacing: .03em; }
+
+/* ── Modal overlay (zone-modal) ─────────────────────────────────────── */
+#zone-modal.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+}
+#zone-modal.modal-overlay.hidden { display: none; }
+#zone-modal .modal-box {
+  background: var(--panel-bg, #1a2a3a);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px 32px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#zone-modal .modal-box h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #e0f7fa;
+  text-align: center;
+}
+
+/* Botões de seleção de zona */
+.btn-zone-select {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,.07);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #e0f7fa;
+  font-size: .95rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background .15s, border-color .15s;
+}
+.btn-zone-select:hover,
+.btn-zone-select:focus {
+  background: rgba(79,195,247,.2);
+  border-color: #4fc3f7;
+  outline: none;
+}
+.btn-zone-select--active,
+.btn-zone-select[disabled] {
+  background: rgba(79,195,247,.25);
+  border-color: #4fc3f7;
+  opacity: .75;
+  cursor: default;
+}
+
+/* btn-bar-zone — oculto por padrão, visível quando mapa tem zonas */
+#btn-bar-zone.hidden { display: none; }
