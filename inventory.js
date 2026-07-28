@@ -361,7 +361,8 @@ const Inventory = (() => {
   // Equipamentos comprados ficam em bb_owned_equip (array de ids).
   // O equipado ativo fica em bb_equip (por slot).
 
-  const STORAGE_KEY_OWNED_EQUIP = 'bb_owned_equip';
+  const STORAGE_KEY_OWNED_EQUIP  = 'bb_owned_equip';
+  const STORAGE_KEY_ACTIVE_BOAT  = 'bb_active_boat';
 
   function _loadOwnedEquip() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY_OWNED_EQUIP) || '[]'); }
@@ -381,6 +382,19 @@ const Inventory = (() => {
 
   /** Retorna array de ids de equipamentos possuídos. */
   function getOwnedEquip() { return _loadOwnedEquip(); }
+
+  // ── Barco ativo ──────────────────────────────────────────────────────────
+
+  /** Define o barco ativo (equipado). */
+  function setActiveBoat(boatId) {
+    try { localStorage.setItem(STORAGE_KEY_ACTIVE_BOAT, boatId); }
+    catch { /* noop */ }
+  }
+
+  /** Retorna o id do barco ativo, ou null se nenhum. */
+  function getActiveBoat() {
+    return localStorage.getItem(STORAGE_KEY_ACTIVE_BOAT) || null;
+  }
 
 
   /** Remove um item de um slot específico (rod/line/hook/float/bait). Slot fica null. */
@@ -487,6 +501,9 @@ const Inventory = (() => {
     // Equipamentos possuídos
     addEquip,
     getOwnedEquip,
+    // Barco ativo
+    setActiveBoat,
+    getActiveBoat,
     // Zone Map
     knowZone,
     getKnownZones,
