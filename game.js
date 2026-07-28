@@ -82,6 +82,25 @@ const Game = (() => {
 
   // ── Inicialização ─────────────────────────────────────────────────────────
   function init() {
+    // ── Parâmetros de teste (só ativo em dev/preview) ─────────────────────
+    const _qp = new URLSearchParams(location.search);
+    if (_qp.has('testcoins')) {
+      const amt = parseInt(_qp.get('testcoins')) || 500;
+      if (Inventory.coins() < amt) Inventory.addCoins(amt - Inventory.coins());
+    }
+    if (_qp.has('testboat')) {
+      const boatId = _qp.get('testboat') || 'canoe';
+      Inventory.addEquip(boatId);
+    }
+    if (_qp.has('testzone')) {
+      // ex: ?testzone=lago_central:raso,meio
+      const [mapId, zonesStr] = _qp.get('testzone').split(':');
+      if (mapId && zonesStr) {
+        zonesStr.split(',').forEach(z => Inventory.knowZone(mapId, z.trim()));
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────
+
         screens = {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
