@@ -120,6 +120,7 @@ const Game = (() => {
       shop:         $('screen-shop'),
       travel:       $('screen-travel'),
       vessel:       $('screen-vessel'),
+      house:        $('screen-house'),
     };
 
     // Garante que só screen-lang está ativa no carregamento inicial
@@ -197,6 +198,8 @@ const Game = (() => {
     $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); });
     $('btn-hub-travel').addEventListener('click', () => { renderTravel(); showScreen('travel'); });
     $('btn-hub-vessel').addEventListener('click', () => { renderVessel(); showScreen('vessel'); });
+    $('btn-hub-home').addEventListener('click',   () => { renderHouse();  showScreen('house');  });
+    $('btn-house-back').addEventListener('click', () => showStoryHub());
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
     // Tela de viagem
     $('btn-travel-back').addEventListener('click',() => showStoryHub());
@@ -1250,6 +1253,79 @@ const Game = (() => {
               || null;
   }
 
+  // ── Casa ───────────────────────────────────────────────────────────────────
+
+  /** Renderiza a tela da casa com nível atual e próximo upgrade. */
+  function renderHouse() {
+    const levelIdx  = Inventory.getHouseLevel();
+    const current   = getHouseLevel(levelIdx);
+    const next      = getNextHouseLevel(levelIdx);
+    const coins     = Inventory.coins();
+
+    const currentCard  = $('house-current-card');
+    const upgradeCard  = $('house-upgrade-card');
+    const upgradeSec   = $('house-upgrade-section');
+    const maxedMsg     = $('house-maxed-msg');
+
+    // Monta card do nível atual
+    const ownedBoats = Inventory.getOwnedEquip();
+    const storedDesc = current.boatTypes.length === 0
+      ? I18n.t('house_storage_none') || 'Sem armazenamento para barcos'
+      : `${I18n.t('house_storage_boats') || 'Barcos guardados'}: ${current.boatSlots === 99
+          ? I18n.t('house_storage_unlimited') || 'Ilimitado'
+          : current.boatSlots} · ${current.boatTypes.map(t => I18n.t('boat_cat_' + t) || t).join(', ')}`;
+
+    currentCard.innerHTML =
+      `<div class="house-card-info">
+         <span class="house-card-icon">${current.emoji}</span>
+         <div>
+           <span class="house-card-name">${I18n.t(current.nameKey) || current.id}</span>
+           <span class="house-card-desc">${I18n.t(current.descKey) || ''}</span>
+           <span class="house-card-storage">${storedDesc}</span>
+         </div>
+       </div>`;
+
+    // Upgrade disponível?
+    if (next) {
+      maxedMsg.hidden   = true;
+      upgradeSec.hidden = false;
+
+      const canAfford   = coins >= next.price;
+      const nextStorage = next.boatTypes.length === 0
+        ? I18n.t('house_storage_none') || 'Sem armazenamento'
+        : `${I18n.t('house_storage_boats') || 'Barcos'}: ${next.boatSlots === 99
+            ? I18n.t('house_storage_unlimited') || 'Ilimitado'
+            : next.boatSlots} · ${next.boatTypes.map(t => I18n.t('boat_cat_' + t) || t).join(', ')}`;
+
+      upgradeCard.innerHTML =
+        `<div class="house-card-info">
+           <span class="house-card-icon">${next.emoji}</span>
+           <div>
+             <span class="house-card-name">${I18n.t(next.nameKey) || next.id}</span>
+             <span class="house-card-desc">${I18n.t(next.descKey) || ''}</span>
+             <span class="house-card-storage">${nextStorage}</span>
+             <span class="house-card-price">${next.price} 🪙</span>
+           </div>
+         </div>
+         <button id="btn-house-upgrade" class="btn-primary"
+                 ${canAfford ? '' : 'disabled'}
+                 aria-label="${I18n.t('house_btn_upgrade') || 'Melhorar'} — ${I18n.t(next.nameKey) || next.id}">
+           ${canAfford
+             ? (I18n.t('house_btn_upgrade') || 'Melhorar')
+             : (I18n.t('vessel_no_coins')   || 'Moedas insuficientes')}
+         </button>`;
+
+      $('btn-house-upgrade').onclick = () => {
+        if (!Inventory.spendCoins(next.price)) return;
+        Inventory.upgradeHouse();
+        renderHouse();
+      };
+    } else {
+      upgradeSec.hidden = true;
+      maxedMsg.hidden   = false;
+    }
+  }
+
   // ── Estaleiro ─────────────────────────────────────────────────────────────
 
   /** Renderiza a tela do estaleiro com embarcações para comprar e possuídas. */
@@ -1401,9 +1477,27 @@ const Game = (() => {
         startGame('normal');
       });
 
-      // Viajar para outro mapa
+      // Viajar para outro mapa — cobrar taxa de estaleiro se necessário
       li.querySelector('.travel-btn-go')?.addEventListener('click', e => {
-        const destId = e.currentTarget.dataset.mapId;
+        const destId    = e.currentTarget.dataset.mapId;
+        const boatId    = Inventory.getActiveBoat();
+        const fee       = Inventory.calcBoatFee(boatId);
+
+        if (fee > 0) {
+          // Verificar se tem moedas suficientes
+          if (Inventory.coins() < fee) {
+            const vessel = VESSELS_CATALOG.find(v => v.id === boatId);
+            const name   = vessel ? (I18n.t(vessel.nameKey) || vessel.id) : boatId;
+            announce(`${I18n.t('vessel_no_coins') || 'Moedas insuficientes'} — ${I18n.t('house_dock_fee') || 'Taxa'}: ${fee} 🪙`);
+            return;
+          }
+          // Cobrar taxa e anunciar
+          Inventory.spendCoins(fee);
+          const vessel = VESSELS_CATALOG.find(v => v.id === boatId);
+          const name   = vessel ? (I18n.t(vessel.nameKey) || vessel.id) : boatId;
+          announce(`${I18n.t('house_fee_paid') || 'Taxa paga'}: ${fee} 🪙`);
+        }
+
         setActiveMap(destId);
         showScreen('game');
         startGame('normal');
