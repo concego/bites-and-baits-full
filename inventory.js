@@ -371,6 +371,7 @@ const Inventory = (() => {
    * Retorna { ok, earned } ou { ok:false, reason }.
    */
   function sellEquip(itemId) {
+    if (isProtected(itemId)) return { ok: false, reason: 'protected' };
     const equip = _loadEquip();
     // Verifica se está equipado em algum slot
     for (const [slot, equipped] of Object.entries(equip)) {
