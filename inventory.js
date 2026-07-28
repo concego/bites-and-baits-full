@@ -45,6 +45,7 @@ const Inventory = (() => {
   const BAITS_VERSION = '1';   // incrementar aqui força reset do estoque
   const STORAGE_KEY_EQUIP    = 'bb_equip';     // { bait:'worm', rod:'rod_basic', ... }
   const STORAGE_KEY_PROTECTED = 'bb_protected'; // Set de ids de peixes protegidos
+  const STORAGE_KEY_ZONEMAP   = 'bb_zonemap';   // { mapId: [zoneId, ...] }
 
   // Estoque inicial generoso para testes
   const DEFAULT_BAITS = {
@@ -391,6 +392,71 @@ const Inventory = (() => {
     return true;
   }
 
+  // ── Zone Map ─────────────────────────────────────────────────────────────
+
+  function _loadZoneMap() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_ZONEMAP) || '{}'); }
+    catch { return {}; }
+  }
+
+  function _saveZoneMap(zm) {
+    try { localStorage.setItem(STORAGE_KEY_ZONEMAP, JSON.stringify(zm)); }
+    catch { /* noop */ }
+  }
+
+  /**
+   * Revela uma zona para o jogador.
+   * Se já conhecida, é idempotente.
+   */
+  function knowZone(mapId, zoneId) {
+    const zm = _loadZoneMap();
+    if (!zm[mapId]) zm[mapId] = [];
+    if (!zm[mapId].includes(zoneId)) {
+      zm[mapId].push(zoneId);
+      _saveZoneMap(zm);
+      return true; // revelação nova
+    }
+    return false; // já conhecia
+  }
+
+  /**
+   * Retorna array de zoneIds conhecidos para um mapa.
+   * Se nunca visitado, retorna [].
+   */
+  function getKnownZones(mapId) {
+    const zm = _loadZoneMap();
+    return zm[mapId] ? [...zm[mapId]] : [];
+  }
+
+  /**
+   * Verifica se o jogador conhece uma zona específica.
+   */
+  function knowsZone(mapId, zoneId) {
+    return getKnownZones(mapId).includes(zoneId);
+  }
+
+  /**
+   * Retorna a zona ativa salva para um mapa (última usada).
+   * Falha graciosamente para a primeira zona conhecida.
+   */
+  function getActiveZone(mapId) {
+    try {
+      const saved = JSON.parse(localStorage.getItem('bb_activezone') || '{}');
+      return saved[mapId] || null;
+    } catch { return null; }
+  }
+
+  /**
+   * Salva a zona ativa para um mapa.
+   */
+  function setActiveZone(mapId, zoneId) {
+    try {
+      const saved = JSON.parse(localStorage.getItem('bb_activezone') || '{}');
+      saved[mapId] = zoneId;
+      localStorage.setItem('bb_activezone', JSON.stringify(saved));
+    } catch { /* noop */ }
+  }
+
   return {
     addFish,
     getAll,
@@ -421,5 +487,11 @@ const Inventory = (() => {
     // Equipamentos possuídos
     addEquip,
     getOwnedEquip,
+    // Zone Map
+    knowZone,
+    getKnownZones,
+    knowsZone,
+    getActiveZone,
+    setActiveZone,
   };
 })();
