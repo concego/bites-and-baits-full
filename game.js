@@ -1438,10 +1438,19 @@ const Game = (() => {
 
     // Barcos que o jogador possui (via bb_owned_equip)
     const ownedEquip = Inventory.getOwnedEquip();
+    const boatHierarchy = ['canoe', 'rowboat', 'lancha', 'veleiro', 'iate'];
 
     MAPS.forEach(m => {
       const isActive  = m.id === map.id;
-      const hasBoat   = !m.requiredBoat || ownedEquip.includes(m.requiredBoat);
+      // Verifica se o jogador tem o barco exigido ou um superior
+      let hasBoat = !m.requiredBoat;
+      if (m.requiredBoat) {
+        const reqIdx = boatHierarchy.indexOf(m.requiredBoat);
+        hasBoat = ownedEquip.some(id => {
+          const ownedIdx = boatHierarchy.indexOf(id);
+          return (ownedIdx !== -1) ? (ownedIdx >= reqIdx) : (id === m.requiredBoat);
+        });
+      }
       const li = document.createElement('li');
       li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
 
