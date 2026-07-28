@@ -174,6 +174,7 @@ const Game = (() => {
 
     $('btn-lang-pt').addEventListener('click', () => selectLang('pt'));
     $('btn-lang-en').addEventListener('click', () => selectLang('en'));
+    $('btn-lang-hu').addEventListener('click', () => selectLang('hu'));
 
     // ── Menu Principal ─────────────────────────────────────────────────────
     $('btn-story').addEventListener('click', () => { gameMode = 'normal'; showStoryHub(); });
@@ -227,6 +228,7 @@ const Game = (() => {
     });
     $('btn-opt-lang-pt').addEventListener('click', () => selectLang('pt'));
     $('btn-opt-lang-en').addEventListener('click', () => selectLang('en'));
+    $('btn-opt-lang-hu')?.addEventListener('click', () => selectLang('hu'));
     $('btn-menu').addEventListener('click',  () => goToMenu());
     $('btn-menu2').addEventListener('click', () => goToMenu());
     $('btn-continue').addEventListener('click', () => {
