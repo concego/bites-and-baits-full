@@ -152,3 +152,36 @@
 .vessel-card-actions .btn-secondary,
 .vessel-card-actions .btn-ghost { white-space: nowrap; font-size: 0.85rem; padding: 0.4rem 0.9rem; }
 .vessel-equipped-badge { font-size: 0.8rem; opacity: 0.8; }
+
+/* ── Casa ──────────────────────────────────────────────────────────────── */
+#screen-house {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1rem;
+  overflow-y: auto;
+}
+#screen-house header { flex-shrink: 0; }
+#screen-house section { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.house-level-card {
+  background: var(--panel-bg, rgba(255,255,255,0.08));
+  border: 1px solid var(--border-color, rgba(255,255,255,0.15));
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.house-card-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+.house-card-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; }
+.house-card-info > div { display: flex; flex-direction: column; gap: 0.2rem; flex: 1; }
+.house-card-name  { font-size: 1.1rem; font-weight: 600; }
+.house-card-desc  { font-size: 0.82rem; opacity: 0.75; }
+.house-card-storage { font-size: 0.8rem; opacity: 0.7; }
+.house-card-price { font-size: 0.95rem; font-weight: 600; margin-top: 0.2rem; }
+.house-maxed { text-align: center; opacity: 0.7; font-style: italic; padding: 0.5rem 0; }
