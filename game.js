@@ -1621,7 +1621,7 @@ const Game = (() => {
     // Controla elementos que só existem no modo história
     const isStory = (gameMode === 'normal');
     const sellAllBar = document.querySelector('.inv-sell-all-bar');
-    if (sellAllBar) sellAllBar.classList.toggle('hidden', !isStory);
+    if (sellAllBar) sellAllBar.classList.add('hidden'); // Oculto permanentemente: venda agora é na loja
     const invBack = $('btn-inv-back');
     if (invBack) {
       invBack.classList.toggle('hidden', !isStory);
