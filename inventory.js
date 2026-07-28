@@ -378,6 +378,7 @@ const Inventory = (() => {
 
   const STORAGE_KEY_OWNED_EQUIP  = 'bb_owned_equip';
   const STORAGE_KEY_ACTIVE_BOAT  = 'bb_active_boat';
+  const STORAGE_KEY_HOUSE_LEVEL  = 'bb_house_level';
 
   function _loadOwnedEquip() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY_OWNED_EQUIP) || '[]'); }
@@ -409,6 +410,46 @@ const Inventory = (() => {
   /** Retorna o id do barco ativo, ou null se nenhum. */
   function getActiveBoat() {
     return localStorage.getItem(STORAGE_KEY_ACTIVE_BOAT) || null;
+  }
+
+  // ── Casa ─────────────────────────────────────────────────────────────────
+
+  /** Retorna o nível atual da casa (0 = barraco). */
+  function getHouseLevel() {
+    return parseInt(localStorage.getItem(STORAGE_KEY_HOUSE_LEVEL) || '0');
+  }
+
+  /** Avança a casa para o próximo nível (salva e retorna novo nível). */
+  function upgradeHouse() {
+    const next = getHouseLevel() + 1;
+    try { localStorage.setItem(STORAGE_KEY_HOUSE_LEVEL, String(next)); }
+    catch { /* noop */ }
+    return next;
+  }
+
+  /**
+   * Calcula a taxa de estaleiro para uma viagem com o barco dado.
+   * Retorna 0 se a casa suporta guardar esse tipo de barco.
+   */
+  function calcBoatFee(boatId) {
+    if (!boatId) return 0;
+    const vessel = (typeof VESSELS_CATALOG !== 'undefined')
+      ? VESSELS_CATALOG.find(v => v.id === boatId) : null;
+    if (!vessel) return 0;
+
+    const houseData = (typeof HOUSE_LEVELS !== 'undefined')
+      ? HOUSE_LEVELS[getHouseLevel()] : null;
+    if (!houseData) return 0;
+
+    // Casa suporta a categoria do barco → sem taxa
+    if (houseData.boatTypes.includes(vessel.category)) return 0;
+
+    // Barco de doca → usa dockFee do próprio barco
+    if (vessel.category === 'dock') return vessel.dockFee || 0;
+
+    // Portátil ou garagem → taxa fixa do BOATYARD_FEE
+    const fees = (typeof BOATYARD_FEE !== 'undefined') ? BOATYARD_FEE : {};
+    return fees[vessel.category] ?? 0;
   }
 
 
@@ -519,6 +560,10 @@ const Inventory = (() => {
     // Barco ativo
     setActiveBoat,
     getActiveBoat,
+    // Casa
+    getHouseLevel,
+    upgradeHouse,
+    calcBoatFee,
     // Zone Map
     knowZone,
     getKnownZones,
