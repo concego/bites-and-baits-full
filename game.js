@@ -1730,6 +1730,11 @@ const Game = (() => {
             <span class="inv-item-detail">${t('shop_stock_label', qty)}</span>
           </div>
           <div class="inv-item-actions">
+            <button class="btn-inv-examine-bait btn-secondary"
+                    data-bait-id="${baitId}"
+                    aria-label="${t('inv_examine')} ${t(def.nameKey) || baitId}">
+              ${t('inv_examine')}
+            </button>
             <button class="btn-equip-bait ${isEquipped ? 'btn-equipped' : 'btn-secondary'}"
                     data-bait-id="${baitId}"
                     aria-pressed="${isEquipped}"
