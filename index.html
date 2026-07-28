@@ -172,7 +172,7 @@
       <nav class="city-menu" aria-label="Menu da cidade">
         <button id="btn-hub-home"   class="btn-city" disabled data-i18n="btn_hub_home"></button>
         <button id="btn-hub-shop"   class="btn-city"          data-i18n="btn_hub_shop"></button>
-        <button id="btn-hub-vessel" class="btn-city" disabled data-i18n="btn_hub_vessel"></button>
+        <button id="btn-hub-vessel" class="btn-city"          data-i18n="btn_hub_vessel"></button>
         <button id="btn-hub-travel" class="btn-city"          data-i18n="btn_hub_travel"></button>
         <button id="btn-hub-inv"    class="btn-city"          data-i18n="btn_hub_inv"></button>
       </nav>
@@ -209,7 +209,19 @@
       <header class="panel-header">
         <h2 id="vessel-title" data-i18n="vessel_title"></h2>
       </header>
-      <p class="coming-soon" data-i18n="coming_soon"></p>
+
+      <!-- Embarcações disponíveis para compra -->
+      <section id="vessel-buy-section" aria-labelledby="vessel-buy-heading">
+        <h3 id="vessel-buy-heading" data-i18n="vessel_buy_title"></h3>
+        <ul id="vessel-buy-list" class="vessel-list" role="list"></ul>
+      </section>
+
+      <!-- Embarcações já possuídas -->
+      <section id="vessel-owned-section" aria-labelledby="vessel-owned-heading" hidden>
+        <h3 id="vessel-owned-heading" data-i18n="vessel_owned_title"></h3>
+        <ul id="vessel-owned-list" class="vessel-list" role="list"></ul>
+      </section>
+
       <button id="btn-vessel-back" class="btn-ghost" data-i18n="btn_back"></button>
     </div>
 
