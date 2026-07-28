@@ -425,6 +425,12 @@
         </div>
       </header>
 
+      <!-- HUD Zona (só aparece em mapas com múltiplas zonas) -->
+      <div id="zone-hud" class="zone-hud hidden" aria-live="polite">
+        <span class="zone-hud-icon" aria-hidden="true">📍</span>
+        <span id="hud-zone-name" class="zone-hud-name"></span>
+      </div>
+
       <!-- Cena visual -->
       <div id="scene">
         <div id="sky"></div>
@@ -470,6 +476,10 @@
       <button id="btn-bar-equip" class="bar-btn" aria-label="Equipamento">
         <span class="bar-icon" aria-hidden="true">⚙️</span>
         <span class="bar-label" data-i18n="bar_equip"></span>
+      </button>
+      <button id="btn-bar-zone" class="bar-btn hidden" aria-label="Mudar zona de pesca">
+        <span class="bar-icon" aria-hidden="true">🎣</span>
+        <span class="bar-label" data-i18n="bar_zone"></span>
       </button>
       <button id="btn-bar-hub"   class="bar-btn bar-btn-back" aria-label="Voltar ao Hub">
         <span class="bar-icon" aria-hidden="true">🗺️</span>
@@ -678,5 +688,17 @@
   <script src="audio.js"></script>
   <script src="sensors.js"></script>
   <script src="game.js"></script>
+
+  <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
+  <div id="zone-modal" class="modal-overlay hidden" role="dialog"
+       aria-modal="true" aria-labelledby="zone-modal-title" inert>
+    <div class="modal-box">
+      <h2 id="zone-modal-title" data-i18n="zone_modal_title"></h2>
+      <ul id="zone-modal-list" class="zone-list" role="list"
+          aria-label="Zonas de pesca disponíveis"></ul>
+      <button id="btn-zone-modal-back" class="btn-ghost" data-i18n="btn_back"></button>
+    </div>
+  </div>
+
 </body>
 </html>
