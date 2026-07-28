@@ -1429,7 +1429,7 @@ const Game = (() => {
   }
 
   /** Renderiza a tela de seleção de destino */
-  function renderTravel() {
+  function renderTravel() { if (typeof _refreshHubHUD === 'function') _refreshHubHUD();
     const map     = getActiveMap();
     const nameEl  = $('travel-current-name');
     const emojiEl = $('travel-current-emoji');
@@ -1445,7 +1445,7 @@ const Game = (() => {
     MAPS.forEach(m => {
       const isActive  = m.id === map.id;
       // Cada mapa exige um barco específico (sem hierarquia)
-      const hasBoat = !m.requiredBoat || ( !m.requiredBoat || ownedEquip.includes(m.requiredBoat) || (m.requiredBoat === 'canoe' && ownedEquip.includes('boat_canoe')) );
+      const hasBoat = !m.requiredBoat || ownedEquip.includes(m.requiredBoat) || (m.requiredBoat === 'canoe' && (ownedEquip.includes('canoe') || ownedEquip.includes('boat_canoe')));
       const li = document.createElement('li');
       li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
 
