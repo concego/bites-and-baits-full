@@ -183,6 +183,24 @@ const Inventory = (() => {
     return { ok: true, coins, earned: item.value };
   }
 
+  /**
+   * Vende N peixes de uma espécie (fishId).
+   * Remove os N mais baratos (ou os que tiver, se qty > count).
+   * Retorna { ok, sold, earned, coins }.
+   */
+  function sellFishQty(fishId, qty) {
+    const items   = _load();
+    const ofKind  = items.filter(i => i.fishId === fishId && !isProtected(i.id));
+    if (ofKind.length === 0) return { ok: false, reason: 'not_found' };
+    const toSell  = ofKind.slice(0, Math.min(qty, ofKind.length));
+    const earned  = toSell.reduce((s, i) => s + i.value, 0);
+    const sellIds = new Set(toSell.map(i => i.id));
+    _save(items.filter(i => !sellIds.has(i.id)));
+    const coins = _loadCoins() + earned;
+    _saveCoins(coins);
+    return { ok: true, sold: toSell.length, earned, coins };
+  }
+
   // sellAll() movida para bloco de proteção acima
 
   /** Retorna saldo atual de moedas */
@@ -533,6 +551,7 @@ const Inventory = (() => {
     count,
     removeItem,
     sellItem,
+    sellFishQty,
     sellAll,
     coins,
     addCoins,
