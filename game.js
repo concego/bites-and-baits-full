@@ -1872,14 +1872,14 @@ const Game = (() => {
           '</div>';
       } else {
         const unitLabel = isBait
-          ? t('shop_price', unitPrice) + ' / un.'
+          ? t('shop_buy_unit_price', unitPrice)
           : t('shop_price', item.price);
         const qtyBlock = isBait
           ? '<label class="shop-qty-label"><span>' + t('shop_buy_qty_label') + '</span>' +
-            '<input class="shop-qty-input" type="number" min="1" max="99" placeholder="1"' +
+            '<input class="shop-qty-input" type="number" min="1" max="99" value="1"' +
             ' data-item-id="' + item.id + '"' +
             ' aria-label="Quantidade de ' + (t(item.nameKey) || item.id) + '">' +
-            '</label><div class="shop-total-preview"></div>'
+            '</label><div class="shop-total-preview">' + t('shop_buy_total_price', 1, unitPrice, unitPrice) + '</div>'
           : '';
         actionArea =
           '<div class="shop-card-buy-row">' +
@@ -1904,11 +1904,12 @@ const Game = (() => {
       const qtyInput = card.querySelector('.shop-qty-input');
       if (qtyInput) {
         qtyInput.addEventListener('input', function() {
-          const qty  = parseInt(this.value) || 1;
-          const prev = card.querySelector('.shop-total-preview');
-          if (prev) prev.textContent = qty > 1 ? t('shop_buy_total', qty, unitPrice) : '';
+          const qty   = Math.max(1, parseInt(this.value) || 1);
+          const total = qty * unitPrice;
+          const prev  = card.querySelector('.shop-total-preview');
+          if (prev) prev.textContent = t('shop_buy_total_price', qty, unitPrice, total);
           const btn = card.querySelector('.btn-shop-buy');
-          if (btn) btn.disabled = Inventory.coins() < qty * unitPrice;
+          if (btn) btn.disabled = Inventory.coins() < total;
         });
       }
 
@@ -1964,29 +1965,61 @@ const Game = (() => {
       });
       fishList.appendChild(sellAllBtn);
 
+      // Agrupar por espécie (fishId) para input de quantidade
+      const bySpecies = {};
       fishes.forEach(function(fish) {
-        const fishName = t(fish.nameKey) || fish.nameKey;
+        if (!bySpecies[fish.fishId]) {
+          bySpecies[fish.fishId] = { nameKey: fish.nameKey, items: [] };
+        }
+        bySpecies[fish.fishId].items.push(fish);
+      });
+
+      Object.values(bySpecies).forEach(function(group) {
+        const fishName  = t(group.nameKey) || group.nameKey;
+        const count     = group.items.length;
+        const avgValue  = Math.round(group.items.reduce(function(s,i){ return s + i.value; }, 0) / count);
         const li = document.createElement('li');
         li.className = 'inv-item';
         li.innerHTML =
           '<div class="inv-item-info">' +
           '<span class="inv-item-name">' + fishName + '</span>' +
-          '<span class="inv-item-detail">' + fish.weight.toFixed(2) + ' kg · ' + t('shop_sell_unit', fish.value) + '</span>' +
+          '<span class="inv-item-detail">' +
+            t('shop_sell_in_stock', count) + ' · ' + t('shop_sell_unit', avgValue) +
+          '</span>' +
           '</div>' +
-          '<div class="inv-item-actions">' +
-          '<button class="btn-sell-item btn-secondary"' +
-          ' data-item-id="' + fish.id + '" data-item-value="' + fish.value + '"' +
-          ' data-item-name="' + fishName + '">' +
-          t('shop_sell_confirm') + ' · ' + fish.value + ' \uD83E\uDE99' +
-          '</button></div>';
-        li.querySelector('.btn-sell-item').addEventListener('click', function() {
-          const val  = parseInt(this.dataset.itemValue);
-          const name = this.dataset.itemName;
-          Inventory.sellItem(this.dataset.itemId);
-          $('shop-coins').textContent = Inventory.coins();
-          _shopFeedback(fbEl, t('shop_sold', name, 1, val), true);
-          _renderShopSell();
+          '<div class="inv-item-actions sell-row">' +
+          '<label class="shop-qty-label"><span>' + t('shop_sell_qty_label') + '</span>' +
+          '<input class="shop-qty-input" type="number" min="1" max="' + count + '" value="1"' +
+          ' aria-label="Qtd de ' + fishName + ' para vender"></label>' +
+          '<div class="shop-total-preview">' + t('shop_sell_total_fish', 1, avgValue, avgValue) + '</div>' +
+          '<button class="btn-sell-fish-qty btn-secondary">' + t('shop_sell_confirm') + '</button>' +
+          '</div>';
+
+        const input   = li.querySelector('.shop-qty-input');
+        const preview = li.querySelector('.shop-total-preview');
+        const sellBtn = li.querySelector('.btn-sell-fish-qty');
+
+        // Valor real: soma dos N peixes que serão vendidos (pelo valor individual)
+        function calcTotal(n) {
+          return group.items.slice(0, n).reduce(function(s,i){ return s + i.value; }, 0);
+        }
+
+        input.addEventListener('input', function() {
+          const n     = Math.min(Math.max(1, parseInt(this.value) || 1), count);
+          const total = calcTotal(n);
+          preview.textContent = t('shop_sell_total_fish', n, avgValue, total);
         });
+
+        sellBtn.addEventListener('click', function() {
+          const n     = Math.min(Math.max(1, parseInt(input.value) || 1), count);
+          const res   = Inventory.sellFishQty(group.items[0].fishId, n);
+          if (res.ok) {
+            $('shop-coins').textContent = Inventory.coins();
+            _shopFeedback(fbEl, t('shop_sold', fishName, res.sold, res.earned), true);
+            _renderShopSell();
+          }
+        });
+
         fishList.appendChild(li);
       });
     }
@@ -2017,13 +2050,13 @@ const Game = (() => {
           '<span class="inv-item-icon" aria-hidden="true">' + def.emoji + '</span>' +
           '<div class="inv-item-info">' +
           '<span class="inv-item-name">' + baitName + '</span>' +
-          '<span class="inv-item-detail">' + t('shop_stock_label', qty) + ' · ' + t('shop_sell_unit', unitSell) + '</span>' +
+          '<span class="inv-item-detail">' + t('shop_sell_in_stock', qty) + ' · ' + t('shop_sell_unit', unitSell) + '</span>' +
           '</div>' +
           '<div class="inv-item-actions sell-row">' +
           '<label class="shop-qty-label"><span>' + t('shop_sell_qty_label') + '</span>' +
-          '<input class="shop-qty-input" type="number" min="1" max="' + qty + '" placeholder="1"' +
+          '<input class="shop-qty-input" type="number" min="1" max="' + qty + '" value="1"' +
           ' aria-label="Qtd de ' + baitName + ' para vender"></label>' +
-          '<div class="shop-total-preview"></div>' +
+          '<div class="shop-total-preview">' + t('shop_sell_total_fish', 1, unitSell, unitSell) + '</div>' +
           '<button class="btn-sell-bait btn-secondary"' +
           ' data-bait-id="' + baitId + '" data-unit-sell="' + unitSell + '" data-max="' + qty + '">' +
           t('shop_sell_confirm') + '</button>' +
@@ -2033,8 +2066,9 @@ const Game = (() => {
         const preview = li.querySelector('.shop-total-preview');
         const sellBtn = li.querySelector('.btn-sell-bait');
         input.addEventListener('input', function() {
-          const n = Math.min(parseInt(this.value) || 1, qty);
-          preview.textContent = n > 1 ? t('shop_sell_total', n, unitSell) : '';
+          const n     = Math.min(Math.max(1, parseInt(this.value) || 1), qty);
+          const total = n * unitSell;
+          preview.textContent = t('shop_sell_total_fish', n, unitSell, total);
         });
         sellBtn.addEventListener('click', function() {
           const n   = Math.min(parseInt(input.value) || 1, qty);
