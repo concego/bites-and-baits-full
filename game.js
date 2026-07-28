@@ -91,6 +91,7 @@ const Game = (() => {
     if (_qp.has('testboat')) {
       const boatId = _qp.get('testboat') || 'canoe';
       Inventory.addEquip(boatId);
+      Inventory.setActiveBoat(boatId);   // equipa automaticamente no QA
     }
     if (_qp.has('testlang')) {
       const langCode = _qp.get('testlang');
