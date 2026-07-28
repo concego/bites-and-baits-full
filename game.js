@@ -1655,6 +1655,11 @@ const Game = (() => {
             <span class="inv-item-detail">${fish.weight.toFixed(2)} kg · ${fish.value} 🪙</span>
           </div>
           <div class="inv-item-actions">
+            <button class="btn-inv-examine-fish btn-secondary"
+                    data-item-id="${fish.id}"
+                    aria-label="${t('inv_examine')} ${t(fish.nameKey) || fish.nameKey}">
+              ${t('inv_examine')}
+            </button>
             <button class="btn-inv-protect btn-secondary"
                     data-item-id="${fish.id}"
                     aria-pressed="${prot}">
@@ -1667,6 +1672,21 @@ const Game = (() => {
               ${t('inv_discard')}
             </button>
           </div>`;
+        li.querySelector('.btn-inv-examine-fish').addEventListener('click', e => {
+          const id   = e.currentTarget.dataset.itemId;
+          const fish = Inventory.getAll().find(f => f.id === id);
+          if (!fish) return;
+          const def  = FISH_CATALOG[fish.fishId];
+          const rarityMap = {
+            lambari:'common', tilapia:'common', cara:'common', piau:'common',
+            traira:'uncommon', curimbata:'uncommon', truta:'uncommon',
+            dourado:'rare', tucunare:'rare',
+            pirarucu:'legendary', peixe_dourado_ornamental:'legendary'
+          };
+          const rarity = t('inv_rarity_' + (rarityMap[fish.fishId] || 'common'));
+          const habitat = t('inv_habitat_' + (def?.habitat || 'freshwater'));
+          _invFeedback(fbEl, t('inv_examine_fish', t(fish.nameKey) || fish.fishId, rarity, habitat), true);
+        });
         li.querySelector('.btn-inv-protect').addEventListener('click', e => {
           const id = e.currentTarget.dataset.itemId;
           Inventory.toggleProtect(id);
@@ -1717,6 +1737,12 @@ const Game = (() => {
               ${isEquipped ? t('shop_equipped') : t('shop_equip')}
             </button>
           </div>`;
+        li.querySelector('.btn-inv-examine-bait').addEventListener('click', e => {
+          const bid  = e.currentTarget.dataset.baitId;
+          const name = t(BAIT_CATALOG[bid]?.nameKey || bid);
+          const desc = t('shop_desc_' + bid) || '';
+          _invFeedback(fbEl, t('inv_examine_bait', name, desc), true);
+        });
         if (!isEquipped) {
           li.querySelector('.btn-equip-bait').addEventListener('click', e => {
             Inventory.equipBait(e.currentTarget.dataset.baitId);
@@ -1761,6 +1787,11 @@ const Game = (() => {
             ${shopItem.tier ? `<span class="shop-tier-badge">${t('shop_tier', shopItem.tier)}</span>` : ''}
           </div>
           <div class="inv-item-actions">
+            <button class="btn-inv-protect btn-secondary"
+                    data-item-id="${itemId}"
+                    aria-pressed="${Inventory.isProtected(itemId)}">
+              ${Inventory.isProtected(itemId) ? t('inv_unprotect') : t('inv_protect')}
+            </button>
             <button class="btn-inv-examine btn-secondary"
                     data-item-id="${itemId}"
                     aria-label="${t('inv_examine')} ${t(shopItem.nameKey) || itemId}">
@@ -1780,6 +1811,11 @@ const Game = (() => {
             }
           </div>`;
 
+        li.querySelector('.btn-inv-protect')?.addEventListener('click', e => {
+          const id = e.currentTarget.dataset.itemId;
+          Inventory.toggleProtect(id);
+          renderInventory();
+        });
         li.querySelector('.btn-inv-examine')?.addEventListener('click', e => {
           const id   = e.currentTarget.dataset.itemId;
           const item = SHOP_CATALOG.find(i => i.id === id);
@@ -2088,7 +2124,7 @@ const Game = (() => {
     const equipEmpty = $('sell-equip-empty');
     equipList.innerHTML = '';
     const sellable = owned.filter(function(id) {
-      return !defaults.includes(id) && !Object.values(equip).includes(id);
+      return !defaults.includes(id) && !Object.values(equip).includes(id) && !Inventory.isProtected(id);
     });
 
     if (sellable.length === 0) {
