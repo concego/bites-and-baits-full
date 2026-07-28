@@ -171,7 +171,7 @@
       </header>
 
       <nav class="city-menu" aria-label="Menu da cidade">
-        <button id="btn-hub-home"   class="btn-city" disabled data-i18n="btn_hub_home"></button>
+        <button id="btn-hub-home"   class="btn-city"          data-i18n="btn_hub_home"></button>
         <button id="btn-hub-shop"   class="btn-city"          data-i18n="btn_hub_shop"></button>
         <button id="btn-hub-vessel" class="btn-city"          data-i18n="btn_hub_vessel"></button>
         <button id="btn-hub-travel" class="btn-city"          data-i18n="btn_hub_travel"></button>
@@ -181,7 +181,32 @@
       <button id="btn-hub-back" class="btn-ghost" data-i18n="btn_back_main"></button>
     </div>
 
-    <!-- ── Tela de Viagem (seleção de destino) ───────────────────────── -->
+    <!-- ── Tela da Casa ──────────────────────────────────────────────────── -->
+    <div id="screen-house" class="screen" role="dialog" aria-modal="true"
+         aria-labelledby="house-title">
+      <header class="panel-header">
+        <h2 id="house-title" data-i18n="house_title"></h2>
+      </header>
+
+      <!-- Nível atual -->
+      <section id="house-current-section" aria-labelledby="house-current-heading">
+        <h3 id="house-current-heading" data-i18n="house_current_title"></h3>
+        <div id="house-current-card" class="house-level-card"></div>
+      </section>
+
+      <!-- Próximo upgrade disponível -->
+      <section id="house-upgrade-section" aria-labelledby="house-upgrade-heading">
+        <h3 id="house-upgrade-heading" data-i18n="house_upgrade_title"></h3>
+        <div id="house-upgrade-card" class="house-level-card"></div>
+      </section>
+
+      <!-- Mensagem quando já está no nível máximo -->
+      <p id="house-maxed-msg" class="house-maxed" hidden data-i18n="house_maxed"></p>
+
+      <button id="btn-house-back" class="btn-ghost" data-i18n="btn_back"></button>
+    </div>
+
+    <!-- ── Tela de Viagem (seleção de destino) ───────────────────────────── -->
     <div id="screen-travel" class="screen" role="dialog" aria-modal="true"
          aria-labelledby="travel-title">
       <header class="panel-header">
@@ -705,6 +730,7 @@
   <script src="score-system.js"></script>
   <script src="inventory.js"></script>
   <script src="shop-data.js"></script>
+  <script src="house-data.js"></script>
   <script src="audio.js"></script>
   <script src="sensors.js"></script>
   <script src="game.js"></script>
