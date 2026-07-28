@@ -810,7 +810,122 @@ const I18n = (() => {
       fish_pirarucu: 'Pirarucu',
 
       // Map names
+    hu: {
+      // Nyelvválasztó képernyő
+      lang_title:       'Válassz nyelvet',
+      lang_subtitle:    'Escolha o idioma',
+
+      // Menü
+      subtitle:         'Ez a játék a telefon mozgását érzékeli.',
+      btn_start:        'Kezdj el horgászni',
+      btn_instructions: 'Hogyan kell játszani',
+      hint:             'A játékhoz tartsd a telefont függőlegesen',
+      credits_by:       'By',
+      credits_brand:    'Eu Concego Jogar',
+
+      // Útmutató-képernyő
+      how_to_play:      'Hogyan kell játszani',
+      instr_sensor_title:  '📱 Telefon a mozgásérzékeléssel (gyorsulásmérővel)',
+      instr_cast:       'Dobás',
+      instr_cast_desc:  'döntsd előre a telefont',
+      instr_reel:       'Zsinór visszahúzása',
+      instr_reel_desc:  'döntsd hátra a telefont',
+      instr_hook:       'Horogra akasztás',
+      instr_hook_desc:  'Rázd meg a telefont, amikor meghallod a jelzést',
+      instr_kb_title:   '⌨️ PC / billentyűzet',
+      instr_kb_cast:    'Dobás',
+      instr_kb_cast_desc: 'fel nyíl ↑',
+      instr_kb_reel:    'Zsinór visszahúzása',
+      instr_kb_reel_desc: 'le nyíl ↓',
+      instr_kb_hook:    'Horogra akasztás',
+      instr_kb_hook_desc: 'szóköz',
+      instr_a11y_title: 'Akadálymentesítés',
+      instr_a11y_1:     'TalkBack bekapcsolásával is működik',
+      instr_a11y_2:     'Minden jelzés valós időben felolvasásra kerül',
+      instr_a11y_3:     'Rezgéses visszajelzés fontos eseményeknél',
+      btn_back:         'Vissza a menübe',
+
+      // Játék kezelőfelülete
+      hud_fish:         'Hal',
+      hud_best:         'Legjobb',
+      tension_label:    'Zsinór feszessége',
+
+      // Eredményképernyő
+      result_caught:    'Hal kifogva!',
+      result_caught_desc: fish => `Fogtál egy ${fish}-t!`,
+      result_snapped:   'A zsinór elszakadt!',
+      result_snapped_desc: 'Ez a hal túl erős volt ezúttal.',
+      stat_today:       'Mai halak',
+      stat_best:        'Legjobb kör',
+      stat_unit:        'hal',
+      btn_again:        'Horgássz újra',
+      btn_menu:         'Menü',
+
+      // Állapotjelzések
+      state_idle:       '🎣 Dobásra kész',
+      state_casting:    '🌊 Dobás...',
+      state_waiting:    '🌊 Kapásra várva...',
+      state_biting:     fish => `⚡ ${fish} a horgon! Rázd meg!`,
+      state_reeling:    fish => `🎣 ${fish} fárasztása...`,
+      state_caught:     fish => `🏆 ${fish} kifogva!`,
+      state_snapped:    '💥 Elszakadt a zsinór!',
+      state_escaped:    '😔 A hal elmenekült...',
+      state_tired:      fish => `😮‍💨 ${fish} elfáradt — húzd vissza!`,
+      state_pulled_out: 'A csali kijött a vízből — döntsd előre a telefont',
+
+      // Telefon döntési tippek
+      tilt_idle:        'Döntsd előre a dobáshoz',
+      tilt_casting:     'Csali bedobása...',
+      tilt_waiting:     'Tartsd mozdulatlanul a telefont',
+      tilt_biting:      'Rázd meg a telefont a hal horogra akasztásához!',
+      tilt_reeling:     'Döntsd hátra a telefont a zsinór visszahúzásához!',
+
+      // Hangbemondások
+      speak_ready:      'Készen állsz. Döntsd előre.',
+      speak_waiting:    'A csali a vízben van. Várj.',
+      speak_fish:       'Hal a csalin! Rázd  meg!',
+      speak_hooked:     'Kapás! Döntsd hátra!',
+      speak_rehooked:   'Kapás!',
+      speak_escaped:    'Elmenekült.',
+      speak_pulled_out: 'Újra dobás. Döntsd előre.',
+      speak_tired:      'Elfáradt! Húzd vissza!',
+      speak_snapped:    'Elszakadt a zsinór!',
+      speak_caught:     (fish, size, score) => `${fish}! ${size}. ${score} hal.`,
+      speak_caught_special: (fish, score) => `${fish}! Különleges egy fogás! ${score} hal.`,
+      speak_danger:     'Veszély! Engedj a zsinóron!',
+      speak_tension:    'Nagy zsinór-feszesség!',
+      speak_no_sensor:  'Az érzékelők engedélyezése sikertelen. Billentyűzetes vezérlés használata.',
+
+      // Méretleírások
+      size_tiny:   'apró',
+      size_small:  'kicsi',
+      size_medium: 'közepes',
+      size_large:  'hatalmas',
+
+      // Halnevek
+      fish_lambari:  'Lambari',
+      fish_tilapia:  'Tilápia',
+      fish_truta:    'Pisztráng',
+      fish_dourado:  'Dourado',
+      fish_pirarucu: 'Pirarucu',
+    },
+
       map_rio_doce: 'Doce River',
+
+      // Maps & zones (inherits PT fallback for missing keys)
+      map_lago_central:   'Központi-tó',
+      zone_margem:        'Tópart',
+      zone_rio:           'Folyó',
+      zone_raso:          'Sekély zóna',
+      zone_meio:          'Tó közepe',
+      zone_fundo:         'Mélyvízi zóna',
+      zone_modal_title:   'Horgászzóna kiválasztása',
+      zone_changed:       'Zóna módosítva:',
+      bar_zone:           'Zóna',
+      travel_go:          'Mehet',
+      travel_go_to:       'Mehet ide',
+      travel_need_boat:   'Csónak szükséges',
+      boat_canoe:         'Kenu',
     },
   };
 
@@ -821,7 +936,7 @@ const I18n = (() => {
   function setLang(code) {
     _lang = code;
     localStorage.setItem('bb_lang', code);
-    document.documentElement.lang = code === 'pt' ? 'pt-BR' : 'en';
+    document.documentElement.lang = code === 'pt' ? 'pt-BR' : code === 'hu' ? 'hu' : 'en';
   }
 
   function getLang() { return _lang; }
