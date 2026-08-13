@@ -22,16 +22,17 @@ Ela permite uso comercial e uso em jogos, mas não permite redistribuir o efeito
 
 ## Música do menu da cidade
 
-- `assets/sounds/city_menu.mp3` — **A New Town (RPG Theme)**, de cynicmusic.
-  Fonte: https://opengameart.org/content/a-new-town-rpg-theme
-  Arquivo original: https://opengameart.org/sites/default/files/025_A_New_Town.mp3
+- `assets/sounds/city_menu.mp3` — **Gone Fishin'**, de You're Perfect Studio / Memoraphile.
+  Fonte: https://opengameart.org/content/gone-fishin
+  Arquivo original: https://opengameart.org/sites/default/files/gone_fishin_by_memoraphile_CC0_0.mp3
 
-Licença: CC0 / Public Domain.
-O autor solicita crédito: **The Cynic Project / pixelsphere.org / cynicmusic.com**.
+A faixa foi escolhida por ser instrumental, loopável e marcada com country, bluegrass, banjo e fishing.
+Licença usada: **CC0 / Public Domain**. A página também lista CC-BY 4.0 e OGA-BY 3.0 como opções de licença.
+Crédito mantido por cortesia: **You're Perfect Studio / Memoraphile**.
 
 ## Uso no jogo
 
-- Margem do Rio Doce: ambiente de rio com pássaros.
+- Margem do Rio Doce: ambiente de rio com pássaros, mixado com uma camada discreta da correnteza do Rio Doce (volume reduzido).
 - Rio Doce: fluxo de rio mais forte.
 - Lago da Margem: água com ambiente natural e pássaros.
 - Lago Central: loop de água.

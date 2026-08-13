@@ -7,6 +7,7 @@ const Audio = (() => {
   let ctx = null;
   const buffers = {};
   let ambientNode = null;
+  let ambientNodes = [];
   let ambientGain = null;
   let ambientFilter = null;
   let ambientKey = null;
@@ -163,12 +164,18 @@ const Audio = (() => {
   // ── Ambiente ───────────────────────────────────────────────────────────────
 
   const AMBIENT_PROFILES = {
-    margem_rio_doce: { key: 'ambient_river_birds', volume: 0.18, filter: 1800 },
-    rio_doce:        { key: 'ambient_river_strong', volume: 0.20, filter: 2200 },
-    lago_margem:     { key: 'ambient_lake_birds', volume: 0.16, filter: 1600 },
-    lago_central:    { key: 'ambient_lake_loop', volume: 0.16, filter: 1400 },
-    lago_central_fundo: { key: 'ambient_lake_loop', volume: 0.09, filter: 520 },
-    lago_central_baia_isolada: { key: 'ambient_lake_loop', volume: 0.11, filter: 800 },
+    // Margem: natureza em primeiro plano + uma camada discreta de correnteza.
+    margem_rio_doce: {
+      layers: [
+        { key: 'ambient_river_birds', volume: 0.18, filter: 1800 },
+        { key: 'ambient_river_strong', volume: 0.055, filter: 1600 },
+      ],
+    },
+    rio_doce:        { layers: [{ key: 'ambient_river_strong', volume: 0.20, filter: 2200 }] },
+    lago_margem:     { layers: [{ key: 'ambient_lake_birds', volume: 0.16, filter: 1600 }] },
+    lago_central:    { layers: [{ key: 'ambient_lake_loop', volume: 0.16, filter: 1400 }] },
+    lago_central_fundo: { layers: [{ key: 'ambient_lake_loop', volume: 0.09, filter: 520 }] },
+    lago_central_baia_isolada: { layers: [{ key: 'ambient_lake_loop', volume: 0.11, filter: 800 }] },
   };
 
   function startAmbient(profile = 'lago_margem') {
@@ -177,35 +184,41 @@ const Audio = (() => {
     const cfg = typeof profile === 'string'
       ? (AMBIENT_PROFILES[profile] || AMBIENT_PROFILES.lago_margem)
       : profile;
-    const key = cfg.key;
-    if (ambientNode && ambientKey === key) {
-      if (ambientGain) ambientGain.gain.value = cfg.volume;
-      if (ambientFilter) ambientFilter.frequency.value = cfg.filter;
-      return;
-    }
-    stopAmbient();
-    if (!buffers[key]) return;
+    const layers = cfg.layers || [{ key: cfg.key, volume: cfg.volume, filter: cfg.filter }];
+    const signature = layers.map(layer => `${layer.key}:${layer.volume}:${layer.filter}`).join('|');
+    if (ambientNodes.length && ambientKey === signature) return;
 
-    const src = ctx.createBufferSource();
-    ambientFilter = ctx.createBiquadFilter();
-    ambientGain = ctx.createGain();
-    src.buffer = buffers[key];
-    src.loop = true;
-    ambientFilter.type = 'lowpass';
-    ambientFilter.frequency.value = cfg.filter || 1400;
-    ambientGain.gain.value = cfg.volume ?? 0.16;
-    src.connect(ambientFilter);
-    ambientFilter.connect(ambientGain);
-    ambientGain.connect(ctx.destination);
-    src.start();
-    ambientNode = src;
-    ambientKey = key;
+    stopAmbient();
+    const created = [];
+    layers.forEach(layer => {
+      if (!layer.key || !buffers[layer.key]) return;
+      const src = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+      src.buffer = buffers[layer.key];
+      src.loop = true;
+      filter.type = 'lowpass';
+      filter.frequency.value = layer.filter || 1400;
+      gain.gain.value = layer.volume ?? 0.16;
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      src.start();
+      created.push({ src, filter, gain });
+    });
+    if (!created.length) return;
+    ambientNodes = created;
+    ambientNode = created[0].src;
+    ambientFilter = created[0].filter;
+    ambientGain = created[0].gain;
+    ambientKey = signature;
   }
 
   function stopAmbient() {
-    if (ambientNode) {
-      try { ambientNode.stop(); } catch(e) {}
-    }
+    ambientNodes.forEach(layer => {
+      try { layer.src.stop(); } catch(e) {}
+    });
+    ambientNodes = [];
     ambientNode = null;
     ambientGain = null;
     ambientFilter = null;
