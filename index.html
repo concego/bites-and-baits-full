@@ -123,13 +123,13 @@
       <p class="subtitle" id="lang-subtitle">Escolha o idioma · Choose your language</p>
 
       <div class="lang-buttons">
-        <button id="btn-lang-pt" class="btn-lang" lang="pt-BR" aria-label="Jogar em Português">
+        <button id="btn-lang-pt" class="btn-lang" lang="pt-BR" data-boot-lang="pt" aria-label="Jogar em Português">
           🇧🇷<span>Português</span>
         </button>
-        <button id="btn-lang-en" class="btn-lang" lang="en" aria-label="Play in English">
+        <button id="btn-lang-en" class="btn-lang" lang="en" data-boot-lang="en" aria-label="Play in English">
           🇺🇸<span>English</span>
         </button>
-        <button id="btn-lang-hu" class="btn-lang" lang="hu" aria-label="Játssz magyarul">
+        <button id="btn-lang-hu" class="btn-lang" lang="hu" data-boot-lang="hu" aria-label="Játssz magyarul">
           🇭🇺<span>Magyar</span>
         </button>
       </div>
@@ -761,6 +761,16 @@
 
   </div><!-- /#app -->
 
+  <!-- Fallback mínimo: a escolha de idioma continua funcionando mesmo se um
+       recurso externo falhar antes de registrar os listeners do jogo. -->
+  <script>
+    document.querySelectorAll('[data-boot-lang]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        localStorage.setItem('bb_lang', btn.dataset.bootLang);
+        window.location.reload();
+      });
+    });
+  </script>
   <script src="a11y.js"></script>
   <script src="i18n.js"></script>
   <script src="fish-data.js"></script>
