@@ -1183,6 +1183,7 @@ const Game = (() => {
     if (!summary) return;
     const available = !!_lastCatchInfo && state === 'IDLE' &&
       screens.game && screens.game.classList.contains('active');
+    if (available) _renderLastCatchSummary();
     summary.classList.toggle('hidden', !available);
     summary.setAttribute('aria-hidden', available ? 'false' : 'true');
   }
