@@ -152,6 +152,9 @@ const Game = (() => {
       resultScore:    $('result-score'),
       resultBest:     $('result-best'),
       normalHud:      $('normal-hud'),
+      boatVisual:     $('boat-visual'),
+      boatVisualIcon: $('boat-visual-icon'),
+      boatContext:    $('boat-context'),
       baitEmoji:      $('bait-active-emoji'),
       baitName:       $('bait-active-name'),
       baitQty:        $('bait-active-qty'),
@@ -601,6 +604,7 @@ const Game = (() => {
       fishEls = [];
       spawnBackgroundFish();
       _updateZoneHud();
+      _renderBoatVisual();
       Sensors.start();
       Audio.startAmbient();
       enterState('IDLE');
@@ -658,6 +662,11 @@ const Game = (() => {
           const _missing = _slots.find(s => !_equip[s]);
           if (_missing) {
             speak(I18n.t('inv_slot_empty_' + _missing) || `Sem ${_missing} equipado.`);
+            enterState('IDLE');
+            break;
+          }
+          if (!_hasRequiredRod(activeMap, _equip)) {
+            speak(I18n.t('travel_need_rod'));
             enterState('IDLE');
             break;
           }
@@ -1390,6 +1399,7 @@ const Game = (() => {
     activeZone = Inventory.getActiveZone(activeMap.id)
               || (activeMap.zones && activeMap.zones.find(z => !z.hidden)?.id)
               || null;
+    _renderBoatVisual();
   }
 
   // ── Casa ───────────────────────────────────────────────────────────────────
@@ -1566,6 +1576,49 @@ const Game = (() => {
     };
   }
 
+  function _hasRequiredRod(map, equip = Inventory.getEquip()) {
+    if (!map?.requiredRod) return true;
+    const required = SHOP_CATALOG.find(item => item.id === map.requiredRod);
+    const equipped = SHOP_CATALOG.find(item => item.id === equip?.rod);
+    return !!required && !!equipped && (equipped.tier || 0) >= (required.tier || 0);
+  }
+
+  function _mapAllowedBoats(map) {
+    return Array.isArray(map?.allowedBoats) ? map.allowedBoats : [];
+  }
+
+  function _mapBoatId(map, owned = Inventory.getOwnedEquip()) {
+    const allowed = _mapAllowedBoats(map);
+    if (!allowed.length) return null;
+    const active = Inventory.getActiveBoat();
+    return allowed.includes(active) ? active : allowed.find(id => owned.includes(id)) || null;
+  }
+
+  function _hasMapBoatAccess(map, owned = Inventory.getOwnedEquip()) {
+    return !_mapAllowedBoats(map).length || !!_mapBoatId(map, owned);
+  }
+
+  function _mapBoatLabel(map) {
+    const allowed = _mapAllowedBoats(map);
+    return allowed.map(id => I18n.t('boat_' + id) || id).join(' / ');
+  }
+
+  function _renderBoatVisual() {
+    const map = activeMap;
+    const allowed = _mapAllowedBoats(map);
+    const needsBoat = allowed.length > 0;
+    const boatId = _mapBoatId(map) || allowed[0] || null;
+    const vessel = boatId ? VESSELS_CATALOG.find(v => v.id === boatId) : null;
+    const icon = vessel?.emoji || (needsBoat ? '🚣' : '');
+    ui.boatVisual?.classList.toggle('hidden', !needsBoat);
+    if (ui.boatVisualIcon) ui.boatVisualIcon.textContent = icon;
+    if (ui.boatContext) {
+      ui.boatContext.textContent = needsBoat
+        ? `${I18n.t(map.nameKey)} — ${I18n.t('boat_context_in')} ${I18n.t(vessel?.nameKey || ('boat_' + (allowed[0] || 'canoe')))}.`
+        : `${I18n.t(map.nameKey)} — ${I18n.t('boat_context_shore')}.`;
+    }
+  }
+
   /** Renderiza a tela de seleção de destino */
   function renderTravel() { if (typeof _refreshHubHUD === 'function') _refreshHubHUD();
     const map     = getActiveMap();
@@ -1578,17 +1631,24 @@ const Game = (() => {
     if (!list) return;
     list.innerHTML = '';
 
-    // Barcos que o jogador possui (via bb_owned_equip)
+    // Barcos e equipamento atualmente disponíveis ao jogador.
     const ownedEquip = Inventory.getOwnedEquip();
+    const equipped   = Inventory.getEquip();
     MAPS.forEach(m => {
       const isActive  = m.id === map.id;
-      // Cada mapa exige um barco específico (sem hierarquia)
-      const hasBoat = !m.requiredBoat || ownedEquip.includes(m.requiredBoat) || (m.requiredBoat === 'canoe' && (ownedEquip.includes('canoe') || ownedEquip.includes('boat_canoe')));
+      const hasBoat = _hasMapBoatAccess(m, ownedEquip);
+      const hasRod  = _hasRequiredRod(m, equipped);
       const li = document.createElement('li');
       li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
 
       let actionsHtml;
-      if (isActive) {
+      if (isActive && !hasBoat) {
+        const lockMsg = `🚣 ${I18n.t('travel_need_boat') || 'Precisa de barco'}: ${_mapBoatLabel(m)}`;
+        actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
+      } else if (isActive && !hasRod) {
+        const lockMsg = `🎋 ${I18n.t('travel_need_rod')}`;
+        actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
+      } else if (isActive) {
         actionsHtml = `<button class="btn-primary btn-sm travel-btn-fish"
                                data-map-id="${m.id}"
                                aria-label="${I18n.t('travel_fish_here')} — ${I18n.t(m.nameKey) || m.id}">
@@ -1601,8 +1661,8 @@ const Game = (() => {
                          🗺️ ${I18n.t('travel_go') || 'Ir'}
                        </button>`;
       } else {
-        const lockMsg = m.requiredBoat
-          ? `🚣 ${I18n.t('travel_need_boat') || 'Precisa de barco'}: ${I18n.t('boat_' + m.requiredBoat) || m.requiredBoat}`
+        const lockMsg = _mapAllowedBoats(m).length
+          ? `🚣 ${I18n.t('travel_need_boat') || 'Precisa de barco'}: ${_mapBoatLabel(m)}`
           : I18n.t('travel_locked') || '🔒';
         actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
       }
@@ -1611,7 +1671,7 @@ const Game = (() => {
         <span class="travel-item-emoji" aria-hidden="true">${m.emoji || '🏞️'}</span>
         <div class="travel-item-info">
           <span class="travel-item-name">${I18n.t(m.nameKey) || m.id}</span>
-          ${m.requiredBoat ? `<span class="travel-item-vessel" aria-hidden="true">🚣</span>` : ''}
+          ${_mapAllowedBoats(m).length ? `<span class="travel-item-vessel" aria-hidden="true">🚣</span>` : ''}
         </div>
         <div class="travel-item-actions">${actionsHtml}</div>`;
 
@@ -1623,7 +1683,13 @@ const Game = (() => {
       // Viajar para outro mapa — cobrar taxa de estaleiro se necessário
       li.querySelector('.travel-btn-go')?.addEventListener('click', e => {
         const destId    = e.currentTarget.dataset.mapId;
-        const boatId    = Inventory.getActiveBoat();
+        const destMap   = MAP_CATALOG[destId];
+        const boatId    = _mapBoatId(destMap, ownedEquip);
+        if (_mapAllowedBoats(destMap).length && !boatId) {
+          speak(`${I18n.t('travel_need_boat') || 'Precisa de barco'}: ${_mapBoatLabel(destMap)}`);
+          return;
+        }
+        if (boatId && boatId !== Inventory.getActiveBoat()) Inventory.setActiveBoat(boatId);
         const fee       = Inventory.calcBoatFee(boatId);
 
         if (fee > 0) {

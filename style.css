@@ -238,6 +238,36 @@ html, body {
   50%       { transform: translateX(5%) scaleY(1.3); }
 }
 
+.boat-visual {
+  position: absolute;
+  z-index: 4;
+  bottom: 11%;
+  left: 50%;
+  width: 96px;
+  height: 42px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.boat-visual::after {
+  content: '';
+  position: absolute;
+  left: 8px; right: 8px; bottom: 2px;
+  height: 10px;
+  border-radius: 0 0 50% 50%;
+  background: rgba(80, 48, 22, .8);
+  box-shadow: 0 4px 0 rgba(255,255,255,.15);
+}
+.boat-visual-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 2.4rem;
+  line-height: 1;
+  filter: drop-shadow(0 3px 2px rgba(0,0,0,.35));
+}
+
 #shore {
   position: absolute;
   bottom: 0; left: 0; right: 0;

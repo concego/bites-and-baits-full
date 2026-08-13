@@ -418,8 +418,14 @@ const Inventory = (() => {
   const STORAGE_KEY_HOUSE_LEVEL  = 'bb_house_level';
 
   function _loadOwnedEquip() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_OWNED_EQUIP) || '[]'); }
-    catch { return []; }
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_OWNED_EQUIP) || '[]');
+      if (!Array.isArray(saved)) return [];
+      // Migra o antigo Barco a Remo para o novo Barco de Alumínio.
+      const migrated = [...new Set(saved.map(id => id === 'rowboat' ? 'barco_aluminio' : id))];
+      if (JSON.stringify(migrated) !== JSON.stringify(saved)) _saveOwnedEquip(migrated);
+      return migrated;
+    } catch { return []; }
   }
 
   function _saveOwnedEquip(arr) {
@@ -446,7 +452,12 @@ const Inventory = (() => {
 
   /** Retorna o id do barco ativo, ou null se nenhum. */
   function getActiveBoat() {
-    return localStorage.getItem(STORAGE_KEY_ACTIVE_BOAT) || null;
+    const saved = localStorage.getItem(STORAGE_KEY_ACTIVE_BOAT) || null;
+    if (saved === 'rowboat') {
+      setActiveBoat('barco_aluminio');
+      return 'barco_aluminio';
+    }
+    return saved;
   }
 
   // ── Casa ─────────────────────────────────────────────────────────────────

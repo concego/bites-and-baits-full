@@ -9,14 +9,34 @@
  */
 
 const MAP_CATALOG = {
+  margem_rio_doce: {
+    id: 'margem_rio_doce',
+    nameKey: 'map_margem_rio_doce',
+    emoji:   '🏞️',
+    sceneClass: 'map-margem-rio-doce',
+    allowedBoats: [],
+    zones: [
+      { id: 'margem', nameKey: 'zone_margem_rio_doce', emoji: '🏞️' },
+    ],
+    fish: [
+      { id: 'lambari',   weight: 0.45 },
+      { id: 'tilapia',   weight: 0.25 },
+      { id: 'piau',      weight: 0.15 },
+      { id: 'curimbata', weight: 0.10 },
+      { id: 'traira',    weight: 0.05 },
+    ],
+  },
+
   rio_doce: {
     id: 'rio_doce',
     nameKey: 'map_rio_doce',
     emoji:   '🏞️',
     sceneClass: 'map-rio-doce',
-    requiredBoat: null,
+    allowedBoats: ['barco_aluminio', 'lancha'],
+    // O trecho principal do rio exige uma vara de nível médio ou superior.
+    requiredRod: 'rod_medium',
     zones: [
-      { id: 'rio', nameKey: 'zone_rio', emoji: '🏞️' },
+      { id: 'rio', nameKey: 'zone_correnteza', emoji: '🌊' },
     ],
     fish: [
       { id: 'lambari',  weight: 0.40 },
@@ -32,7 +52,7 @@ const MAP_CATALOG = {
     nameKey: 'map_lago_margem',
     emoji:   '🏕️',
     sceneClass: 'map-lago-margem',
-    requiredBoat: null,     // sem barco — pesca da margem
+    allowedBoats: [],       // sem barco — pesca da margem
     zones: [
       { id: 'margem', nameKey: 'zone_margem', emoji: '🏕️' },
     ],
@@ -98,7 +118,7 @@ const MAP_CATALOG = {
     nameKey: 'map_lago_central',
     emoji:   '🚣',
     sceneClass: 'map-lago-central',
-    requiredBoat: 'canoe',   // exige canoa ou superior
+    allowedBoats: ['canoe', 'barco_aluminio', 'lancha'],
     zones: [
       { id: 'raso',  nameKey: 'zone_raso',  emoji: '🌊' },
       { id: 'meio',  nameKey: 'zone_meio',  emoji: '🌀' },
