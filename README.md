@@ -1,137 +1,96 @@
 # 🎣 Bites & Baits
 
-> Demonstração de mecânica — uso de recursos nativos do dispositivo para criar imersão em jogos web acessíveis.
+> Jogo web de pesca com controles por movimento ou teclado, dois modos de jogo e acessibilidade integrada desde a arquitetura.
 
-**Jogar agora:** https://concego.github.io/bites-and-baits/
-
----
+**Jogar agora:** <https://concego.github.io/bites-and-baits-full/>
 
 ## Sobre o projeto
 
-Bites & Baits é um jogo de pesca desenvolvido como prova de conceito para explorar **recursos físicos do dispositivo** — acelerômetro, giroscópio, vibração e áudio — diretamente no navegador, sem instalar nada.
+Bites & Baits é um jogo de pesca desenvolvido por **Anderson Carvalho / Eu Concego Jogar**. A mesma experiência pode ser jogada no celular, usando sensores de movimento, ou no computador, usando teclado físico — inclusive por conexão OTG.
 
-A proposta central não é o jogo em si, mas a demonstração de que é possível criar experiências imersivas e acessíveis usando apenas APIs web padrão. O jogo funciona tanto no celular (com sensores de movimento) quanto no PC (com teclado), e foi projetado desde o início para ser compatível com leitores de tela.
+O projeto busca colocar pessoas que enxergam e pessoas cegas na mesma atividade, sem criar uma versão separada do jogo. As informações importantes permanecem disponíveis na interface e são anunciadas pelo leitor de tela, sem TTS próprio para duplicar a leitura.
 
----
+## Modos de jogo
 
-## Recursos do dispositivo explorados
+### História
 
-### 📐 Acelerômetro e Giroscópio
-A mecânica de pesca é controlada pela inclinação física do celular:
+- Progressão com mapas, zonas de pesca, moedas e inventário.
+- Equipamentos, iscas e barcos influenciam a pescaria.
+- Capturas são registradas no inventário.
+- O histórico de última captura da História é mantido separadamente.
 
-- **Inclinar para frente** → lança a linha
-- **Inclinar para trás** → puxa o peixe
-- **Sacudir** → fisga quando o peixe morde
+### Pesca Livre
 
-Implementado via `DeviceOrientationEvent` e `DeviceMotionEvent`. Em iOS, a permissão é solicitada explicitamente via `DeviceOrientationEvent.requestPermission()`.
+- Pescaria rápida voltada para pontuação.
+- Não depende do inventário nem consome iscas da História.
+- A pontuação da captura aparece no resumo de resultados.
+- Mantém seu próprio histórico de última captura, separado da História.
 
-### 📳 Vibração (Haptic Feedback)
-Eventos do jogo geram padrões de vibração distintos via `navigator.vibrate()`:
+## Controles
 
-| Evento | Padrão |
-|---|---|
-| Peixe mordeu | Curto-curto |
-| Fisgou | Médio-curto-médio |
-| Linha arrebentou | Longo-médio-longo |
-| Tensão crítica | Pulso contínuo |
+### Celular
 
-Cada padrão foi calibrado para ser reconhecível sem precisar olhar para a tela.
+Com sensores disponíveis:
 
-### 🔊 Web Audio API
-O áudio do jogo é gerado proceduralmente — sem arquivos externos:
+- **Inclinar para frente** → lançar a linha ou puxar o peixe.
+- **Inclinar para trás** → aliviar a tensão da linha.
+- **Sacudir** → fisgar quando o peixe morde.
 
-- **Som ambiente** → ruído de água sintetizado com `BiquadFilterNode`
-- **Carretel** → oscilador de frequência variável (agudo ao puxar, grave ao resistir)
-- **Mordida** → envelope de ataque rápido com decaimento
-- **Quebra da linha** → ruído filtrado com queda brusca de frequência
-
-Toda a síntese acontece em tempo real no `AudioContext`, permitindo variação dinâmica conforme o estado do jogo.
-
-### Acessibilidade como camada nativa
-
-O jogo não usa TTS próprio — o **TalkBack** (Android) e o **VoiceOver** (iOS) são os narradores oficiais. Todos os eventos de gameplay são anunciados via `aria-live="assertive"`.
-
-Para garantir que mensagens urgentes interrompam o que o leitor de tela estiver lendo, foi implementado o padrão **Double RAF** (duplo `requestAnimationFrame`):
-
-```js
-function announce(msg) {
- ui.announcer.textContent = '';
- requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
-   ui.announcer.textContent = msg;
-  });
- });
-}
-```
-
-Isso força o leitor de tela a descartar a fila atual e ler a nova mensagem imediatamente — essencial para eventos em tempo real como "Peixe! Sacuda!" e "Perigo! Solte!".
-
-Durante o gameplay ativo, o restante da interface recebe `aria-hidden="true"` para evitar que o TalkBack foque em elementos visuais irrelevantes, enquanto o `announcer` permanece sempre visível para o leitor.
-
----
-
-## Mecânica do jogo
-
-O jogador passa por uma sequência de estados:
-
-```
-IDLE → WAITING → BITING → REELING → CAUGHT
-                 ↘ SNAPPED
-```
-
-- **IDLE** — aguardando lançar a linha
-- **WAITING** — linha na água, peixe se aproximando
-- **BITING** — peixe mordeu, janela de tempo para fisgar com shake
-- **REELING** — puxando o peixe; tensão sobe com a resistência dele
-- **CAUGHT** — captura bem-sucedida
-- **SNAPPED** — tensão chegou a 100%, linha arrebentou
-
-### Espécies e comportamento
-
-Cada peixe tem parâmetros independentes que afetam diretamente a dificuldade:
-
-| Espécie | Raridade | Resistência | Janela p/ fisgar | Cansa em |
-|---|---|---|---|---|
-| Lambari | 40% | Mínima | 4,5 s | 3 s |
-| Tilápia | 35% | Baixa | 3,5 s | 4,5 s |
-| Truta | 14% | Média | 3,0 s | 6 s |
-| Dourado | 8% | Alta | 2,5 s | 9 s |
-| Pirarucu | 3% | Máxima | 2,0 s | 14 s |
-
-O **Pirarucu** funciona como boss — demanda mais puxadas, resiste mais e quase não cansa.
-
-### Fallback para teclado
-
-Quando não há acelerômetro disponível (desktop), o jogo detecta automaticamente e ativa os controles por teclado:
+### PC, celular sem sensores ou teclado OTG
 
 | Tecla | Ação |
-|---|---|
-| ↑ Seta cima | Lançar / puxar |
-| ↓ Seta baixo | Soltar linha |
-| Espaço | Shake / fisgar |
+| --- | --- |
+| ↑ Seta para cima | Lançar ou puxar |
+| ↓ Seta para baixo | Aliviar a tensão |
+| Espaço | Sacudir / fisgar |
+| F | Ler novamente os dados da última captura |
 
----
+Os listeners de teclado são registrados uma única vez e não substituem nem alteram a gameplay por sensores.
+
+## Última captura
+
+Depois de uma captura, o resumo fica disponível diretamente na tela de pesca para consulta. Dependendo do modo, ele apresenta:
+
+- nome do peixe;
+- tamanho;
+- peso e valor, na História;
+- mapa e zona;
+- pontuação, na Pesca Livre.
+
+Ao pressionar **F**, o jogo coloca o foco em uma leitura acessível com todos os dados do resumo — não apenas no título. O leitor de tela faz a leitura; o jogo não adiciona voz sintética própria.
+
+Os históricos são persistidos localmente e separados por modo. Um histórico antigo, criado antes da separação, é migrado apenas para a História.
+
+## Acessibilidade
+
+- Interface compatível com leitores de tela.
+- Eventos importantes anunciados por regiões `aria-live`.
+- Resumo da captura disponível visualmente e em texto acessível.
+- Teclado físico como alternativa aos sensores.
+- Nenhuma alteração na física principal da pescaria ao usar teclado.
+- A interface evita duplicar com áudio próprio o que o leitor de tela já pode ler.
+
+## Recursos do dispositivo
+
+Quando disponíveis, o jogo pode explorar APIs web nativas para movimento e feedback do dispositivo. A experiência principal continua utilizável sem sensores, pelo teclado.
+
+- `DeviceOrientationEvent` — orientação do aparelho.
+- `DeviceMotionEvent` — movimento e sacudida.
+- `ARIA Live Regions` — integração com leitores de tela.
+- `SVG inline` — representação visual dos peixes.
 
 ## Tecnologias
 
-- **HTML5 / CSS3 / JavaScript** — sem frameworks, sem dependências externas
-- **DeviceOrientationEvent** — leitura do giroscópio
-- **DeviceMotionEvent** — detecção de shake via aceleração linear
-- **Web Audio API** — síntese de áudio procedural
-- **Vibration API** — haptic feedback
-- **ARIA Live Regions** — integração nativa com leitores de tela
-- **SVG inline** — sprites dos peixes desenhados em código
-
----
+- HTML5, CSS3 e JavaScript sem frameworks.
+- `DeviceOrientationEvent` e `DeviceMotionEvent`.
+- Web Storage para dados locais da partida e da última captura.
+- Regiões ARIA para comunicação com tecnologia assistiva.
+- GitHub Pages para publicação.
 
 ## Contexto
 
-Desenvolvido por **Anderson Carvalho** ([Eu Concego Jogar](https://concego.github.io)) como parte de uma série de experimentos em inclusão digital e design de jogos acessíveis.
+Desenvolvido como parte dos experimentos da **Eu Concego Jogar** em inclusão digital e design de jogos. A acessibilidade não é uma camada posterior: ela participa da arquitetura e da interação desde o começo.
 
-A filosofia do projeto é que acessibilidade não é uma camada separada — ela está na arquitetura desde o início. O mesmo jogo que usa o acelerômetro para imersão física usa `aria-live` para imersão sonora via leitor de tela. Quem enxerga e quem não enxerga jogam a mesma coisa, da mesma forma.
+## Licença
 
----
-
-*Licença MIT — sinta-se livre para estudar, adaptar e evoluir.*
-
-<!-- deploy bump 2026-07-26T18:18:06.774008 -->
+Licença MIT — sinta-se livre para estudar, adaptar e evoluir.
