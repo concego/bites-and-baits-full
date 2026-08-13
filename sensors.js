@@ -122,17 +122,23 @@ const Sensors = (() => {
     if (_callbacks.onTilt) _callbacks.onTilt(_keyTilt, beta, norm);
   }
 
+  function _isKey(e, key, code = key) {
+    // e.code mantém a identificação física da tecla no PC mesmo quando o
+    // layout/idioma altera e.key. O fallback legado cobre navegadores antigos.
+    return e.key === key || e.code === code || e.key === key.replace('Arrow', '');
+  }
+
   function _handleKeyDown(e) {
     if (!_gameScreenActive()) return;
-    if (e.key === 'ArrowUp') {
+    if (_isKey(e, 'ArrowUp')) {
       e.preventDefault();
       _keyTilt = 'forward';
       _fireKey();
-    } else if (e.key === 'ArrowDown') {
+    } else if (_isKey(e, 'ArrowDown')) {
       e.preventDefault();
       _keyTilt = 'back';
       _fireKey();
-    } else if (e.key === ' ' || e.key === 'Spacebar') {
+    } else if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') {
       e.preventDefault();
       // Evita vários disparos quando o teclado mantém a tecla pressionada.
       if (!e.repeat && _callbacks.onShake) _callbacks.onShake();
@@ -141,7 +147,7 @@ const Sensors = (() => {
 
   function _handleKeyUp(e) {
     if (!_gameScreenActive()) return;
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    if (_isKey(e, 'ArrowUp') || _isKey(e, 'ArrowDown')) {
       e.preventDefault();
       _keyTilt = 'neutral';
       _fireKey();
@@ -149,10 +155,12 @@ const Sensors = (() => {
   }
 
   function enableDesktopFallback() {
+    // Captura no window evita que controles focados ou outros listeners
+    // interrompam as setas antes de o jogo receber o evento.
     // Pode ser chamado pelo start() e pela resposta da permissão sem duplicar listeners.
     if (_keyboardListeners) return;
-    document.addEventListener('keydown', _handleKeyDown);
-    document.addEventListener('keyup',   _handleKeyUp);
+    window.addEventListener('keydown', _handleKeyDown, true);
+    window.addEventListener('keyup',   _handleKeyUp,   true);
     _keyboardListeners = true;
     console.info('[Sensors] Teclado ativo: ↑=lançar ↓=puxar Espaço=shake');
   }
