@@ -250,10 +250,28 @@ const Inventory = (() => {
   }
 
   function _loadEquip() {
+    const starter = {
+      bait:  'worm',
+      rod:   'rod_basic',
+      line:  'line_mono',
+      hook:  'hook_basic',
+      float: 'float_basic',
+    };
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_EQUIP));
-      return saved || { bait: 'worm' };
-    } catch { return { bait: 'worm' }; }
+      // Migra saves antigos que só tinham a isca, sem substituir slots que
+      // o jogador tenha deixado explicitamente desequipados (null).
+      if (!saved || typeof saved !== 'object' || Array.isArray(saved)) {
+        localStorage.setItem(STORAGE_KEY_EQUIP, JSON.stringify(starter));
+        return starter;
+      }
+      const equip = { ...starter, ...saved };
+      const migrated = Object.keys(starter).some(slot => !(slot in saved));
+      if (migrated) localStorage.setItem(STORAGE_KEY_EQUIP, JSON.stringify(equip));
+      return equip;
+    } catch {
+      return starter;
+    }
   }
 
   function _saveEquip(equip) {
