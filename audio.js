@@ -8,6 +8,10 @@ const Audio = (() => {
   const buffers = {};
   let ambientNode = null;
   let ambientGain = null;
+  let ambientFilter = null;
+  let ambientKey = null;
+  let cityMusicNode = null;
+  let cityMusicGain = null;
 
   // ── Carretel contínuo ──────────────────────────────────────────────────────
   let reelNode  = null;   // BufferSource em loop
@@ -20,7 +24,13 @@ const Audio = (() => {
     reel:         'assets/sounds/reel.wav',
     point_normal: 'assets/sounds/point_normal.wav',
     point_special:'assets/sounds/point_special.wav',
-    uhoh:         'assets/sounds/uhoh.wav',
+    uhoh:               'assets/sounds/uhoh.wav',
+    ambient_river_strong:'assets/sounds/ambient_river_strong.mp3',
+    ambient_river_birds: 'assets/sounds/ambient_river_birds.mp3',
+    ambient_lake_loop:   'assets/sounds/ambient_lake_loop.mp3',
+    ambient_lake_birds:  'assets/sounds/ambient_lake_birds.mp3',
+    zone_transition:     'assets/sounds/zone_transition.mp3',
+    city_menu:           'assets/sounds/city_menu.mp3',
   };
 
   function init() {
@@ -152,49 +162,79 @@ const Audio = (() => {
 
   // ── Ambiente ───────────────────────────────────────────────────────────────
 
-  function startAmbient() {
-    if (!ctx || ambientNode) return;
+  const AMBIENT_PROFILES = {
+    margem_rio_doce: { key: 'ambient_river_birds', volume: 0.18, filter: 1800 },
+    rio_doce:        { key: 'ambient_river_strong', volume: 0.20, filter: 2200 },
+    lago_margem:     { key: 'ambient_lake_birds', volume: 0.16, filter: 1600 },
+    lago_central:    { key: 'ambient_lake_loop', volume: 0.16, filter: 1400 },
+    lago_central_fundo: { key: 'ambient_lake_loop', volume: 0.09, filter: 520 },
+    lago_central_baia_isolada: { key: 'ambient_lake_loop', volume: 0.11, filter: 800 },
+  };
+
+  function startAmbient(profile = 'lago_margem') {
+    if (!ctx) return;
     if (ctx.state === 'suspended') ctx.resume();
-
-    // Ruído rosa filtrado → som de água
-    const bufSize = ctx.sampleRate * 4;
-    const buf     = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data    = buf.getChannelData(0);
-
-    // Ruído de Voss (pink noise aproximado)
-    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0;
-    for (let i = 0; i < bufSize; i++) {
-      const white = Math.random() * 2 - 1;
-      b0 = 0.99886*b0 + white*0.0555179;
-      b1 = 0.99332*b1 + white*0.0750759;
-      b2 = 0.96900*b2 + white*0.1538520;
-      b3 = 0.86650*b3 + white*0.3104856;
-      b4 = 0.55000*b4 + white*0.5329522;
-      b5 = -0.7616*b5 - white*0.0168980;
-      data[i] = (b0+b1+b2+b3+b4+b5+white*0.5362) * 0.11;
+    const cfg = typeof profile === 'string'
+      ? (AMBIENT_PROFILES[profile] || AMBIENT_PROFILES.lago_margem)
+      : profile;
+    const key = cfg.key;
+    if (ambientNode && ambientKey === key) {
+      if (ambientGain) ambientGain.gain.value = cfg.volume;
+      if (ambientFilter) ambientFilter.frequency.value = cfg.filter;
+      return;
     }
+    stopAmbient();
+    if (!buffers[key]) return;
 
-    const src    = ctx.createBufferSource();
-    const filter = ctx.createBiquadFilter();
-    ambientGain  = ctx.createGain();
-
-    src.buffer        = buf;
-    src.loop          = true;
-    filter.type       = 'lowpass';
-    filter.frequency.value = 600;
-    ambientGain.gain.value = 0.18;
-
-    src.connect(filter);
-    filter.connect(ambientGain);
+    const src = ctx.createBufferSource();
+    ambientFilter = ctx.createBiquadFilter();
+    ambientGain = ctx.createGain();
+    src.buffer = buffers[key];
+    src.loop = true;
+    ambientFilter.type = 'lowpass';
+    ambientFilter.frequency.value = cfg.filter || 1400;
+    ambientGain.gain.value = cfg.volume ?? 0.16;
+    src.connect(ambientFilter);
+    ambientFilter.connect(ambientGain);
     ambientGain.connect(ctx.destination);
     src.start();
     ambientNode = src;
+    ambientKey = key;
   }
 
   function stopAmbient() {
-    if (!ambientNode) return;
-    try { ambientNode.stop(); } catch(e) {}
+    if (ambientNode) {
+      try { ambientNode.stop(); } catch(e) {}
+    }
     ambientNode = null;
+    ambientGain = null;
+    ambientFilter = null;
+    ambientKey = null;
+  }
+
+  function startCityMusic() {
+    if (!ctx || cityMusicNode || !buffers.city_menu) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    cityMusicNode = ctx.createBufferSource();
+    cityMusicGain = ctx.createGain();
+    cityMusicNode.buffer = buffers.city_menu;
+    cityMusicNode.loop = true;
+    cityMusicGain.gain.value = 0.13;
+    cityMusicNode.connect(cityMusicGain);
+    cityMusicGain.connect(ctx.destination);
+    cityMusicNode.start();
+  }
+
+  function stopCityMusic() {
+    if (cityMusicNode) {
+      try { cityMusicNode.stop(); } catch(e) {}
+    }
+    cityMusicNode = null;
+    cityMusicGain = null;
+  }
+
+  function playZoneTransition() {
+    return play('zone_transition', { volume: 0.28 });
   }
 
   // ── Carretel contínuo com pitch variável ───────────────────────────────────
@@ -484,7 +524,8 @@ const Audio = (() => {
   function chomp() { _chomp(); }
   function snap()  { _snap(); }
 
-  return { init, play, stop, startAmbient, stopAmbient, vibrate, chomp, snap,
+  return { init, play, stop, startAmbient, stopAmbient, startCityMusic, stopCityMusic,
+           playZoneTransition, vibrate, chomp, snap,
            startReel, setReelMode, stopReel, fishResist,
            fishApproach, fishRetreat, tensionAlert,
            fishEscaped, fishTiredSound, fishRecoveredSound };

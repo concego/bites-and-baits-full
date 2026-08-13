@@ -563,6 +563,17 @@ const Game = (() => {
     showScreen('start');
   }
 
+  function _ambientProfileKey() {
+    if (!activeMap) return 'lago_margem';
+    if (activeMap.id === 'lago_central' && activeZone === 'fundo') {
+      return 'lago_central_fundo';
+    }
+    if (activeMap.id === 'lago_central' && activeZone === 'baia_isolada') {
+      return 'lago_central_baia_isolada';
+    }
+    return activeMap.id;
+  }
+
   // ── Inicia jogo ───────────────────────────────────────────────────────────
   async function startGame(mode = 'normal') {
     try {
@@ -577,7 +588,11 @@ const Game = (() => {
       Sensors.requestPermission().then(ok => {
         if (!ok) Sensors.enableDesktopFallback();
       }).catch(() => Sensors.enableDesktopFallback());
-      Audio.init().catch(() => {});
+      Audio.stopCityMusic();
+      const soundEnabled = A11y.get('sound');
+      Audio.init().then(() => {
+        if (soundEnabled) Audio.startAmbient(_ambientProfileKey());
+      }).catch(() => {});
 
       // 3. HUDs
       const scoreHud = $('score-hud');
@@ -606,7 +621,6 @@ const Game = (() => {
       _updateZoneHud();
       _renderBoatVisual();
       Sensors.start();
-      Audio.startAmbient();
       enterState('IDLE');
     } catch (err) {
       console.error('[startGame]', err);
@@ -1378,7 +1392,11 @@ const Game = (() => {
   /** Exibe o hub da cidade */
   function showStoryHub() {
     _refreshHubHUD();
+    Audio.stopAmbient();
     showScreen('storyHub');
+    if (A11y.get('sound')) {
+      Audio.init().then(() => Audio.startCityMusic()).catch(() => {});
+    }
   }
 
   /** Salva o mapa ativo e atualiza o estado interno */
@@ -1744,6 +1762,10 @@ const Game = (() => {
       btn.addEventListener('click', () => {
         activeZone = zone.id;
         Inventory.setActiveZone(map.id, zone.id);
+        if (A11y.get('sound')) {
+          Audio.playZoneTransition();
+          Audio.init().then(() => Audio.startAmbient(_ambientProfileKey())).catch(() => {});
+        }
         closeZoneModal();
         // Anunciar a mudança para leitores de tela
         const ann = $('announcer');
