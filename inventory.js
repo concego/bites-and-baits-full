@@ -58,22 +58,27 @@ const Inventory = (() => {
     jig:       15,
   };
 
-  // Preço base por kg por espécie (expandir via shop-data.js futuramente)
+  // Preço base inteiro por kg — escala de moedas sem centavos (estilo iene).
+  // A ordem representa valor aproximado de mercado, enquanto o peso e a
+  // raridade continuam diferenciando o retorno final de cada captura.
   const BASE_PRICE_PER_KG = {
     // Espécies comuns — valor baixo
     lambari:                   4,   // isca viva, valor baixo mas volume alto
     cara:                      3,
-    piau:                      4,
-    curimbata:                 5,
+    piau:                      5,
+    curimbata:                 6,
     // Espécies de consumo médio
-    tilapia:                   6,
-    traira:                    7,
-    truta:                     9,
+    tilapia:                   7,
+    traira:                    9,
+    traira_grande:            11,
+    truta:                    10,
     // Espécies nobres / especiais
-    tucunare:                  11,
-    dourado:                   14,
-    peixe_dourado_ornamental:  20,  // ornamental — raridade eleva o preço
-    pirarucu:                  18,
+    tucunare:                 13,
+    dourado:                  16,
+    pintado:                  14,
+    jau:                      15,
+    pirarucu:                 14,
+    peixe_dourado_ornamental: 20,  // ornamental — raridade eleva o preço
   };
 
   // ── Persistência ──────────────────────────────────────────────────────────
