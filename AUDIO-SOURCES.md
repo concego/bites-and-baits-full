@@ -39,3 +39,4 @@ Crédito mantido por cortesia: **You're Perfect Studio / Memoraphile**.
 - Fundo do Lago e Baía Isolada: mesma fonte do Lago Central, com volume e filtro mais discretos para representar distância e isolamento, sem abafar leitor de tela ou anúncios.
 - Mudança de zona: efeito curto de transição.
 - Hub da cidade: música em loop com volume baixo.
+- Período noturno (18:00–05:30): os ambientes diurnos são reduzidos e recebem uma textura procedural de fundo, com ruído filtrado, grilos espaçados e coaxos graves ocasionais conforme o tipo de mapa. Não há arquivo externo ou voz nessa camada; o volume é deliberadamente baixo para preservar o leitor de tela e os anúncios.

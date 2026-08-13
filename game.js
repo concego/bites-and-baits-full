@@ -108,6 +108,17 @@ const Game = (() => {
         zonesStr.split(',').forEach(z => Inventory.knowZone(mapId, z.trim()));
       }
     }
+    if (_qp.has('testhour') && typeof GameTime !== 'undefined') {
+      // QA: ?testhour=22 força o horário sem alterar o fluxo normal do jogo.
+      const t = GameTime.load();
+      const hour = Number.parseInt(_qp.get('testhour'), 10);
+      const minute = Number.parseInt(_qp.get('testminute') || '0', 10);
+      if (Number.isFinite(hour)) {
+        t.hour = Math.max(0, Math.min(23, hour));
+        t.minute = minute >= 30 ? 30 : 0;
+        GameTime.save(t);
+      }
+    }
     // ─────────────────────────────────────────────────────────────────────
 
         screens = {

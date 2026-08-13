@@ -11,6 +11,9 @@ const Audio = (() => {
   let ambientGain = null;
   let ambientFilter = null;
   let ambientKey = null;
+  let nightNodes = [];
+  let nightTimers = [];
+  let nightActive = false;
   let cityMusicNode = null;
   let cityMusicGain = null;
 
@@ -164,19 +167,134 @@ const Audio = (() => {
   // ── Ambiente ───────────────────────────────────────────────────────────────
 
   const AMBIENT_PROFILES = {
-    // Margem: natureza em primeiro plano + uma camada discreta de correnteza.
+    // De dia: natureza em primeiro plano + água discreta.
+    // À noite: a água continua reconhecível, mas os sons diurnos ficam baixos
+    // e entram texturas noturnas procedurais, sem voz ou sinalização sonora.
     margem_rio_doce: {
       layers: [
         { key: 'ambient_river_birds', volume: 0.18, filter: 1800 },
         { key: 'ambient_river_strong', volume: 0.055, filter: 1600 },
       ],
+      nightLayers: [
+        { key: 'ambient_river_birds', volume: 0.035, filter: 1100 },
+        { key: 'ambient_river_strong', volume: 0.045, filter: 1200 },
+      ],
+      nightTexture: 'river',
     },
-    rio_doce:        { layers: [{ key: 'ambient_river_strong', volume: 0.20, filter: 2200 }] },
-    lago_margem:     { layers: [{ key: 'ambient_lake_birds', volume: 0.16, filter: 1600 }] },
-    lago_central:    { layers: [{ key: 'ambient_lake_loop', volume: 0.16, filter: 1400 }] },
-    lago_central_fundo: { layers: [{ key: 'ambient_lake_loop', volume: 0.09, filter: 520 }] },
-    lago_central_baia_isolada: { layers: [{ key: 'ambient_lake_loop', volume: 0.11, filter: 800 }] },
+    rio_doce: {
+      layers: [{ key: 'ambient_river_strong', volume: 0.20, filter: 2200 }],
+      nightLayers: [{ key: 'ambient_river_strong', volume: 0.13, filter: 1500 }],
+      nightTexture: 'river',
+    },
+    lago_margem: {
+      layers: [{ key: 'ambient_lake_birds', volume: 0.16, filter: 1600 }],
+      nightLayers: [{ key: 'ambient_lake_birds', volume: 0.035, filter: 1050 }],
+      nightTexture: 'lake',
+    },
+    lago_central: {
+      layers: [{ key: 'ambient_lake_loop', volume: 0.16, filter: 1400 }],
+      nightLayers: [{ key: 'ambient_lake_loop', volume: 0.075, filter: 1050 }],
+      nightTexture: 'lake',
+    },
+    lago_central_fundo: {
+      layers: [{ key: 'ambient_lake_loop', volume: 0.09, filter: 520 }],
+      nightLayers: [{ key: 'ambient_lake_loop', volume: 0.045, filter: 420 }],
+      nightTexture: 'deep',
+    },
+    lago_central_baia_isolada: {
+      layers: [{ key: 'ambient_lake_loop', volume: 0.11, filter: 800 }],
+      nightLayers: [{ key: 'ambient_lake_loop', volume: 0.055, filter: 620 }],
+      nightTexture: 'deep',
+    },
   };
+
+  // Textura noturna leve: ruído filtrado como fundo, grilos espaçados e,
+  // nos rios, coaxos graves ocasionais. Tudo passa por um ganho baixo para
+  // preservar anúncios e leitor de tela.
+  function _startNightTexture(kind = 'lake') {
+    _stopNightTexture();
+    if (!ctx) return;
+    nightActive = true;
+
+    const master = ctx.createGain();
+    const volume = kind === 'deep' ? 0.018 : kind === 'river' ? 0.028 : 0.024;
+    master.gain.value = volume;
+    master.connect(ctx.destination);
+    nightNodes.push(master);
+
+    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseData.length; i++) {
+      noiseData[i] = (Math.random() * 2 - 1) * 0.35;
+    }
+    const noise = ctx.createBufferSource();
+    const noiseFilter = ctx.createBiquadFilter();
+    const noiseGain = ctx.createGain();
+    noise.buffer = noiseBuffer;
+    noise.loop = true;
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.value = kind === 'river' ? 700 : 520;
+    noiseGain.gain.value = 0.22;
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(master);
+    noise.start();
+    nightNodes.push(noise);
+
+    const scheduleCricket = () => {
+      if (!nightActive || !ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = 2200 + Math.random() * 900;
+      gain.gain.setValueAtTime(0, now);
+      for (let i = 0; i < 3; i++) {
+        const at = now + i * 0.11;
+        gain.gain.setValueAtTime(0, at);
+        gain.gain.linearRampToValueAtTime(0.16, at + 0.018);
+        gain.gain.linearRampToValueAtTime(0, at + 0.07);
+      }
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start(now);
+      osc.stop(now + 0.42);
+      nightTimers.push(setTimeout(scheduleCricket, 1100 + Math.random() * 2600));
+    };
+    scheduleCricket();
+
+    if (kind === 'river' || kind === 'lake') {
+      const scheduleFrog = () => {
+        if (!nightActive || !ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(kind === 'river' ? 150 : 125, now);
+        osc.frequency.exponentialRampToValueAtTime(kind === 'river' ? 95 : 82, now + 0.28);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.12, now + 0.035);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(now);
+        osc.stop(now + 0.38);
+        nightTimers.push(setTimeout(scheduleFrog, 3600 + Math.random() * 5200));
+      };
+      nightTimers.push(setTimeout(scheduleFrog, 900 + Math.random() * 1800));
+    }
+  }
+
+  function _stopNightTexture() {
+    nightActive = false;
+    nightTimers.forEach(timer => clearTimeout(timer));
+    nightTimers = [];
+    nightNodes.forEach(node => {
+      try { node.stop(); } catch (e) {}
+      try { node.disconnect(); } catch (e) {}
+    });
+    nightNodes = [];
+  }
 
   function startAmbient(profile = 'lago_margem') {
     if (!ctx) return;
@@ -184,8 +302,13 @@ const Audio = (() => {
     const cfg = typeof profile === 'string'
       ? (AMBIENT_PROFILES[profile] || AMBIENT_PROFILES.lago_margem)
       : profile;
-    const layers = cfg.layers || [{ key: cfg.key, volume: cfg.volume, filter: cfg.filter }];
-    const signature = layers.map(layer => `${layer.key}:${layer.volume}:${layer.filter}`).join('|');
+    const night = typeof GameTime !== 'undefined' && typeof GameTime.isNight === 'function'
+      && GameTime.isNight();
+    const layers = (night && cfg.nightLayers ? cfg.nightLayers : cfg.layers)
+      || [{ key: cfg.key, volume: cfg.volume, filter: cfg.filter }];
+    const texture = night ? (cfg.nightTexture || 'lake') : 'none';
+    const signature = `${night ? 'night' : 'day'}:${texture}:`
+      + layers.map(layer => `${layer.key}:${layer.volume}:${layer.filter}`).join('|');
     if (ambientNodes.length && ambientKey === signature) return;
 
     stopAmbient();
@@ -212,9 +335,11 @@ const Audio = (() => {
     ambientFilter = created[0].filter;
     ambientGain = created[0].gain;
     ambientKey = signature;
+    if (night) _startNightTexture(texture);
   }
 
   function stopAmbient() {
+    _stopNightTexture();
     ambientNodes.forEach(layer => {
       try { layer.src.stop(); } catch(e) {}
     });

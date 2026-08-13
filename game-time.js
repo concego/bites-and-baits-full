@@ -102,6 +102,12 @@ const GameTime = (() => {
     return 'evening';
   }
 
+  /** Retorna se o horário atual pertence ao período noturno (18h–05h30). */
+  function isNight() {
+    const t = load();
+    return t.hour >= 18 || t.hour < 6;
+  }
+
   /** Estação atual */
   function season() {
     const m = load().month;
@@ -130,5 +136,5 @@ const GameTime = (() => {
     return { date: `${wd}, ${dd} ${mm}`, time: `${hh}:${min}`, season: season(), period: period() };
   }
 
-  return { load, save, advance, period, season, formatHUD, ACTION_COST };
+  return { load, save, advance, period, isNight, season, formatHUD, ACTION_COST };
 })();
