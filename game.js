@@ -52,7 +52,6 @@ const Game = (() => {
   let fishPull         = 0;
   let _fishStrengthMult = 1.0;  // multiplicador gradual de força (1.0 = 100%, 0.3 = cansado)
   let fishTired        = false;
-  let tiredTimer       = null;
   let recoveryTimer    = null;   // timer de recuperação do fôlego do peixe
   let tensionLoop      = null;
   let _lastTensionWarn = null;
@@ -70,6 +69,7 @@ const Game = (() => {
   let _activeFishY     = 0;      // posição Y em % da cena
   let _activeFishPhase = 0;      // fase da ondulação
   let _fishState       = 'idle'; // 'idle'|'approaching'|'retreating'|'biting'|'fighting'
+  let _fishPullImpulse = 0;      // reação visual acumulada aos puxões do jogador
   let _lureX           = 50;     // posição X da isca em % (referência para o peixe)
   let _lureY           = 20;     // posição Y da isca em % (referência)
   let _approachBeepCooldown = 0;
@@ -505,9 +505,21 @@ const Game = (() => {
           _activeFishX += fightDir * p.swimSpeed * 0.25 * pullStrength;
           _activeFishY += Math.sin(_activeFishPhase * 2) * p.wobble * 0.08 * pullStrength;
 
-          // Puxa em direção à isca conforme o puxão do jogador
+          // Acompanha parcialmente a isca, mas continua resistindo ao jogador.
           _activeFishX = _activeFishX * 0.97 + _lureX * 0.03;
           _activeFishY = _activeFishY * 0.97 + _lureY * 0.03;
+
+          // Cada puxão gera uma reação visual: o peixe se afasta da isca
+          // e o impulso desaparece gradualmente, sem alterar a física da tensão.
+          if (_fishPullImpulse > 0) {
+            const awayX = Math.abs(_activeFishX - _lureX) > 0.5
+              ? Math.sign(_activeFishX - _lureX) : fightDir;
+            const awayY = Math.abs(_activeFishY - _lureY) > 0.5
+              ? Math.sign(_activeFishY - _lureY) : 1;
+            _activeFishX += awayX * _fishPullImpulse * 0.08;
+            _activeFishY += awayY * _fishPullImpulse * 0.06;
+            _fishPullImpulse = Math.max(0, _fishPullImpulse - 0.12);
+          }
 
           _activeFishEl.style.transform = fightDir < 0 ? 'scaleX(-1)' : 'scaleX(1)';
           break;
@@ -600,8 +612,9 @@ const Game = (() => {
 
       case 'IDLE':
         tension = 0;
-        currentFish = null;
-        fishTired   = false;
+        currentFish      = null;
+        fishTired        = false;
+        _fishPullImpulse = 0;
         updateTensionBar();
         ui.tensionCont.classList.add('hidden');
         ui.lure.style.display  = 'none';
@@ -671,9 +684,10 @@ const Game = (() => {
         ui.rod.style.transform = 'translateX(-50%) rotate(-10deg)';
 
         // Sorteia o peixe agora para que ele já apareça nadando
-        currentFish = pickFishFromMap(activeMap, activeZone);
-        fishPull    = currentFish.pull;
-        fishTired   = false;
+        currentFish      = pickFishFromMap(activeMap, activeZone);
+        fishPull         = currentFish.pull;
+        fishTired        = false;
+        _fishPullImpulse = 0;
         _fishStrengthMult = 1.0;
         clearTimeout(recoveryTimer);
         recoveryTimer = null;
@@ -725,7 +739,6 @@ const Game = (() => {
         sayKey('hooked');
         Audio.startReel('neutral');
         startTensionLoop();
-        scheduleFishTired();
         break;
 
       case 'CAUGHT': {
@@ -968,6 +981,7 @@ const Game = (() => {
     Audio.setReelMode('pulling');
     _pullProgress += amount;
     _pulling = true; // sinaliza ao tensionLoop que houve ação neste tick
+    _fishPullImpulse = Math.min(12, _fishPullImpulse + amount * 2.5);
     tension = Math.min(100, tension + amount * 0.4);
     updateTensionBar();
     if (_pullProgress >= currentFish.pullNeeded) {
@@ -982,21 +996,6 @@ const Game = (() => {
     tension = Math.max(0, tension - amount * 1.5);
     _pullProgress = Math.max(0, _pullProgress - amount * 0.3);
     updateTensionBar();
-  }
-
-  // ── Cansaço do peixe ──────────────────────────────────────────────────────
-  function scheduleFishTired() {
-    const jitter = Math.random() * 0.3 - 0.15;
-    const base = currentFish.tiredBase ?? 5000;
-    const ms = base * (1 + jitter) * A11y.timeScale();
-    tiredTimer = setTimeout(() => {
-      if (state === 'REELING') {
-        fishTired = true;
-        Audio.fishTiredSound();
-        sayKey('tired');
-        setLabel(I18n.t('state_tired', fishName(currentFish)));
-      }
-    }, ms);
   }
 
   // ── Peixes decorativos de fundo ───────────────────────────────────────────
@@ -2319,7 +2318,6 @@ const Game = (() => {
   function clearTimers() {
     clearTimeout(waitTimer);
     clearTimeout(biteTimer);
-    clearTimeout(tiredTimer);
     clearTimeout(recoveryTimer);
     clearInterval(tensionLoop);
     Audio.stopReel();
