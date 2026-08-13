@@ -134,6 +134,10 @@ const Inventory = (() => {
       weight,
       value,
       special:  fish.special ?? false,
+      rarity:   fish.rarity || (fish.special ? 'rare' : 'common'),
+      role:     fish.role || null,
+      mapId:    fish.mapId || null,
+      zoneId:   fish.zoneId || null,
       caughtAt: Date.now(),
     };
     const items = _load();

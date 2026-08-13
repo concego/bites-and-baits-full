@@ -1891,7 +1891,7 @@ const Game = (() => {
             dourado:'rare', tucunare:'rare',
             pirarucu:'legendary', peixe_dourado_ornamental:'legendary'
           };
-          const rarity = t('inv_rarity_' + (rarityMap[fish.fishId] || 'common'));
+          const rarity = t('inv_rarity_' + (fish.rarity || rarityMap[fish.fishId] || 'common'));
           const habitat = t('inv_habitat_' + (def?.habitat || 'freshwater'));
           _invFeedback(fbEl, t('inv_examine_fish', t(fish.nameKey) || fish.fishId, rarity, habitat), true);
         });

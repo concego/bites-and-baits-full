@@ -388,6 +388,14 @@ const I18n = (() => {
       // Nomes dos peixes
 
       // Mapa 1 — Margem do Lago
+      fish_lambari:                 'Lambari',
+      fish_tilapia:                 'Tilápia',
+      fish_truta:                   'Truta',
+      fish_dourado:                 'Dourado',
+      fish_pirarucu:                'Pirarucu',
+      fish_traira_grande:           'Traíra Grande',
+      fish_pintado_surubim:         'Pintado / Surubim',
+      fish_jau:                     'Jaú',
       fish_cara:                    'Cará',
       fish_traira:                  'Traíra',
       fish_piau:                    'Piau',
@@ -814,6 +822,14 @@ const I18n = (() => {
       size_large:  'enormous',
 
       // Map 1 — Lake Shore
+      fish_lambari:                 'Lambari',
+      fish_tilapia:                 'Tilapia',
+      fish_truta:                   'Trout',
+      fish_dourado:                 'Dourado',
+      fish_pirarucu:                'Pirarucu',
+      fish_traira_grande:           'Large Traíra',
+      fish_pintado_surubim:         'Pintado / Surubim',
+      fish_jau:                     'Jau Catfish',
       fish_cara:                    'Cará Cichlid',
       fish_traira:                  'Traíra',
       fish_piau:                    'Piau',
@@ -976,6 +992,9 @@ const I18n = (() => {
       fish_truta:    'Pisztráng',
       fish_dourado:  'Dourado',
       fish_pirarucu: 'Pirarucu',
+      fish_traira_grande:   'Nagy traíra',
+      fish_pintado_surubim: 'Pintado / Surubim',
+      fish_jau:             'Jaú harcsa',
 btn_story:        'Történet',
       btn_free:         'Szabad horgászat',
       btn_free_desc:    'Pontszámozással',
