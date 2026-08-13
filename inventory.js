@@ -160,6 +160,26 @@ const Inventory = (() => {
     return _load().length;
   }
 
+  // Capacidade padrão para pesca da margem, quando nenhum barco está equipado.
+  const DEFAULT_HOLD_CAPACITY = 8;
+
+  /** Retorna a capacidade de carga do barco ativo (ou da pesca da margem). */
+  function holdCapacity(boatId = getActiveBoat()) {
+    const vessel = (typeof VESSELS_CATALOG !== 'undefined')
+      ? VESSELS_CATALOG.find(v => v.id === boatId) : null;
+    return vessel?.holdCap ?? DEFAULT_HOLD_CAPACITY;
+  }
+
+  /** Retorna quantos peixes ocupam a carga/inventário atualmente. */
+  function holdUsed() {
+    return count();
+  }
+
+  /** Verifica se ainda cabe pelo menos um peixe na carga. */
+  function hasHoldSpace(boatId = getActiveBoat()) {
+    return holdUsed() < holdCapacity(boatId);
+  }
+
   /**
    * Remove um item do inventário pelo id (para quando vender na loja).
    * Retorna true se removido, false se não encontrado.
@@ -583,6 +603,9 @@ const Inventory = (() => {
     addFish,
     getAll,
     count,
+    holdCapacity,
+    holdUsed,
+    hasHoldSpace,
     removeItem,
     sellItem,
     sellFishQty,

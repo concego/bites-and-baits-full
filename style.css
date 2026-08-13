@@ -668,6 +668,19 @@ html, body {
 .bait-emoji { font-size: 1.3rem; line-height: 1; }
 .bait-name  { font-size: 0.85rem; font-weight: 600; }
 .bait-qty   { font-size: 0.8rem; opacity: 0.75; }
+.hold-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.hold-indicator .score-value {
+  font-size: .9rem;
+  white-space: nowrap;
+}
+.hold-indicator.hold-full {
+  color: #ffb4ab;
+}
 
 .btn-equip {
   background: rgba(255,255,255,0.15);

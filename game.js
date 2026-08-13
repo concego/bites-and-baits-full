@@ -158,6 +158,7 @@ const Game = (() => {
       baitEmoji:      $('bait-active-emoji'),
       baitName:       $('bait-active-name'),
       baitQty:        $('bait-active-qty'),
+      holdCount:      $('hold-active-count'),
       equipPanel:     $('equip-panel'),
       baitList:       $('bait-list'),
       lastCatchSummary: $('last-catch-summary'),
@@ -603,8 +604,11 @@ const Game = (() => {
       const btnContinue = $('btn-continue');
       if (btnContinue) btnContinue.classList.toggle('hidden', gameMode === 'free');
 
-      // Indicador de isca
-      if (gameMode === 'normal') refreshBaitHud();
+      // Indicadores de isca e capacidade da embarcação
+      if (gameMode === 'normal') {
+        refreshBaitHud();
+        refreshHoldHud();
+      }
 
       // Texto do botão voltar — depende do modo
       const btnMenuEl = $('btn-menu');
@@ -668,6 +672,12 @@ const Game = (() => {
         break;
 
       case 'CASTING':
+        // Modo normal: a capacidade impede iniciar uma pescaria que não poderá ser armazenada.
+        if (gameMode === 'normal' && !Inventory.hasHoldSpace()) {
+          enterState('IDLE');
+          _announceHoldFull();
+          break;
+        }
         // Modo normal: verifica slots e consome 1 isca
         if (gameMode === 'normal') {
           // Verificar slots obrigatórios
@@ -795,6 +805,7 @@ const Game = (() => {
         // Modo livre: não registra moedas nem inventário
         const caughtItem = (gameMode !== 'free') ? Inventory.addFish(currentFish) : null;
         _lastCaughtItem = caughtItem;
+        if (gameMode !== 'free') refreshHoldHud();
         _lastCatchInfo = {
           fishId: currentFish.id,
           fishName: fishName(currentFish),
@@ -1104,6 +1115,26 @@ const Game = (() => {
     if (ui.baitEmoji) ui.baitEmoji.textContent = bait ? bait.emoji : '?';
     if (ui.baitName)  ui.baitName.textContent  = bait ? I18n.t(bait.nameKey) : baitId;
     if (ui.baitQty)   ui.baitQty.textContent   = `×${qty}`;
+  }
+
+  /** Atualiza o indicador acessível de carga do barco. */
+  function refreshHoldHud() {
+    if (gameMode !== 'normal') return;
+    const used = Inventory.holdUsed();
+    const cap  = Inventory.holdCapacity();
+    if (ui.holdCount) ui.holdCount.textContent = `${used}/${cap}`;
+    const indicator = $('hold-indicator');
+    if (indicator) {
+      indicator.classList.toggle('hold-full', used >= cap);
+      indicator.setAttribute('aria-label', `${I18n.t('hold_title') || 'Carga'}: ${used} de ${cap} peixes`);
+    }
+  }
+
+  function _announceHoldFull() {
+    refreshHoldHud();
+    const full = I18n.t('hold_full') || 'Carga cheia!';
+    const hint = I18n.t('hold_full_hint') || 'Venda peixes no inventário ou use um barco com maior capacidade.';
+    speak(`${full} ${hint}`);
   }
 
   // ── Última captura ───────────────────────────────────────────────────────
