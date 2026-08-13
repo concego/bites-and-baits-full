@@ -1001,7 +1001,7 @@ btn_story:        'Történet',
       house_level_2:   '🏡 Ház garázzsal',
       house_level_3:   '🏘️ Ház magán kikötővel',
       house_desc_0:    'Nincs csónaktároló. Minden csónak hajóépítő díjat fizet.',
-      house_desc_1:    'Elfér 1 hordozható csónak. Kenu és alumínium csónak ingyenes.'
+      house_desc_1:    'Elfér 1 hordozható csónak. Kenu és alumínium csónak ingyenes.',
       house_desc_2:    'Garázs 2 csónaknak. Motorcsónak és vitorlás is belefér.',
       house_desc_3:    'Magán kikötő. Bármely csónak díjmentesen tárolható.',
       boat_cat_portable: 'Hordozható',
