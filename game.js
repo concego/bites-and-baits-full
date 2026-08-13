@@ -158,6 +158,7 @@ const Game = (() => {
       equipPanel:     $('equip-panel'),
       baitList:       $('bait-list'),
       lastCatchSummary: $('last-catch-summary'),
+      lastCatchReadout: $('last-catch-readout'),
       lastCatchFish:  $('last-catch-fish'),
       lastCatchSize:  $('last-catch-size'),
       lastCatchWeight: $('last-catch-weight'),
@@ -1149,10 +1150,36 @@ const Game = (() => {
     $('last-catch-score-row').hidden = info.mode !== 'free';
   }
 
+  function _lastCatchSummaryText() {
+    const parts = [I18n.t('last_catch_title')];
+    const add = (labelKey, elementId, rowId) => {
+      const row = $(rowId);
+      const value = $(elementId)?.textContent?.trim();
+      if (value && !row?.hidden) parts.push(`${I18n.t(labelKey)}: ${value}`);
+    };
+    add('last_catch_fish_label', 'last-catch-fish', 'last-catch-fish-row');
+    add('last_catch_size_label', 'last-catch-size', 'last-catch-size-row');
+    add('last_catch_weight_label', 'last-catch-weight', 'last-catch-weight-row');
+    add('last_catch_value_label', 'last-catch-value', 'last-catch-value-row');
+    add('last_catch_location_label', 'last-catch-location', 'last-catch-location-row');
+    add('last_catch_score_label', 'last-catch-score', 'last-catch-score-row');
+    return parts.join('. ');
+  }
+
   function focusLastCatchSummary() {
     if (!_lastCatchInfo || state !== 'IDLE') return;
     _renderLastCatchSummary();
-    ui.lastCatchSummary?.focus();
+    const readout = ui.lastCatchReadout;
+    if (!readout) {
+      ui.lastCatchSummary?.focus();
+      return;
+    }
+    // Troca o conteúdo para disparar o aria-live e focaliza o texto completo.
+    readout.textContent = '';
+    requestAnimationFrame(() => {
+      readout.textContent = _lastCatchSummaryText();
+      readout.focus();
+    });
   }
 
   function _handleLastCatchKey(e) {
