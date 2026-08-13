@@ -104,6 +104,9 @@ const MAP_CATALOG = {
       { id: 'meio',  nameKey: 'zone_meio',  emoji: '🌀' },
       { id: 'fundo', nameKey: 'zone_fundo', emoji: '🌑', hidden: true },
     ],
+    // Raso e Meio ficam disponíveis assim que o Lago Central é liberado.
+    // Fundo continua condicionado à progressão do mapa.
+    initialZones: ['raso', 'meio'],
     fishByZonePeriod: {
       raso: {
         dawn:      [ { id: 'lambari',   weight: 0.45 }, { id: 'tilapia',  weight: 0.30 }, { id: 'cara',    weight: 0.15 }, { id: 'piau',    weight: 0.10 } ],

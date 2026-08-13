@@ -166,11 +166,13 @@ const Game = (() => {
     // Mapa inicial
     activeMap = getActiveMap();
     ui.scene.classList.add(activeMap.sceneClass);
-    // Garantir que o lago_margem já começa com zona 'margem' conhecida
-    if (activeMap.zones && activeMap.zones.length) {
-      Inventory.knowZone(activeMap.id, activeMap.zones[0].id);
-    }
-    activeZone = Inventory.getActiveZone(activeMap.id) || (activeMap.zones && activeMap.zones[0].id) || null;
+    // Revela as zonas iniciais do mapa; zonas condicionadas permanecem ocultas.
+    const initialZones = activeMap.initialZones ||
+      (activeMap.zones && activeMap.zones.find(z => !z.hidden)
+        ? [activeMap.zones.find(z => !z.hidden).id] : []);
+    initialZones.forEach(zoneId => Inventory.knowZone(activeMap.id, zoneId));
+    activeZone = Inventory.getActiveZone(activeMap.id) ||
+      (activeMap.zones && activeMap.zones.find(z => !z.hidden)?.id) || null;
 
     // Preferências de acessibilidade — carrega antes de tudo
     A11y.init();
@@ -1243,11 +1245,11 @@ const Game = (() => {
     if (activeMap) ui.scene.classList.remove(activeMap.sceneClass);
     activeMap = map;
     ui.scene.classList.add(activeMap.sceneClass);
-    // Revelar primeira zona se nunca visitado
-    if (activeMap.zones && activeMap.zones.length) {
-      const firstPublic = activeMap.zones.find(z => !z.hidden);
-      if (firstPublic) Inventory.knowZone(activeMap.id, firstPublic.id);
-    }
+    // Revela as zonas iniciais; zonas condicionadas ficam para a progressão.
+    const initialZones = activeMap.initialZones ||
+      (activeMap.zones && activeMap.zones.find(z => !z.hidden)
+        ? [activeMap.zones.find(z => !z.hidden).id] : []);
+    initialZones.forEach(zoneId => Inventory.knowZone(activeMap.id, zoneId));
     // Restaurar zona ativa
     activeZone = Inventory.getActiveZone(activeMap.id)
               || (activeMap.zones && activeMap.zones.find(z => !z.hidden)?.id)
