@@ -118,10 +118,10 @@ const MAP_CATALOG = {
         evening:   [ { id: 'traira',    weight: 0.35 }, { id: 'tucunare',  weight: 0.25 }, { id: 'curimbata',weight: 0.20 }, { id: 'piau',     weight: 0.12 }, { id: 'lambari',  weight: 0.08 } ],
       },
       fundo: {
-        dawn:      [ { id: 'tucunare',      weight: 0.35 }, { id: 'traira',    weight: 0.25 }, { id: 'curimbata',   weight: 0.20 }, { id: 'peixe_dourado', weight: 0.12 }, { id: 'piau',    weight: 0.08 } ],
-        morning:   [ { id: 'traira',        weight: 0.30 }, { id: 'tucunare',  weight: 0.30 }, { id: 'curimbata',   weight: 0.20 }, { id: 'peixe_dourado', weight: 0.12 }, { id: 'cara',    weight: 0.08 } ],
-        afternoon: [ { id: 'curimbata',     weight: 0.35 }, { id: 'traira',    weight: 0.25 }, { id: 'tucunare',    weight: 0.20 }, { id: 'peixe_dourado', weight: 0.10 }, { id: 'tilapia', weight: 0.10 } ],
-        evening:   [ { id: 'peixe_dourado', weight: 0.30 }, { id: 'tucunare',  weight: 0.30 }, { id: 'traira',      weight: 0.25 }, { id: 'curimbata',     weight: 0.10 }, { id: 'cara',    weight: 0.05 } ],
+        dawn:      [ { id: 'tucunare',      weight: 0.35 }, { id: 'traira',    weight: 0.25 }, { id: 'curimbata',   weight: 0.20 }, { id: 'peixe_dourado_ornamental', weight: 0.12 }, { id: 'piau',    weight: 0.08 } ],
+        morning:   [ { id: 'traira',        weight: 0.30 }, { id: 'tucunare',  weight: 0.30 }, { id: 'curimbata',   weight: 0.20 }, { id: 'peixe_dourado_ornamental', weight: 0.12 }, { id: 'cara',    weight: 0.08 } ],
+        afternoon: [ { id: 'curimbata',     weight: 0.35 }, { id: 'traira',    weight: 0.25 }, { id: 'tucunare',    weight: 0.20 }, { id: 'peixe_dourado_ornamental', weight: 0.10 }, { id: 'tilapia', weight: 0.10 } ],
+        evening:   [ { id: 'peixe_dourado_ornamental', weight: 0.30 }, { id: 'tucunare',  weight: 0.30 }, { id: 'traira',      weight: 0.25 }, { id: 'curimbata',     weight: 0.10 }, { id: 'cara',    weight: 0.05 } ],
       },
     },
     fish: [
@@ -132,7 +132,7 @@ const MAP_CATALOG = {
       { id: 'curimbata',     weight: 0.12 },
       { id: 'traira',        weight: 0.10 },
       { id: 'tucunare',      weight: 0.06 },
-      { id: 'peixe_dourado', weight: 0.04 },
+      { id: 'peixe_dourado_ornamental', weight: 0.04 },
     ],
   },
 };

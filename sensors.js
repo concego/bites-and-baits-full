@@ -24,9 +24,11 @@ const Sensors = (() => {
   const SHAKE_THRESHOLD    =  22;  // m/s² para detectar shake
   const SHAKE_COOLDOWN_MS  = 600;  // ms entre shakes
 
-  let _lastTilt    = 'neutral';
-  let _lastShakeAt = 0;
-  let _permitted   = false;
+  let _lastTilt          = 'neutral';
+  let _lastShakeAt       = 0;
+  let _permitted         = false;
+  let _keyTilt           = 'neutral';
+  let _keyboardListeners = false;
 
   // ── Solicita permissão (iOS 13+) ─────────────────────────────────────────
   async function requestPermission() {
@@ -65,12 +67,16 @@ const Sensors = (() => {
   function start() {
     window.addEventListener('deviceorientation', _handleOrientation, true);
     window.addEventListener('devicemotion',      _handleMotion,      true);
+    // O teclado também funciona em celulares com sensores, inclusive via OTG.
+    // O registro é idempotente e os handlers só atuam na tela de jogo.
+    enableDesktopFallback();
   }
 
   function stop() {
     window.removeEventListener('deviceorientation', _handleOrientation, true);
     window.removeEventListener('devicemotion',      _handleMotion,      true);
     _lastTilt = 'neutral';
+    _keyTilt  = 'neutral';
   }
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -104,31 +110,51 @@ const Sensors = (() => {
     }
   }
 
-  // ── Modo desktop (teclado) — para teste sem celular ───────────────────────
-  function enableDesktopFallback() {
-    let _keyTilt = 'neutral';
+  // ── Teclado físico — PC, Android com teclado OTG e outros dispositivos ───
+  function _gameScreenActive() {
+    const screen = document.getElementById('screen-game');
+    return !!screen && screen.classList.contains('active');
+  }
 
-    document.addEventListener('keydown', e => {
-      // Só intercepta quando a tela de jogo está ativa
-      if (!document.getElementById('screen-game').classList.contains('active')) return;
-      if (e.key === 'ArrowUp')   { e.preventDefault(); _keyTilt = 'forward';  _fireKey(); }
-      if (e.key === 'ArrowDown') { e.preventDefault(); _keyTilt = 'back';     _fireKey(); }
-      if (e.key === ' ')         { e.preventDefault(); if (_callbacks.onShake) _callbacks.onShake(); }
-    });
-    document.addEventListener('keyup', e => {
-      if (!document.getElementById('screen-game').classList.contains('active')) return;
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        e.preventDefault(); _keyTilt = 'neutral'; _fireKey();
-      }
-    });
+  function _fireKey() {
+    const beta = _keyTilt === 'forward' ? -30 : _keyTilt === 'back' ? 30 : 0;
+    const norm = _keyTilt === 'forward' ? -0.5 : _keyTilt === 'back' ? 0.5 : 0;
+    if (_callbacks.onTilt) _callbacks.onTilt(_keyTilt, beta, norm);
+  }
 
-    function _fireKey() {
-      const beta = _keyTilt === 'forward' ? -30 : _keyTilt === 'back' ? 30 : 0;
-      const norm = _keyTilt === 'forward' ? -0.5 : _keyTilt === 'back' ? 0.5 : 0;
-      if (_callbacks.onTilt) _callbacks.onTilt(_keyTilt, beta, norm);
+  function _handleKeyDown(e) {
+    if (!_gameScreenActive()) return;
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      _keyTilt = 'forward';
+      _fireKey();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      _keyTilt = 'back';
+      _fireKey();
+    } else if (e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      // Evita vários disparos quando o teclado mantém a tecla pressionada.
+      if (!e.repeat && _callbacks.onShake) _callbacks.onShake();
     }
+  }
 
-    console.info('[Sensors] Modo desktop: ↑=lançar ↓=puxar Espaço=shake');
+  function _handleKeyUp(e) {
+    if (!_gameScreenActive()) return;
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      _keyTilt = 'neutral';
+      _fireKey();
+    }
+  }
+
+  function enableDesktopFallback() {
+    // Pode ser chamado pelo start() e pela resposta da permissão sem duplicar listeners.
+    if (_keyboardListeners) return;
+    document.addEventListener('keydown', _handleKeyDown);
+    document.addEventListener('keyup',   _handleKeyUp);
+    _keyboardListeners = true;
+    console.info('[Sensors] Teclado ativo: ↑=lançar ↓=puxar Espaço=shake');
   }
 
   function on(event, cb) {

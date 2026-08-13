@@ -1493,14 +1493,14 @@ const Game = (() => {
           if (Inventory.coins() < fee) {
             const vessel = VESSELS_CATALOG.find(v => v.id === boatId);
             const name   = vessel ? (I18n.t(vessel.nameKey) || vessel.id) : boatId;
-            announce(`${I18n.t('vessel_no_coins') || 'Moedas insuficientes'} — ${I18n.t('house_dock_fee') || 'Taxa'}: ${fee} 🪙`);
+            speak(`${I18n.t('vessel_no_coins') || 'Moedas insuficientes'} — ${I18n.t('house_dock_fee') || 'Taxa'}: ${fee} 🪙`);
             return;
           }
           // Cobrar taxa e anunciar
           Inventory.spendCoins(fee);
           const vessel = VESSELS_CATALOG.find(v => v.id === boatId);
           const name   = vessel ? (I18n.t(vessel.nameKey) || vessel.id) : boatId;
-          announce(`${I18n.t('house_fee_paid') || 'Taxa paga'}: ${fee} 🪙`);
+          speak(`${I18n.t('house_fee_paid') || 'Taxa paga'}: ${fee} 🪙`);
         }
 
         setActiveMap(destId);
