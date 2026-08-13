@@ -766,11 +766,11 @@ const Game = (() => {
           const kg    = caughtItem ? caughtItem.weight.toFixed(2) : null;
           const coins = caughtItem ? caughtItem.value : null;
           if (currentFish.special) {
-            sayKey(gameMode === 'free' ? 'caught_special' : 'caught_special_noscore',
-                   fishName(currentFish), gameMode === 'free' ? score : kg, gameMode === 'free' ? undefined : coins);
+            sayCatchKey(gameMode === 'free' ? 'caught_special' : 'caught_special_noscore',
+                        fishName(currentFish), gameMode === 'free' ? score : kg, gameMode === 'free' ? undefined : coins);
           } else {
-            sayKey(gameMode === 'free' ? 'caught' : 'caught_noscore',
-                   fishName(currentFish), sizeDesc, gameMode === 'free' ? score : kg, gameMode === 'free' ? undefined : coins);
+            sayCatchKey(gameMode === 'free' ? 'caught' : 'caught_noscore',
+                        fishName(currentFish), sizeDesc, gameMode === 'free' ? score : kg, gameMode === 'free' ? undefined : coins);
           }
         }
 
@@ -2293,6 +2293,20 @@ const Game = (() => {
     const verbose = typeof A11y !== 'undefined' && A11y.get('verboseVoice');
     const fullKey = verbose ? `vspeak_${key}` : `speak_${key}`;
     speak(I18n.t(fullKey, ...args));
+  }
+
+  // Capturas precisam de uma atualização separada do live region: no PC,
+  // leitores como o NVDA podem ignorar a troca quando ela ocorre junto da
+  // transição visual do peixe para o estado CAUGHT.
+  function sayCatchKey(key, ...args) {
+    const verbose = typeof A11y !== 'undefined' && A11y.get('verboseVoice');
+    const fullKey = verbose ? `vspeak_${key}` : `speak_${key}`;
+    const message = I18n.t(fullKey, ...args);
+    if (!ui.announcer) return;
+    ui.announcer.textContent = '';
+    setTimeout(() => {
+      if (ui.announcer) ui.announcer.textContent = message;
+    }, 80);
   }
 
   function setTiltHint(arrow, text) {
