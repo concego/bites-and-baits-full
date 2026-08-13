@@ -48,6 +48,8 @@ const Game = (() => {
   let activeMap        = null;   // mapa ativo (do MAP_CATALOG)
   let activeZone       = null;   // zona ativa no mapa atual
   let _lastCaughtItem  = null;   // último item adicionado ao inventário
+  let _lastCatchInfo   = null;   // dados persistidos da última captura
+  let _lastCatchTrigger = null;  // elemento que abriu o painel
   let tension          = 0;      // 0..100
   let fishPull         = 0;
   let _fishStrengthMult = 1.0;  // multiplicador gradual de força (1.0 = 100%, 0.3 = cansado)
@@ -156,6 +158,15 @@ const Game = (() => {
       baitQty:        $('bait-active-qty'),
       equipPanel:     $('equip-panel'),
       baitList:       $('bait-list'),
+      lastCatchBtn:   $('btn-last-catch'),
+      lastCatchPanel: $('last-catch-panel'),
+      lastCatchClose: $('btn-last-catch-close'),
+      lastCatchFish:  $('last-catch-fish'),
+      lastCatchSize:  $('last-catch-size'),
+      lastCatchWeight: $('last-catch-weight'),
+      lastCatchValue: $('last-catch-value'),
+      lastCatchLocation: $('last-catch-location'),
+      lastCatchScore: $('last-catch-score'),
     };
 
     ui.best.textContent = best;
@@ -182,6 +193,8 @@ const Game = (() => {
       applyI18n();   // atualiza aria-labels dos toggles com idioma correto
       showScreen('start');
     }
+    _lastCatchInfo = _loadLastCatchInfo();
+    _refreshLastCatchButton();
 
     $('btn-lang-pt').addEventListener('click', () => selectLang('pt'));
     $('btn-lang-en').addEventListener('click', () => selectLang('en'));
@@ -245,6 +258,10 @@ const Game = (() => {
     $('btn-opt-lang-hu')?.addEventListener('click', () => selectLang('hu'));
     $('btn-menu').addEventListener('click',  () => goToMenu());
     $('btn-menu2').addEventListener('click', () => goToMenu());
+    $('btn-last-catch')?.addEventListener('click', () => openLastCatchPanel());
+    $('btn-last-catch-close')?.addEventListener('click', () => closeLastCatchPanel());
+    // F abre os dados da última captura sem interferir nas setas ou no Espaço.
+    document.addEventListener('keydown', _handleLastCatchKey, true);
     $('btn-continue').addEventListener('click', () => {
       startGame(gameMode);
     });
@@ -607,6 +624,7 @@ const Game = (() => {
   function enterState(newState) {
     clearTimers();
     state = newState;
+    _refreshLastCatchButton();
 
     switch (state) {
 
@@ -756,6 +774,19 @@ const Game = (() => {
         // Modo livre: não registra moedas nem inventário
         const caughtItem = (gameMode !== 'free') ? Inventory.addFish(currentFish) : null;
         _lastCaughtItem = caughtItem;
+        _lastCatchInfo = {
+          fishId: currentFish.id,
+          fishName: fishName(currentFish),
+          size: currentFish.size,
+          weight: caughtItem ? caughtItem.weight.toFixed(2) : null,
+          value: caughtItem ? caughtItem.value : null,
+          mapId: activeMap?.id || null,
+          zoneId: activeZone || null,
+          mode: gameMode,
+          score,
+        };
+        _saveLastCatchInfo(_lastCatchInfo);
+        _refreshLastCatchButton();
 
         setLabel(I18n.t('state_caught', fishName(currentFish)));
         {
@@ -1052,6 +1083,89 @@ const Game = (() => {
     if (ui.baitEmoji) ui.baitEmoji.textContent = bait ? bait.emoji : '?';
     if (ui.baitName)  ui.baitName.textContent  = bait ? I18n.t(bait.nameKey) : baitId;
     if (ui.baitQty)   ui.baitQty.textContent   = `×${qty}`;
+  }
+
+  // ── Última captura ───────────────────────────────────────────────────────
+  const LAST_CATCH_STORAGE_KEY = 'bb_last_catch';
+
+  function _loadLastCatchInfo() {
+    try {
+      return JSON.parse(localStorage.getItem(LAST_CATCH_STORAGE_KEY) || 'null');
+    } catch { return null; }
+  }
+
+  function _saveLastCatchInfo(info) {
+    try { localStorage.setItem(LAST_CATCH_STORAGE_KEY, JSON.stringify(info)); }
+    catch { /* noop */ }
+  }
+
+  function _refreshLastCatchButton() {
+    const btn = ui.lastCatchBtn;
+    if (!btn) return;
+    const available = !!_lastCatchInfo && state === 'IDLE' &&
+      screens.game && screens.game.classList.contains('active');
+    btn.classList.toggle('hidden', !available);
+    btn.setAttribute('aria-hidden', available ? 'false' : 'true');
+  }
+
+  function _renderLastCatchPanel() {
+    if (!_lastCatchInfo) return;
+    const info = _lastCatchInfo;
+    const fish = FISH_CATALOG[info.fishId];
+    const map = info.mapId ? MAP_CATALOG[info.mapId] : null;
+    const zone = map && info.zoneId
+      ? map.zones?.find(z => z.id === info.zoneId) : null;
+
+    ui.lastCatchFish.textContent = fish ? fishName(fish) : (info.fishName || info.fishId || '—');
+    ui.lastCatchSize.textContent = I18n.t(
+      info.size <= 1 ? 'size_tiny' : info.size <= 2 ? 'size_small'
+      : info.size <= 3 ? 'size_medium' : 'size_large'
+    );
+    ui.lastCatchWeight.textContent = info.weight != null ? `${info.weight} kg` : '';
+    ui.lastCatchValue.textContent = info.value != null ? `${info.value} 🪙` : '';
+    ui.lastCatchLocation.textContent = [
+      map ? I18n.t(map.nameKey) : null,
+      zone ? I18n.t(zone.nameKey) : null,
+    ].filter(Boolean).join(' — ') || '—';
+    ui.lastCatchScore.textContent = info.score != null ? String(info.score) : '';
+
+    $('last-catch-size-row').hidden = info.size == null;
+    $('last-catch-weight-row').hidden = info.weight == null;
+    $('last-catch-value-row').hidden = info.value == null;
+    $('last-catch-location-row').hidden = !map && !zone;
+    $('last-catch-score-row').hidden = info.mode !== 'free';
+  }
+
+  function openLastCatchPanel() {
+    if (!_lastCatchInfo || state !== 'IDLE') return;
+    _lastCatchTrigger = document.activeElement;
+    _renderLastCatchPanel();
+    ui.lastCatchPanel?.classList.remove('hidden');
+    ui.lastCatchPanel?.setAttribute('aria-hidden', 'false');
+    ui.lastCatchClose?.focus();
+  }
+
+  function closeLastCatchPanel() {
+    ui.lastCatchPanel?.classList.add('hidden');
+    ui.lastCatchPanel?.setAttribute('aria-hidden', 'true');
+    if (_lastCatchTrigger && typeof _lastCatchTrigger.focus === 'function') {
+      _lastCatchTrigger.focus();
+    }
+    _lastCatchTrigger = null;
+  }
+
+  function _handleLastCatchKey(e) {
+    if (!screens.game || !screens.game.classList.contains('active')) return;
+    if (e.key === 'Escape' && !ui.lastCatchPanel?.classList.contains('hidden')) {
+      e.preventDefault();
+      closeLastCatchPanel();
+      return;
+    }
+    if (e.repeat || state !== 'IDLE') return;
+    if (e.key?.toLowerCase() === 'f' || e.code === 'KeyF') {
+      e.preventDefault();
+      openLastCatchPanel();
+    }
   }
 
   /** Abre o painel de equipamento — só disponível no IDLE */

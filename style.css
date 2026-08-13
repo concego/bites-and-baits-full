@@ -694,6 +694,21 @@ html, body {
   color: var(--accent);
 }
 
+.last-catch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+.last-catch-list > div {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.8fr) 1.2fr;
+  gap: 12px;
+  align-items: baseline;
+}
+.last-catch-list dt { font-weight: 700; color: var(--accent); }
+.last-catch-list dd { margin: 0; font-weight: 600; }
+
 /* Vistas do painel (categorias / iscas) */
 .equip-view.hidden { display: none !important; }
 

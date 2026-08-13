@@ -514,6 +514,8 @@
 
       <!-- Botão voltar simples (pesca livre) -->
       <button id="btn-menu" class="btn-secondary btn-menu-free hidden" data-i18n="btn_back_hub"></button>
+      <button id="btn-last-catch" class="btn-secondary btn-last-catch hidden"
+              data-i18n="btn_last_catch"></button>
     </div>
 
     <!-- Barra de ações inferior — fora do screen-game para não herdar inert -->
@@ -531,6 +533,42 @@
         <span class="bar-label" data-i18n="bar_hub"></span>
       </button>
     </nav>
+
+    <!-- Última captura: acessível pelo botão ou pela tecla F -->
+    <div id="last-catch-panel" class="equip-panel hidden" role="dialog"
+         aria-modal="true" aria-hidden="true" aria-labelledby="last-catch-heading">
+      <div class="equip-dialog">
+        <h2 id="last-catch-heading" data-i18n="last_catch_title"></h2>
+        <dl class="last-catch-list">
+          <div>
+            <dt data-i18n="last_catch_fish_label"></dt>
+            <dd id="last-catch-fish"></dd>
+          </div>
+          <div id="last-catch-size-row">
+            <dt data-i18n="last_catch_size_label"></dt>
+            <dd id="last-catch-size"></dd>
+          </div>
+          <div id="last-catch-weight-row">
+            <dt data-i18n="last_catch_weight_label"></dt>
+            <dd id="last-catch-weight"></dd>
+          </div>
+          <div id="last-catch-value-row">
+            <dt data-i18n="last_catch_value_label"></dt>
+            <dd id="last-catch-value"></dd>
+          </div>
+          <div id="last-catch-location-row">
+            <dt data-i18n="last_catch_location_label"></dt>
+            <dd id="last-catch-location"></dd>
+          </div>
+          <div id="last-catch-score-row">
+            <dt data-i18n="last_catch_score_label"></dt>
+            <dd id="last-catch-score"></dd>
+          </div>
+        </dl>
+        <button id="btn-last-catch-close" class="btn-secondary"
+                data-i18n="last_catch_close"></button>
+      </div>
+    </div>
 
     <!-- Painel de Equipamento — fora do screen-game para não herdar inert -->
     <div id="equip-panel" class="equip-panel hidden" role="dialog"
@@ -746,6 +784,5 @@
     </div>
   </div>
 
-  <div id="release-badge" style="position:fixed;bottom:2px;right:5px;font-size:10px;color:rgba(255,255,255,0.4);pointer-events:none;z-index:9999;">v1.2.07281855</div>
 </body>
 </html>
