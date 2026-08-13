@@ -49,7 +49,6 @@ const Game = (() => {
   let activeZone       = null;   // zona ativa no mapa atual
   let _lastCaughtItem  = null;   // último item adicionado ao inventário
   let _lastCatchInfo   = null;   // dados persistidos da última captura
-  let _lastCatchTrigger = null;  // elemento que abriu o painel
   let tension          = 0;      // 0..100
   let fishPull         = 0;
   let _fishStrengthMult = 1.0;  // multiplicador gradual de força (1.0 = 100%, 0.3 = cansado)
@@ -158,9 +157,7 @@ const Game = (() => {
       baitQty:        $('bait-active-qty'),
       equipPanel:     $('equip-panel'),
       baitList:       $('bait-list'),
-      lastCatchBtn:   $('btn-last-catch'),
-      lastCatchPanel: $('last-catch-panel'),
-      lastCatchClose: $('btn-last-catch-close'),
+      lastCatchSummary: $('last-catch-summary'),
       lastCatchFish:  $('last-catch-fish'),
       lastCatchSize:  $('last-catch-size'),
       lastCatchWeight: $('last-catch-weight'),
@@ -194,7 +191,7 @@ const Game = (() => {
       showScreen('start');
     }
     _lastCatchInfo = _loadLastCatchInfo();
-    _refreshLastCatchButton();
+    _refreshLastCatchSummary();
 
     $('btn-lang-pt').addEventListener('click', () => selectLang('pt'));
     $('btn-lang-en').addEventListener('click', () => selectLang('en'));
@@ -258,9 +255,7 @@ const Game = (() => {
     $('btn-opt-lang-hu')?.addEventListener('click', () => selectLang('hu'));
     $('btn-menu').addEventListener('click',  () => goToMenu());
     $('btn-menu2').addEventListener('click', () => goToMenu());
-    $('btn-last-catch')?.addEventListener('click', () => openLastCatchPanel());
-    $('btn-last-catch-close')?.addEventListener('click', () => closeLastCatchPanel());
-    // F abre os dados da última captura sem interferir nas setas ou no Espaço.
+    // F leva o foco aos dados da última captura sem interferir nas setas ou no Espaço.
     document.addEventListener('keydown', _handleLastCatchKey, true);
     $('btn-continue').addEventListener('click', () => {
       startGame(gameMode);
@@ -568,6 +563,8 @@ const Game = (() => {
   async function startGame(mode = 'normal') {
     try {
       gameMode = mode;
+      // Cada modo mantém seu próprio histórico de última captura.
+      _lastCatchInfo = _loadLastCatchInfo(gameMode);
 
       // 1. Troca de tela PRIMEIRO — imediato, sem await
       showScreen('game');
@@ -624,7 +621,7 @@ const Game = (() => {
   function enterState(newState) {
     clearTimers();
     state = newState;
-    _refreshLastCatchButton();
+    _refreshLastCatchSummary();
 
     switch (state) {
 
@@ -786,7 +783,7 @@ const Game = (() => {
           score,
         };
         _saveLastCatchInfo(_lastCatchInfo);
-        _refreshLastCatchButton();
+        _refreshLastCatchSummary();
 
         setLabel(I18n.t('state_caught', fishName(currentFish)));
         {
@@ -1086,29 +1083,45 @@ const Game = (() => {
   }
 
   // ── Última captura ───────────────────────────────────────────────────────
-  const LAST_CATCH_STORAGE_KEY = 'bb_last_catch';
+  const LAST_CATCH_STORAGE_KEYS = {
+    normal: 'bb_last_catch_story',
+    free:   'bb_last_catch_free',
+  };
+  const LEGACY_LAST_CATCH_KEY = 'bb_last_catch';
 
-  function _loadLastCatchInfo() {
+  function _loadLastCatchInfo(mode = gameMode) {
+    const key = LAST_CATCH_STORAGE_KEYS[mode] || LAST_CATCH_STORAGE_KEYS.normal;
     try {
-      return JSON.parse(localStorage.getItem(LAST_CATCH_STORAGE_KEY) || 'null');
-    } catch { return null; }
+      const saved = localStorage.getItem(key);
+      if (saved) return JSON.parse(saved);
+      // Migra o histórico antigo para História, sem misturá-lo com Pesca Livre.
+      if (mode === 'normal') {
+        const legacy = localStorage.getItem(LEGACY_LAST_CATCH_KEY);
+        if (legacy) {
+          localStorage.setItem(key, legacy);
+          return JSON.parse(legacy);
+        }
+      }
+    } catch { /* segue sem histórico */ }
+    return null;
   }
 
   function _saveLastCatchInfo(info) {
-    try { localStorage.setItem(LAST_CATCH_STORAGE_KEY, JSON.stringify(info)); }
+    const key = LAST_CATCH_STORAGE_KEYS[info.mode] || LAST_CATCH_STORAGE_KEYS.normal;
+    try { localStorage.setItem(key, JSON.stringify(info)); }
     catch { /* noop */ }
   }
 
-  function _refreshLastCatchButton() {
-    const btn = ui.lastCatchBtn;
-    if (!btn) return;
+  function _refreshLastCatchSummary() {
+    const summary = ui.lastCatchSummary;
+    if (!summary) return;
     const available = !!_lastCatchInfo && state === 'IDLE' &&
       screens.game && screens.game.classList.contains('active');
-    btn.classList.toggle('hidden', !available);
-    btn.setAttribute('aria-hidden', available ? 'false' : 'true');
+    summary.classList.toggle('hidden', !available);
+    summary.setAttribute('aria-hidden', available ? 'false' : 'true');
   }
 
-  function _renderLastCatchPanel() {
+  function _renderLastCatchSummary() {
     if (!_lastCatchInfo) return;
     const info = _lastCatchInfo;
     const fish = FISH_CATALOG[info.fishId];
@@ -1136,35 +1149,18 @@ const Game = (() => {
     $('last-catch-score-row').hidden = info.mode !== 'free';
   }
 
-  function openLastCatchPanel() {
+  function focusLastCatchSummary() {
     if (!_lastCatchInfo || state !== 'IDLE') return;
-    _lastCatchTrigger = document.activeElement;
-    _renderLastCatchPanel();
-    ui.lastCatchPanel?.classList.remove('hidden');
-    ui.lastCatchPanel?.setAttribute('aria-hidden', 'false');
-    ui.lastCatchClose?.focus();
-  }
-
-  function closeLastCatchPanel() {
-    ui.lastCatchPanel?.classList.add('hidden');
-    ui.lastCatchPanel?.setAttribute('aria-hidden', 'true');
-    if (_lastCatchTrigger && typeof _lastCatchTrigger.focus === 'function') {
-      _lastCatchTrigger.focus();
-    }
-    _lastCatchTrigger = null;
+    _renderLastCatchSummary();
+    ui.lastCatchSummary?.focus();
   }
 
   function _handleLastCatchKey(e) {
     if (!screens.game || !screens.game.classList.contains('active')) return;
-    if (e.key === 'Escape' && !ui.lastCatchPanel?.classList.contains('hidden')) {
-      e.preventDefault();
-      closeLastCatchPanel();
-      return;
-    }
     if (e.repeat || state !== 'IDLE') return;
     if (e.key?.toLowerCase() === 'f' || e.code === 'KeyF') {
       e.preventDefault();
-      openLastCatchPanel();
+      focusLastCatchSummary();
     }
   }
 

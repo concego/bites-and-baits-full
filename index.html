@@ -514,31 +514,11 @@
 
       <!-- Botão voltar simples (pesca livre) -->
       <button id="btn-menu" class="btn-secondary btn-menu-free hidden" data-i18n="btn_back_hub"></button>
-      <button id="btn-last-catch" class="btn-secondary btn-last-catch hidden"
-              data-i18n="btn_last_catch"></button>
-    </div>
 
-    <!-- Barra de ações inferior — fora do screen-game para não herdar inert -->
-    <nav id="game-bottom-bar" class="game-bottom-bar hidden" aria-label="Ações do jogo">
-      <button id="btn-bar-equip" class="bar-btn" aria-label="Equipamento">
-        <span class="bar-icon" aria-hidden="true">⚙️</span>
-        <span class="bar-label" data-i18n="bar_equip"></span>
-      </button>
-      <button id="btn-bar-zone" class="bar-btn hidden" aria-label="Mudar zona de pesca">
-        <span class="bar-icon" aria-hidden="true">🎣</span>
-        <span class="bar-label" data-i18n="bar_zone"></span>
-      </button>
-      <button id="btn-bar-hub"   class="bar-btn bar-btn-back" aria-label="Voltar ao Hub">
-        <span class="bar-icon" aria-hidden="true">🗺️</span>
-        <span class="bar-label" data-i18n="bar_hub"></span>
-      </button>
-    </nav>
-
-    <!-- Última captura: acessível pelo botão ou pela tecla F -->
-    <div id="last-catch-panel" class="equip-panel hidden" role="dialog"
-         aria-modal="true" aria-hidden="true" aria-labelledby="last-catch-heading">
-      <div class="equip-dialog">
-        <h2 id="last-catch-heading" data-i18n="last_catch_title"></h2>
+      <!-- Última captura: permanece visível para consulta; F move o foco para cá -->
+      <section id="last-catch-summary" class="last-catch-summary hidden"
+               tabindex="-1" aria-hidden="true" aria-labelledby="last-catch-heading">
+        <h3 id="last-catch-heading" data-i18n="last_catch_title"></h3>
         <dl class="last-catch-list">
           <div>
             <dt data-i18n="last_catch_fish_label"></dt>
@@ -565,10 +545,25 @@
             <dd id="last-catch-score"></dd>
           </div>
         </dl>
-        <button id="btn-last-catch-close" class="btn-secondary"
-                data-i18n="last_catch_close"></button>
-      </div>
+        <p class="last-catch-hint" data-i18n="last_catch_hint"></p>
+      </section>
     </div>
+
+    <!-- Barra de ações inferior — fora do screen-game para não herdar inert -->
+    <nav id="game-bottom-bar" class="game-bottom-bar hidden" aria-label="Ações do jogo">
+      <button id="btn-bar-equip" class="bar-btn" aria-label="Equipamento">
+        <span class="bar-icon" aria-hidden="true">⚙️</span>
+        <span class="bar-label" data-i18n="bar_equip"></span>
+      </button>
+      <button id="btn-bar-zone" class="bar-btn hidden" aria-label="Mudar zona de pesca">
+        <span class="bar-icon" aria-hidden="true">🎣</span>
+        <span class="bar-label" data-i18n="bar_zone"></span>
+      </button>
+      <button id="btn-bar-hub"   class="bar-btn bar-btn-back" aria-label="Voltar ao Hub">
+        <span class="bar-icon" aria-hidden="true">🗺️</span>
+        <span class="bar-label" data-i18n="bar_hub"></span>
+      </button>
+    </nav>
 
     <!-- Painel de Equipamento — fora do screen-game para não herdar inert -->
     <div id="equip-panel" class="equip-panel hidden" role="dialog"

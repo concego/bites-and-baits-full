@@ -709,6 +709,25 @@ html, body {
 .last-catch-list dt { font-weight: 700; color: var(--accent); }
 .last-catch-list dd { margin: 0; font-weight: 600; }
 
+.last-catch-summary {
+  width: min(100%, 420px);
+  margin: 8px auto 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: var(--radius);
+  background: rgba(0,0,0,0.18);
+}
+.last-catch-summary h3 {
+  margin: 0 0 10px;
+  color: var(--yellow);
+  font-size: 1rem;
+}
+.last-catch-hint {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
 /* Vistas do painel (categorias / iscas) */
 .equip-view.hidden { display: none !important; }
 
