@@ -5,9 +5,152 @@
   O arquivo é apenas uma biblioteca visual: atributos e regras continuam nos catálogos JS.
 -->
 <svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="gearDropShadow" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="1.5" dy="2.5" stdDeviation="1.6" flood-color="#101820" flood-opacity="0.28"/>
+    </filter>
+    <linearGradient id="g-d66b83" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e39aab"/>
+      <stop offset="0.48" stop-color="#d66b83"/>
+      <stop offset="1" stop-color="#9a4d5e"/>
+    </linearGradient>
+    <linearGradient id="g-f5f7f8" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fafa"/>
+      <stop offset="0.48" stop-color="#f5f7f8"/>
+      <stop offset="1" stop-color="#b0b2b3"/>
+    </linearGradient>
+    <linearGradient id="g-4d6b42" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#869a7e"/>
+      <stop offset="0.48" stop-color="#4d6b42"/>
+      <stop offset="1" stop-color="#374d30"/>
+    </linearGradient>
+    <linearGradient id="g-6d8e55" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9cb28b"/>
+      <stop offset="0.48" stop-color="#6d8e55"/>
+      <stop offset="1" stop-color="#4e663d"/>
+    </linearGradient>
+    <linearGradient id="g-f4d35e" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8e192"/>
+      <stop offset="0.48" stop-color="#f4d35e"/>
+      <stop offset="1" stop-color="#b09844"/>
+    </linearGradient>
+    <linearGradient id="g-9fc3d1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bed6e0"/>
+      <stop offset="0.48" stop-color="#9fc3d1"/>
+      <stop offset="1" stop-color="#728c96"/>
+    </linearGradient>
+    <linearGradient id="g-7eafc2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a7c9d6"/>
+      <stop offset="0.48" stop-color="#7eafc2"/>
+      <stop offset="1" stop-color="#5b7e8c"/>
+    </linearGradient>
+    <linearGradient id="g-425765" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7e8d96"/>
+      <stop offset="0.48" stop-color="#425765"/>
+      <stop offset="1" stop-color="#303f49"/>
+    </linearGradient>
+    <linearGradient id="g-dce8ec" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e7eff2"/>
+      <stop offset="0.48" stop-color="#dce8ec"/>
+      <stop offset="1" stop-color="#9ea7aa"/>
+    </linearGradient>
+    <linearGradient id="g-8ab5a0" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#afcdbe"/>
+      <stop offset="0.48" stop-color="#8ab5a0"/>
+      <stop offset="1" stop-color="#638273"/>
+    </linearGradient>
+    <linearGradient id="g-6f9e8b" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9dbdb0"/>
+      <stop offset="0.48" stop-color="#6f9e8b"/>
+      <stop offset="1" stop-color="#507264"/>
+    </linearGradient>
+    <linearGradient id="g-5f8d7d" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#92b1a7"/>
+      <stop offset="0.48" stop-color="#5f8d7d"/>
+      <stop offset="1" stop-color="#44665a"/>
+    </linearGradient>
+    <linearGradient id="g-d85d54" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e4918b"/>
+      <stop offset="0.48" stop-color="#d85d54"/>
+      <stop offset="1" stop-color="#9c433c"/>
+    </linearGradient>
+    <linearGradient id="g-f2c84b" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6da85"/>
+      <stop offset="0.48" stop-color="#f2c84b"/>
+      <stop offset="1" stop-color="#ae9036"/>
+    </linearGradient>
+    <linearGradient id="g-c58a4b" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d8af85"/>
+      <stop offset="0.48" stop-color="#c58a4b"/>
+      <stop offset="1" stop-color="#8e6336"/>
+    </linearGradient>
+    <linearGradient id="g-a96e36" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c59c76"/>
+      <stop offset="0.48" stop-color="#a96e36"/>
+      <stop offset="1" stop-color="#7a4f27"/>
+    </linearGradient>
+    <linearGradient id="g-8e5c31" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b29073"/>
+      <stop offset="0.48" stop-color="#8e5c31"/>
+      <stop offset="1" stop-color="#664223"/>
+    </linearGradient>
+    <linearGradient id="g-354452" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#768089"/>
+      <stop offset="0.48" stop-color="#354452"/>
+      <stop offset="1" stop-color="#26313b"/>
+    </linearGradient>
+    <linearGradient id="g-1c2933" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#656d74"/>
+      <stop offset="0.48" stop-color="#1c2933"/>
+      <stop offset="1" stop-color="#141e25"/>
+    </linearGradient>
+    <linearGradient id="g-647887" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#96a3ad"/>
+      <stop offset="0.48" stop-color="#647887"/>
+      <stop offset="1" stop-color="#485661"/>
+    </linearGradient>
+    <linearGradient id="g-a9d9d1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c5e5e0"/>
+      <stop offset="0.48" stop-color="#a9d9d1"/>
+      <stop offset="1" stop-color="#7a9c96"/>
+    </linearGradient>
+    <linearGradient id="g-4f9271" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#87b59e"/>
+      <stop offset="0.48" stop-color="#4f9271"/>
+      <stop offset="1" stop-color="#396951"/>
+    </linearGradient>
+    <linearGradient id="g-edc0a1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3d4bf"/>
+      <stop offset="0.48" stop-color="#edc0a1"/>
+      <stop offset="1" stop-color="#ab8a74"/>
+    </linearGradient>
+    <linearGradient id="g-d9c5ed" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e5d8f3"/>
+      <stop offset="0.48" stop-color="#d9c5ed"/>
+      <stop offset="1" stop-color="#9c8eab"/>
+    </linearGradient>
+    <linearGradient id="g-6d55a0" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9c8bbe"/>
+      <stop offset="0.48" stop-color="#6d55a0"/>
+      <stop offset="1" stop-color="#4e3d73"/>
+    </linearGradient>
+    <linearGradient id="g-ed8247" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3aa82"/>
+      <stop offset="0.48" stop-color="#ed8247"/>
+      <stop offset="1" stop-color="#ab5e33"/>
+    </linearGradient>
+    <linearGradient id="g-4c9fc4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#85bed7"/>
+      <stop offset="0.48" stop-color="#4c9fc4"/>
+      <stop offset="1" stop-color="#37728d"/>
+    </linearGradient>
+  </defs>
   <style>
-    .gear-stroke { stroke:#18212b; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+    .gear-stroke { stroke:#18212b; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; paint-order:stroke fill; }
     .gear-fine { stroke:#18212b; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .gear-object { filter:url(#gearDropShadow); }
+    .gear-glint { fill:none; stroke:#ffffff; stroke-width:2; stroke-linecap:round; opacity:.46; }
+    .gear-seam { fill:none; stroke:#18212b; stroke-width:1.5; stroke-linecap:round; opacity:.55; }
     .metal { fill:#b9c7d1; }
     .dark-metal { fill:#647887; }
     .wood { fill:#a96735; }
@@ -18,37 +161,64 @@
     .yellow { fill:#f2c84b; }
     .red { fill:#d85d54; }
     .cream { fill:#f2dfb2; }
+    [fill="#d66b83"] { fill:url(#g-d66b83); }
+    [fill="#f5f7f8"] { fill:url(#g-f5f7f8); }
+    [fill="#4d6b42"] { fill:url(#g-4d6b42); }
+    [fill="#6d8e55"] { fill:url(#g-6d8e55); }
+    [fill="#f4d35e"] { fill:url(#g-f4d35e); }
+    [fill="#9fc3d1"] { fill:url(#g-9fc3d1); }
+    [fill="#7eafc2"] { fill:url(#g-7eafc2); }
+    [fill="#425765"] { fill:url(#g-425765); }
+    [fill="#dce8ec"] { fill:url(#g-dce8ec); }
+    [fill="#8ab5a0"] { fill:url(#g-8ab5a0); }
+    [fill="#6f9e8b"] { fill:url(#g-6f9e8b); }
+    [fill="#5f8d7d"] { fill:url(#g-5f8d7d); }
+    [fill="#d85d54"] { fill:url(#g-d85d54); }
+    [fill="#f2c84b"] { fill:url(#g-f2c84b); }
+    [fill="#c58a4b"] { fill:url(#g-c58a4b); }
+    [fill="#a96e36"] { fill:url(#g-a96e36); }
+    [fill="#8e5c31"] { fill:url(#g-8e5c31); }
+    [fill="#354452"] { fill:url(#g-354452); }
+    [fill="#1c2933"] { fill:url(#g-1c2933); }
+    [fill="#647887"] { fill:url(#g-647887); }
+    [fill="#a9d9d1"] { fill:url(#g-a9d9d1); }
+    [fill="#4f9271"] { fill:url(#g-4f9271); }
+    [fill="#edc0a1"] { fill:url(#g-edc0a1); }
+    [fill="#d9c5ed"] { fill:url(#g-d9c5ed); }
+    [fill="#6d55a0"] { fill:url(#g-6d55a0); }
+    [fill="#ed8247"] { fill:url(#g-ed8247); }
+    [fill="#4c9fc4"] { fill:url(#g-4c9fc4); }
   </style>
 
   <!-- ISCAS -->
   <symbol id="gear-bait-worm" viewBox="0 0 96 96">
-    <path d="M18 59 C22 39 36 35 45 48 C54 61 66 55 69 41 C72 30 82 32 80 45 C77 66 59 74 46 61 C34 49 27 70 18 59Z" fill="#d66b83" class="gear-stroke"/>
+    <path d="M18 59 C22 39 36 35 45 48 C54 61 66 55 69 41 C72 30 82 32 80 45 C77 66 59 74 46 61 C34 49 27 70 18 59Z" fill="#d66b83" class="gear-stroke gear-object"/>
     <path d="M29 45l-3 7M39 47l-3 7M51 58l-3 7M64 56l-3 7" class="gear-fine" fill="none" opacity=".55"/>
     <circle cx="77" cy="39" r="3" fill="#f5f7f8"/>
   </symbol>
 
   <symbol id="gear-bait-cricket" viewBox="0 0 96 96">
-    <ellipse cx="49" cy="53" rx="16" ry="25" fill="#4d6b42" class="gear-stroke" transform="rotate(28 49 53)"/>
+    <ellipse cx="49" cy="53" rx="16" ry="25" fill="#4d6b42" class="gear-stroke gear-object" transform="rotate(28 49 53)"/>
     <ellipse cx="42" cy="32" rx="9" ry="11" fill="#6d8e55" class="gear-stroke" transform="rotate(25 42 32)"/>
     <path d="M37 25L25 15M43 24L38 10M52 66L34 80M59 62L77 76M42 58L24 64M57 49L78 43" class="gear-fine" fill="none"/>
     <circle cx="39" cy="30" r="2" fill="#f4d35e"/>
   </symbol>
 
   <symbol id="gear-bait-fly" viewBox="0 0 96 96">
-    <path d="M48 30 C31 17 17 25 24 42 C31 50 39 45 48 39Z" fill="#9fc3d1" class="gear-stroke"/>
+    <path d="M48 30 C31 17 17 25 24 42 C31 50 39 45 48 39Z" fill="#9fc3d1" class="gear-stroke gear-object"/>
     <path d="M49 30 C66 17 80 25 73 42 C66 50 58 45 49 39Z" fill="#7eafc2" class="gear-stroke"/>
     <ellipse cx="48" cy="47" rx="7" ry="20" fill="#425765" class="gear-stroke"/>
     <path d="M46 64 Q57 72 64 63" class="gear-fine" fill="none"/>
   </symbol>
 
   <symbol id="gear-bait-spoon" viewBox="0 0 96 96">
-    <path d="M34 20 C21 30 21 53 36 63 C49 72 65 65 67 48 C69 34 56 20 44 20Z" fill="#dce8ec" class="gear-stroke" transform="rotate(-18 48 48)"/>
+    <path d="M34 20 C21 30 21 53 36 63 C49 72 65 65 67 48 C69 34 56 20 44 20Z" fill="#dce8ec" class="gear-stroke gear-object" transform="rotate(-18 48 48)"/>
     <path d="M40 28 C48 37 51 51 46 62" class="gear-fine" fill="none" opacity=".55"/>
     <path d="M48 65 C55 75 61 77 69 73 C78 68 80 76 75 81 C65 90 51 82 44 70" fill="none" class="gear-stroke"/>
   </symbol>
 
   <symbol id="gear-bait-live-bait" viewBox="0 0 96 96">
-    <path d="M19 49 L34 37 L57 38 C71 39 79 48 72 59 C66 69 48 70 34 61Z" fill="#8ab5a0" class="gear-stroke"/>
+    <path d="M19 49 L34 37 L57 38 C71 39 79 48 72 59 C66 69 48 70 34 61Z" fill="#8ab5a0" class="gear-stroke gear-object"/>
     <path d="M34 37 L30 27 L43 35 L52 25 L56 38" fill="#6f9e8b" class="gear-stroke"/>
     <circle cx="64" cy="47" r="3" fill="#18212b"/>
     <path d="M20 49 L9 41 L12 56Z" fill="#5f8d7d" class="gear-stroke"/>
@@ -57,13 +227,13 @@
 
   <symbol id="gear-bait-shrimp" viewBox="0 0 96 96">
     <path d="M72 27 C52 21 29 30 28 50 C27 69 46 76 61 66 C70 60 69 49 60 45 C52 41 43 45 43 53 C43 59 49 61 54 58" fill="none" stroke="#dc7c61" stroke-width="10" stroke-linecap="round"/>
-    <path d="M72 27 C52 21 29 30 28 50 C27 69 46 76 61 66 C70 60 69 49 60 45 C52 41 43 45 43 53 C43 59 49 61 54 58" fill="none" class="gear-stroke" stroke="#18212b" stroke-width="2"/>
+    <path d="M72 27 C52 21 29 30 28 50 C27 69 46 76 61 66 C70 60 69 49 60 45 C52 41 43 45 43 53 C43 59 49 61 54 58" fill="none" class="gear-stroke gear-object" stroke="#18212b" stroke-width="2"/>
     <path d="M35 36l-8-10M41 32l-4-13M48 29l1-13M35 65l-9 8M43 69l-5 11" class="gear-fine" fill="none"/>
     <circle cx="76" cy="26" r="3" fill="#18212b"/>
   </symbol>
 
   <symbol id="gear-bait-jig" viewBox="0 0 96 96">
-    <path d="M35 24 Q48 17 61 24 L58 54 Q48 63 38 54Z" fill="#d85d54" class="gear-stroke"/>
+    <path d="M35 24 Q48 17 61 24 L58 54 Q48 63 38 54Z" fill="#d85d54" class="gear-stroke gear-object"/>
     <path d="M35 31 Q48 38 61 31" class="gear-fine" fill="none" stroke="#f2c84b"/>
     <path d="M48 54 C49 67 65 68 69 59 C72 52 78 55 77 62 C75 75 57 79 47 65" fill="none" class="gear-stroke"/>
     <path d="M40 24 L48 13 L56 24" fill="#f2c84b" class="gear-stroke"/>
@@ -71,20 +241,23 @@
 
   <!-- CESTOS -->
   <symbol id="gear-basket-basic" viewBox="0 0 96 96">
-    <path d="M22 35 H74 L68 76 H28Z" fill="#c58a4b" class="gear-stroke"/>
+    <path d="M22 35 H74 L68 76 H28Z" fill="#c58a4b" class="gear-stroke gear-object"/>
+    <path d="M27 42H69" class="gear-glint"/>
     <path d="M26 35 Q48 12 70 35" fill="none" class="gear-stroke"/>
     <path d="M28 47H70M27 59H69M30 70H66M35 37L34 75M47 36L47 76M59 36L60 76" class="gear-fine" fill="none" opacity=".75"/>
   </symbol>
 
   <symbol id="gear-basket-reinforced" viewBox="0 0 96 96">
-    <path d="M19 34 H77 L70 77 H26Z" fill="#a96e36" class="gear-stroke"/>
+    <path d="M19 34 H77 L70 77 H26Z" fill="#a96e36" class="gear-stroke gear-object"/>
+    <path d="M24 41H72" class="gear-glint"/>
     <path d="M24 34 Q48 10 72 34" fill="none" class="gear-stroke"/>
     <path d="M25 45H73M24 59H71M28 71H68M31 35L30 77M47 35L47 77M64 35L65 77" class="gear-fine" fill="none"/>
     <path d="M22 39L73 70M73 39L23 70" class="gear-fine" fill="none" opacity=".7"/>
   </symbol>
 
   <symbol id="gear-basket-large" viewBox="0 0 96 96">
-    <path d="M14 31 H82 L74 78 H22Z" fill="#8e5c31" class="gear-stroke"/>
+    <path d="M14 31 H82 L74 78 H22Z" fill="#8e5c31" class="gear-stroke gear-object"/>
+    <path d="M20 38H76" class="gear-glint"/>
     <path d="M20 31 Q48 5 76 31" fill="none" class="gear-stroke"/>
     <path d="M18 43H79M17 57H77M20 70H75M26 32L25 78M40 31L40 78M55 31L55 78M69 31L70 78" class="gear-fine" fill="none"/>
     <path d="M15 29H81" stroke="#e4b46b" stroke-width="5" fill="none"/>
@@ -92,21 +265,21 @@
 
   <!-- VARAS -->
   <symbol id="gear-rod-basic" viewBox="0 0 96 96">
-    <path d="M22 78 L70 18" stroke="#a96735" stroke-width="6" class="gear-stroke" fill="none"/>
+    <path d="M22 78 L70 18" stroke="#a96735" stroke-width="6" class="gear-stroke gear-object" fill="none"/>
     <path d="M65 24 L74 14" class="gear-fine" fill="none"/>
     <rect x="17" y="73" width="22" height="9" rx="4" fill="#425765" class="gear-stroke" transform="rotate(-52 28 77)"/>
     <circle cx="40" cy="60" r="5" fill="none" class="gear-fine"/>
   </symbol>
 
   <symbol id="gear-rod-medium" viewBox="0 0 96 96">
-    <path d="M20 79 L72 17" stroke="#4f9271" stroke-width="5" class="gear-stroke" fill="none"/>
+    <path d="M20 79 L72 17" stroke="#4f9271" stroke-width="5" class="gear-stroke gear-object" fill="none"/>
     <path d="M66 24 L77 12" stroke="#b9c7d1" stroke-width="2" fill="none"/>
     <rect x="16" y="73" width="23" height="9" rx="4" fill="#354452" class="gear-stroke" transform="rotate(-52 28 77)"/>
     <circle cx="41" cy="59" r="6" fill="none" class="gear-fine"/>
   </symbol>
 
   <symbol id="gear-rod-carbon" viewBox="0 0 96 96">
-    <path d="M20 79 L74 16" stroke="#354452" stroke-width="4" class="gear-stroke" fill="none"/>
+    <path d="M20 79 L74 16" stroke="#354452" stroke-width="4" class="gear-stroke gear-object" fill="none"/>
     <path d="M68 23 L80 10" stroke="#dce8ec" stroke-width="2" fill="none"/>
     <rect x="16" y="73" width="24" height="9" rx="4" fill="#1c2933" class="gear-stroke" transform="rotate(-52 28 77)"/>
     <circle cx="42" cy="58" r="6" fill="none" class="gear-fine"/>
@@ -114,7 +287,7 @@
   </symbol>
 
   <symbol id="gear-rod-pro" viewBox="0 0 96 96">
-    <path d="M19 80 L76 14" stroke="#d85d54" stroke-width="4" class="gear-stroke" fill="none"/>
+    <path d="M19 80 L76 14" stroke="#d85d54" stroke-width="4" class="gear-stroke gear-object" fill="none"/>
     <path d="M70 21 L82 8" stroke="#dce8ec" stroke-width="2" fill="none"/>
     <rect x="15" y="73" width="25" height="9" rx="4" fill="#18212b" class="gear-stroke" transform="rotate(-52 28 77)"/>
     <circle cx="42" cy="58" r="7" fill="none" class="gear-fine"/>
@@ -122,7 +295,7 @@
   </symbol>
 
   <symbol id="gear-rod-master" viewBox="0 0 96 96">
-    <path d="M18 81 L78 13" stroke="#f2c84b" stroke-width="4" class="gear-stroke" fill="none"/>
+    <path d="M18 81 L78 13" stroke="#f2c84b" stroke-width="4" class="gear-stroke gear-object" fill="none"/>
     <path d="M72 20 L84 7" stroke="#f5f7f8" stroke-width="2" fill="none"/>
     <rect x="14" y="73" width="26" height="9" rx="4" fill="#18212b" class="gear-stroke" transform="rotate(-52 28 77)"/>
     <circle cx="43" cy="57" r="7" fill="none" class="gear-fine"/>
@@ -131,25 +304,25 @@
 
   <!-- LINHAS -->
   <symbol id="gear-line-mono" viewBox="0 0 96 96">
-    <circle cx="48" cy="48" r="27" fill="#dce8ec" class="gear-stroke"/>
+    <circle cx="48" cy="48" r="27" fill="#dce8ec" class="gear-stroke gear-object"/>
     <circle cx="48" cy="48" r="9" fill="#647887" class="gear-stroke"/>
     <path d="M30 38 Q48 26 66 38 M29 48 Q48 36 67 48 M31 58 Q48 48 65 58" class="gear-fine" fill="none"/>
   </symbol>
 
   <symbol id="gear-line-fluoro" viewBox="0 0 96 96">
-    <circle cx="48" cy="48" r="27" fill="#a9d9d1" class="gear-stroke"/>
+    <circle cx="48" cy="48" r="27" fill="#a9d9d1" class="gear-stroke gear-object"/>
     <circle cx="48" cy="48" r="9" fill="#4f9271" class="gear-stroke"/>
     <path d="M30 38 Q48 26 66 38 M29 48 Q48 36 67 48 M31 58 Q48 48 65 58" class="gear-fine" fill="none"/>
   </symbol>
 
   <symbol id="gear-line-braided" viewBox="0 0 96 96">
-    <circle cx="48" cy="48" r="27" fill="#edc0a1" class="gear-stroke"/>
+    <circle cx="48" cy="48" r="27" fill="#edc0a1" class="gear-stroke gear-object"/>
     <circle cx="48" cy="48" r="9" fill="#d85d54" class="gear-stroke"/>
     <path d="M29 37L67 59M29 48L67 70M29 26L67 48M29 59L59 76" class="gear-fine" fill="none" opacity=".75"/>
   </symbol>
 
   <symbol id="gear-line-dyneema" viewBox="0 0 96 96">
-    <circle cx="48" cy="48" r="27" fill="#d9c5ed" class="gear-stroke"/>
+    <circle cx="48" cy="48" r="27" fill="#d9c5ed" class="gear-stroke gear-object"/>
     <circle cx="48" cy="48" r="9" fill="#6d55a0" class="gear-stroke"/>
     <path d="M29 37L67 59M29 48L67 70M29 26L67 48M29 59L59 76" class="gear-fine" fill="none"/>
     <path d="M25 23L71 73" stroke="#f5f7f8" stroke-width="2" fill="none" opacity=".8"/>
@@ -157,39 +330,39 @@
 
   <!-- ANZÓIS -->
   <symbol id="gear-hook-basic" viewBox="0 0 96 96">
-    <path d="M35 20 V54 C35 70 51 75 61 65 C68 58 65 49 58 50" fill="none" stroke="#9aaab4" stroke-width="8" class="gear-stroke"/>
+    <path d="M35 20 V54 C35 70 51 75 61 65 C68 58 65 49 58 50" fill="none" stroke="#9aaab4" stroke-width="8" class="gear-stroke gear-object"/>
     <path d="M35 20 V54 C35 70 51 75 61 65 C68 58 65 49 58 50" fill="none" stroke="#dce8ec" stroke-width="3"/>
     <path d="M35 19 L29 12 M35 19 L42 12" class="gear-fine" fill="none"/>
   </symbol>
 
   <symbol id="gear-hook-offset" viewBox="0 0 96 96">
-    <path d="M35 20 V48 C35 66 49 76 63 66 C74 58 69 45 60 48" fill="none" stroke="#d4a947" stroke-width="8" class="gear-stroke"/>
+    <path d="M35 20 V48 C35 66 49 76 63 66 C74 58 69 45 60 48" fill="none" stroke="#d4a947" stroke-width="8" class="gear-stroke gear-object"/>
     <path d="M35 20 V48 C35 66 49 76 63 66 C74 58 69 45 60 48" fill="none" stroke="#f2c84b" stroke-width="3"/>
     <path d="M35 19 L29 12 M35 19 L42 12" class="gear-fine" fill="none"/>
   </symbol>
 
   <symbol id="gear-hook-treble" viewBox="0 0 96 96">
-    <circle cx="48" cy="29" r="7" fill="#dce8ec" class="gear-stroke"/>
+    <circle cx="48" cy="29" r="7" fill="#dce8ec" class="gear-stroke gear-object"/>
     <path d="M48 36 V51 C48 66 35 71 29 61 C25 54 30 49 35 52 M48 51 C48 67 61 72 67 62 C71 55 66 50 61 53" fill="none" stroke="#b9c7d1" stroke-width="7" class="gear-stroke"/>
     <path d="M48 51 C48 66 48 72 48 77" fill="none" stroke="#b9c7d1" stroke-width="7" class="gear-stroke"/>
   </symbol>
 
   <!-- BOIAS -->
   <symbol id="gear-float-basic" viewBox="0 0 96 96">
-    <path d="M48 18 C34 18 29 29 31 43 C33 58 39 69 48 75 C57 69 63 58 65 43 C67 29 62 18 48 18Z" fill="#ed8247" class="gear-stroke"/>
+    <path d="M48 18 C34 18 29 29 31 43 C33 58 39 69 48 75 C57 69 63 58 65 43 C67 29 62 18 48 18Z" fill="#ed8247" class="gear-stroke gear-object"/>
     <path d="M31 40 H65" class="gear-fine" fill="none" stroke="#f5f7f8"/>
     <path d="M48 75 V84" class="gear-stroke" fill="none"/>
   </symbol>
 
   <symbol id="gear-float-sensitive" viewBox="0 0 96 96">
-    <path d="M48 15 C34 15 28 27 31 42 C34 59 40 70 48 76 C56 70 62 59 65 42 C68 27 62 15 48 15Z" fill="#4c9fc4" class="gear-stroke"/>
+    <path d="M48 15 C34 15 28 27 31 42 C34 59 40 70 48 76 C56 70 62 59 65 42 C68 27 62 15 48 15Z" fill="#4c9fc4" class="gear-stroke gear-object"/>
     <path d="M30 37 H66" class="gear-fine" fill="none" stroke="#f5f7f8"/>
     <path d="M48 76 V85" class="gear-stroke" fill="none"/>
     <circle cx="48" cy="27" r="4" fill="#f2c84b" class="gear-fine"/>
   </symbol>
 
   <symbol id="gear-float-pro" viewBox="0 0 96 96">
-    <path d="M48 12 C32 12 26 25 30 42 C33 60 40 72 48 78 C56 72 63 60 66 42 C70 25 64 12 48 12Z" fill="#4f9271" class="gear-stroke"/>
+    <path d="M48 12 C32 12 26 25 30 42 C33 60 40 72 48 78 C56 72 63 60 66 42 C70 25 64 12 48 12Z" fill="#4f9271" class="gear-stroke gear-object"/>
     <path d="M29 34 H67" class="gear-fine" fill="none" stroke="#f2c84b" stroke-width="5"/>
     <path d="M48 78 V87" class="gear-stroke" fill="none"/>
     <path d="M41 22H55" class="gear-fine" fill="none" stroke="#f5f7f8"/>
