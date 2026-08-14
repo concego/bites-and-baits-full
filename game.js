@@ -2002,77 +2002,11 @@ const Game = (() => {
     const equip  = Inventory.getEquip();
 
     // ── Aba Peixes ──────────────────────────────────────────────────────────
-    const fishes    = Inventory.getAll();
-    const fishList  = $('inv-fish-list');
-    const fishEmpty = $('inv-fish-empty');
-    fishList.innerHTML = '';
-
-    if (fishes.length === 0) {
-      fishEmpty.classList.remove('hidden');
-    } else {
-      fishEmpty.classList.add('hidden');
-      fishes.forEach(fish => {
-        const prot = Inventory.isProtected(fish.id);
-        const li = document.createElement('li');
-        li.className = 'inv-item';
-        li.setAttribute('role', 'listitem');
-        li.innerHTML = `
-          <div class="inv-item-info">
-            <span class="inv-item-name">${t(fish.nameKey) || fish.nameKey}
-              ${prot ? `<span class="inv-badge-protect" aria-label="${t('inv_protected_badge')}">${t('inv_protected_badge')}</span>` : ''}
-            </span>
-            <span class="inv-item-detail">${fish.weight.toFixed(2)} kg · ${fish.value} 🪙</span>
-          </div>
-          <div class="inv-item-actions">
-            <button class="btn-inv-examine-fish btn-secondary"
-                    data-item-id="${fish.id}"
-                    aria-label="${t('inv_examine')} ${t(fish.nameKey) || fish.nameKey}">
-              ${t('inv_examine')}
-            </button>
-            <button class="btn-inv-protect btn-secondary"
-                    data-item-id="${fish.id}"
-                    aria-pressed="${prot}">
-              ${prot ? t('inv_unprotect') : t('inv_protect')}
-            </button>
-            <button class="btn-inv-discard btn-danger"
-                    data-item-id="${fish.id}"
-                    data-item-name="${t(fish.nameKey) || fish.nameKey}"
-                    aria-label="${t('inv_discard')} ${t(fish.nameKey) || fish.nameKey}">
-              ${t('inv_discard')}
-            </button>
-          </div>`;
-        li.querySelector('.btn-inv-examine-fish').addEventListener('click', e => {
-          const id   = e.currentTarget.dataset.itemId;
-          const fish = Inventory.getAll().find(f => f.id === id);
-          if (!fish) return;
-          const def  = FISH_CATALOG[fish.fishId];
-          const rarityMap = {
-            lambari:'common', tilapia:'common', cara:'common', piau:'common',
-            traira:'uncommon', curimbata:'uncommon', truta:'uncommon',
-            dourado:'rare', tucunare:'rare',
-            pirarucu:'legendary', peixe_dourado_ornamental:'legendary'
-          };
-          const rarity = t('inv_rarity_' + (fish.rarity || rarityMap[fish.fishId] || 'common'));
-          const habitat = t('inv_habitat_' + (def?.habitat || 'freshwater'));
-          _invFeedback(fbEl, t('inv_examine_fish', t(fish.nameKey) || fish.fishId, rarity, habitat), true);
-        });
-        li.querySelector('.btn-inv-protect').addEventListener('click', e => {
-          const id = e.currentTarget.dataset.itemId;
-          Inventory.toggleProtect(id);
-          renderInventory();
-        });
-        li.querySelector('.btn-inv-discard').addEventListener('click', e => {
-          const id   = e.currentTarget.dataset.itemId;
-          const name = e.currentTarget.dataset.itemName;
-          if (confirm(t('inv_confirm_discard') ? (typeof t('inv_confirm_discard') === 'function'
-            ? t('inv_confirm_discard', name) : t('inv_confirm_discard')) : `Descartar ${name}?`)) {
-            Inventory.removeItem(id);
-            renderInventory();
-          }
-        });
-        fishList.appendChild(li);
-      });
-    }
+    InventoryFishView.render({
+      translate: t,
+      feedback: _invFeedback.bind(null, fbEl),
+      rerender: renderInventory,
+    });
 
     // ── Aba Iscas ───────────────────────────────────────────────────────────
     const baits     = Inventory.getBaits();
