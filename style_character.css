@@ -1,0 +1,41 @@
+/* Criação da personagem — primeira etapa de identidade narrativa. */
+.character-create-screen {
+  background: linear-gradient(180deg, #87CEEB 0%, #1a6fa8 60%, #0d3f66 100%);
+  overflow-y: auto;
+  justify-content: flex-start;
+  padding: 28px 18px;
+}
+.character-create-card {
+  width: min(100%, 520px);
+  margin: auto;
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, .62);
+  box-shadow: 0 8px 28px rgba(0,0,0,.32);
+}
+.character-create-card h2 { margin-bottom: 10px; }
+.character-create-card > p { line-height: 1.5; margin-bottom: 22px; }
+.character-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+.character-field label { font-weight: 700; }
+.character-field small { line-height: 1.4; opacity: .82; }
+.character-field input,
+.character-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 2px solid rgba(255,255,255,.55);
+  border-radius: 10px;
+  color: #18212b;
+  background: #fff;
+  font: inherit;
+}
+.character-field input:focus,
+.character-field select:focus { outline: 3px solid #f2c84b; outline-offset: 2px; }
+.form-feedback { min-height: 1.5em; line-height: 1.4; margin: 6px 0; }
+.character-form-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
+.character-form-actions button { min-width: 150px; }

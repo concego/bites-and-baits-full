@@ -127,6 +127,7 @@ const Game = (() => {
         screens = {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
+      characterCreate: $('screen-character-create'),
       storyHub:     $('screen-story-hub'),
       game:         $('screen-game'),
       result:       $('screen-result'),
@@ -148,6 +149,11 @@ const Game = (() => {
     });
     ui = {
       announcer:      $('announcer'),
+      characterForm:  $('character-form'),
+      characterName:  $('character-name'),
+      characterGender: $('character-gender'),
+      characterFormError: $('character-form-error'),
+      characterFormStatus: $('character-form-status'),
       stateLabel:     $('state-label'),
       tensionCont:    $('tension-container'),
       tensionBar:     $('tension-bar'),
@@ -217,7 +223,13 @@ const Game = (() => {
     $('btn-lang-hu').addEventListener('click', () => selectLang('hu'));
 
     // ── Menu Principal ─────────────────────────────────────────────────────
-    $('btn-story').addEventListener('click', () => { gameMode = 'normal'; showStoryHub(); });
+    $('btn-story').addEventListener('click', () => {
+      gameMode = 'normal';
+      if (Character.isConfirmed()) showStoryHub();
+      else openCharacterCreate();
+    });
+    ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
+    $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
     $('btn-free').addEventListener('click',  () => startGame('free'));
     $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
     $('btn-back').addEventListener('click',  () => showScreen('start'));
@@ -340,6 +352,44 @@ const Game = (() => {
     const name  = item ? (item.querySelector('.a11y-toggle-label') || {}).textContent || '' : '';
     const state = I18n.t(value ? 'toggle_on' : 'toggle_off');
     btn.setAttribute('aria-label', name ? `${name}, ${state}` : state);
+  }
+
+  // ── Criação inicial da personagem ───────────────────────────────────────
+  function openCharacterCreate() {
+    const current = Character.load();
+    if (ui.characterName) ui.characterName.value = current.name || '';
+    if (ui.characterGender) ui.characterGender.value = current.genderProfile || '';
+    if (ui.characterFormError) ui.characterFormError.textContent = '';
+    if (ui.characterFormStatus) ui.characterFormStatus.textContent = '';
+    showScreen('characterCreate');
+    ui.characterName?.focus();
+  }
+
+  function _handleCharacterSubmit(event) {
+    event.preventDefault();
+    if (ui.characterFormError) ui.characterFormError.textContent = '';
+    if (ui.characterFormStatus) ui.characterFormStatus.textContent = '';
+
+    const name = ui.characterName?.value || '';
+    const gender = ui.characterGender?.value || '';
+    if (!String(name).trim()) {
+      if (ui.characterFormError) ui.characterFormError.textContent = I18n.t('character_error_name');
+      ui.characterName?.focus();
+      return;
+    }
+    if (!gender) {
+      if (ui.characterFormError) ui.characterFormError.textContent = I18n.t('character_error_gender');
+      ui.characterGender?.focus();
+      return;
+    }
+
+    const saved = Character.confirmIdentity(name, gender);
+    if (!saved) return;
+    if (ui.characterFormStatus) ui.characterFormStatus.textContent = I18n.t('character_saved');
+    speak(I18n.t('character_saved'));
+
+    // Ponte temporária até a cena de correspondência ser implementada.
+    setTimeout(() => showStoryHub(), 350);
   }
 
   // ── Linha SVG dinâmica ────────────────────────────────────────────────────

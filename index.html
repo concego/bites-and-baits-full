@@ -6,6 +6,7 @@
   <title>Bites &amp; Baits</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="style_visuals.css" />
+  <link rel="stylesheet" href="style_character.css" />
   <link rel="stylesheet" href="shop.css" />
   <link rel="stylesheet" href="style_append.css" />
 </head>
@@ -190,6 +191,41 @@
         <p><span data-i18n="credits_by"></span> <strong>Anderson Carvalho</strong> · <span data-i18n="credits_brand"></span></p>
         <p><a href="mailto:euconcego@gmail.com">euconcego@gmail.com</a></p>
       </footer>
+    </div>
+
+    <!-- ── Criação inicial da personagem ─────────────────────────────── -->
+    <div id="screen-character-create" class="screen character-create-screen" role="dialog" aria-modal="true" aria-labelledby="character-create-title">
+      <div class="character-create-card">
+        <h2 id="character-create-title" data-i18n="character_create_title"></h2>
+        <p data-i18n="character_create_intro"></p>
+
+        <form id="character-form" novalidate>
+          <div class="character-field">
+            <label for="character-name" data-i18n="character_name_label"></label>
+            <input id="character-name" name="characterName" type="text" maxlength="40" autocomplete="nickname" required aria-describedby="character-name-hint" />
+            <small id="character-name-hint" data-i18n="character_name_hint"></small>
+          </div>
+
+          <div class="character-field">
+            <label for="character-gender" data-i18n="character_gender_label"></label>
+            <select id="character-gender" name="genderProfile" required aria-describedby="character-gender-hint">
+              <option value="" data-i18n="character_gender_placeholder"></option>
+              <option value="feminine" data-i18n="character_gender_feminine"></option>
+              <option value="masculine" data-i18n="character_gender_masculine"></option>
+              <option value="neutral" data-i18n="character_gender_neutral"></option>
+            </select>
+            <small id="character-gender-hint" data-i18n="character_gender_hint"></small>
+          </div>
+
+          <p id="character-form-error" class="form-feedback" role="alert" aria-live="assertive"></p>
+          <p id="character-form-status" class="form-feedback feedback-ok" aria-live="polite"></p>
+
+          <div class="character-form-actions">
+            <button id="btn-character-back" type="button" class="btn-ghost" data-i18n="character_back"></button>
+            <button id="btn-character-confirm" type="submit" class="btn-primary" data-i18n="character_confirm"></button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- ── Hub da Cidade ─────────────────────────────────────────────── -->
@@ -831,6 +867,7 @@
   <script src="audio.js"></script>
   <script src="sensors.js"></script>
   <script src="visuals.js"></script>
+  <script src="character-data.js"></script>
   <script src="game.js"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->

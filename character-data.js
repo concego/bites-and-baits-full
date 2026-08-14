@@ -1,0 +1,45 @@
+/* character-data.js — Bites & Baits
+ * Persistência da identidade da personagem.
+ * A aparência será adicionada sem misturar este estado aos equipamentos.
+ */
+const Character = (() => {
+  const STORAGE_KEY = 'bb_character';
+  const DEFAULT = {
+    name: '',
+    genderProfile: '',
+    confirmed: false,
+  };
+
+  function load() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      return { ...DEFAULT, ...(raw && typeof raw === 'object' ? raw : {}) };
+    } catch {
+      return { ...DEFAULT };
+    }
+  }
+
+  function save(value) {
+    const next = { ...DEFAULT, ...(value || {}) };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch { /* storage indisponível */ }
+    return next;
+  }
+
+  function confirmIdentity(name, genderProfile) {
+    const cleanName = String(name || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+    const cleanGender = String(genderProfile || '').trim();
+    if (!cleanName || !cleanGender) return null;
+    return save({ name: cleanName, genderProfile: cleanGender, confirmed: true });
+  }
+
+  function isConfirmed() {
+    const current = load();
+    return !!(current.confirmed && current.name && current.genderProfile);
+  }
+
+  function clear() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ }
+  }
+
+  return { load, save, confirmIdentity, isConfirmed, clear, STORAGE_KEY };
+})();
