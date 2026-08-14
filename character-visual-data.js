@@ -1,107 +1,365 @@
 /* character-visual-data.js — Bites & Baits
- * Catálogo textual da aparência inicial. A aparência é independente
- * do gênero/forma textual e não altera qualquer regra do jogo.
+ * A aparência segue o perfil escolhido na identidade:
+ * feminine, masculine ou neutral (apresentação andrógina).
+ * Nada aqui altera atributos ou regras do jogo.
  */
-const CHARACTER_VISUAL_CATEGORIES = [
-  { key: 'skinTone', labels: { pt: 'Tom de pele', en: 'Skin tone', hu: 'Bőrtónus' }, options: [
-    { value: 'very-light', labels: { pt: 'Pele muito clara', en: 'Very light skin', hu: 'Nagyon világos bőr' } },
-    { value: 'warm-light', labels: { pt: 'Pele clara quente', en: 'Warm light skin', hu: 'Meleg világos bőr' } },
-    { value: 'medium', labels: { pt: 'Pele média', en: 'Medium skin', hu: 'Közepes bőrtónus' } },
-    { value: 'brown', labels: { pt: 'Pele castanha', en: 'Brown skin', hu: 'Barna bőr' } },
-    { value: 'dark', labels: { pt: 'Pele escura', en: 'Dark skin', hu: 'Sötét bőr' } },
-  ] },
-  { key: 'bodyShape', labels: { pt: 'Forma do corpo', en: 'Body shape', hu: 'Testalkat' }, options: [
-    { value: 'compact', labels: { pt: 'Compacto', en: 'Compact', hu: 'Zömök' } },
-    { value: 'slender', labels: { pt: 'Esbelto', en: 'Slender', hu: 'Karcsú' } },
-    { value: 'average', labels: { pt: 'Médio', en: 'Average', hu: 'Átlagos' } },
-    { value: 'broad', labels: { pt: 'Largo', en: 'Broad', hu: 'Széles' } },
-    { value: 'full', labels: { pt: 'Encorpado', en: 'Fuller', hu: 'Testesebb' } },
-  ] },
-  { key: 'height', labels: { pt: 'Altura', en: 'Height', hu: 'Magasság' }, options: [
-    { value: 'short', labels: { pt: 'Baixa', en: 'Short', hu: 'Alacsony' } },
-    { value: 'medium-short', labels: { pt: 'Média-baixa', en: 'Medium-short', hu: 'Közepesen alacsony' } },
-    { value: 'medium', labels: { pt: 'Média', en: 'Medium', hu: 'Közepes' } },
-    { value: 'medium-tall', labels: { pt: 'Média-alta', en: 'Medium-tall', hu: 'Közepesen magas' } },
-    { value: 'tall', labels: { pt: 'Alta', en: 'Tall', hu: 'Magas' } },
-  ] },
-  { key: 'faceShape', labels: { pt: 'Formato do rosto', en: 'Face shape', hu: 'Arcforma' }, options: [
-    { value: 'oval', labels: { pt: 'Oval', en: 'Oval', hu: 'Ovális' } },
-    { value: 'round', labels: { pt: 'Redondo', en: 'Round', hu: 'Kerek' } },
-    { value: 'square', labels: { pt: 'Quadrado', en: 'Square', hu: 'Szögletes' } },
-    { value: 'long', labels: { pt: 'Alongado', en: 'Oblong', hu: 'Hosszúkás' } },
-    { value: 'triangular', labels: { pt: 'Triangular', en: 'Triangular', hu: 'Háromszögletű' } },
-  ] },
-  { key: 'eyeDetails', labels: { pt: 'Olhos e detalhes faciais', en: 'Eyes and facial details', hu: 'Szemek és arcvonások' }, options: [
-    { value: 'open', labels: { pt: 'Olhar aberto', en: 'Open gaze', hu: 'Nyílt tekintet' } },
-    { value: 'soft', labels: { pt: 'Olhar suave', en: 'Soft gaze', hu: 'Szelíd tekintet' } },
-    { value: 'attentive', labels: { pt: 'Olhar atento', en: 'Attentive gaze', hu: 'Figyelmes tekintet' } },
-    { value: 'curious', labels: { pt: 'Olhar curioso', en: 'Curious gaze', hu: 'Kíváncsi tekintet' } },
-    { value: 'calm', labels: { pt: 'Olhar tranquilo', en: 'Calm gaze', hu: 'Nyugodt tekintet' } },
-  ] },
-  { key: 'eyeColor', labels: { pt: 'Cor dos olhos', en: 'Eye color', hu: 'Szemszín' }, options: [
-    { value: 'dark-brown', labels: { pt: 'Castanho escuro', en: 'Dark brown', hu: 'Sötétbarna' } },
-    { value: 'light-brown', labels: { pt: 'Castanho claro', en: 'Light brown', hu: 'Világosbarna' } },
-    { value: 'green', labels: { pt: 'Verde', en: 'Green', hu: 'Zöld' } },
-    { value: 'blue', labels: { pt: 'Azul', en: 'Blue', hu: 'Kék' } },
-    { value: 'gray', labels: { pt: 'Cinza', en: 'Gray', hu: 'Szürke' } },
-  ] },
-  { key: 'hairStyle', labels: { pt: 'Cabelo', en: 'Hair', hu: 'Haj' }, options: [
-    { value: 'short-straight', labels: { pt: 'Curto liso', en: 'Short straight', hu: 'Rövid, egyenes' } },
-    { value: 'short-curly', labels: { pt: 'Curto cacheado', en: 'Short curly', hu: 'Rövid, göndör' } },
-    { value: 'medium-wavy', labels: { pt: 'Médio ondulado', en: 'Medium wavy', hu: 'Középhosszú, hullámos' } },
-    { value: 'long-tied', labels: { pt: 'Longo preso', en: 'Long tied back', hu: 'Hosszú, összefogott' } },
-    { value: 'none', labels: { pt: 'Sem cabelo', en: 'No hair', hu: 'Haj nélkül' } },
-  ] },
-  { key: 'hairColor', labels: { pt: 'Cor do cabelo', en: 'Hair color', hu: 'Hajszín' }, options: [
-    { value: 'black', labels: { pt: 'Preto', en: 'Black', hu: 'Fekete' } },
-    { value: 'dark-brown', labels: { pt: 'Castanho escuro', en: 'Dark brown', hu: 'Sötétbarna' } },
-    { value: 'light-brown', labels: { pt: 'Castanho claro', en: 'Light brown', hu: 'Világosbarna' } },
-    { value: 'blond', labels: { pt: 'Loiro', en: 'Blond', hu: 'Szőke' } },
-    { value: 'red', labels: { pt: 'Ruivo', en: 'Red', hu: 'Vörös' } },
-  ] },
-  { key: 'headCovering', labels: { pt: 'Cobertura de cabeça', en: 'Head covering', hu: 'Fejfedő' }, options: [
-    { value: 'none', labels: { pt: 'Nenhuma cobertura', en: 'No covering', hu: 'Nincs fejfedő' } },
-    { value: 'cap', labels: { pt: 'Boné', en: 'Cap', hu: 'Sapka' } },
-    { value: 'hat', labels: { pt: 'Chapéu', en: 'Hat', hu: 'Kalap' } },
-    { value: 'beanie', labels: { pt: 'Gorro', en: 'Beanie', hu: 'Kötött sapka' } },
-    { value: 'scarf-cultural', labels: { pt: 'Lenço ou cobertura culturalmente apropriada', en: 'Scarf or culturally appropriate covering', hu: 'Sál vagy kulturálisan megfelelő fejfedő' } },
-  ] },
-  { key: 'facialHair', labels: { pt: 'Pelos faciais', en: 'Facial hair', hu: 'Arcszőrzet' }, options: [
-    { value: 'none', labels: { pt: 'Sem pelos faciais', en: 'No facial hair', hu: 'Nincs arcszőrzet' } },
-    { value: 'mustache', labels: { pt: 'Bigode', en: 'Mustache', hu: 'Bajusz' } },
-    { value: 'short-beard', labels: { pt: 'Barba curta', en: 'Short beard', hu: 'Rövid szakáll' } },
-    { value: 'full-beard', labels: { pt: 'Barba cheia', en: 'Full beard', hu: 'Teljes szakáll' } },
-    { value: 'goatee', labels: { pt: 'Cavanhaque', en: 'Goatee', hu: 'Kecskeszakáll' } },
-  ] },
-  { key: 'arrivalOutfit', labels: { pt: 'Roupa de chegada', en: 'Arrival outfit', hu: 'Érkezési öltözet' }, options: [
-    { value: 'light-casual', labels: { pt: 'Casual claro', en: 'Light casual', hu: 'Világos hétköznapi' } },
-    { value: 'dark-casual', labels: { pt: 'Casual escuro', en: 'Dark casual', hu: 'Sötét hétköznapi' } },
-    { value: 'comfortable', labels: { pt: 'Confortável', en: 'Comfortable', hu: 'Kényelmes' } },
-    { value: 'urban', labels: { pt: 'Urbano', en: 'Urban', hu: 'Városi' } },
-    { value: 'practical', labels: { pt: 'Prático', en: 'Practical', hu: 'Praktikus' } },
-  ] },
-  { key: 'fishingOutfit', labels: { pt: 'Roupa de pesca', en: 'Fishing outfit', hu: 'Horgászöltözet' }, options: [
-    { value: 'classic', labels: { pt: 'Pescador clássico', en: 'Classic angler', hu: 'Klasszikus horgász' } },
-    { value: 'river', labels: { pt: 'Rio', en: 'River', hu: 'Folyóparti' } },
-    { value: 'lake', labels: { pt: 'Lago', en: 'Lake', hu: 'Tavi' } },
-    { value: 'rain', labels: { pt: 'Chuva', en: 'Rain', hu: 'Esős időre való' } },
-    { value: 'heavy-work', labels: { pt: 'Trabalho pesado', en: 'Heavy work', hu: 'Nehéz munkához való' } },
-  ] },
-  { key: 'footwear', labels: { pt: 'Calçados', en: 'Footwear', hu: 'Lábbeli' }, options: [
-    { value: 'simple-sneakers', labels: { pt: 'Tênis simples', en: 'Simple sneakers', hu: 'Egyszerű sportcipő' } },
-    { value: 'short-boots', labels: { pt: 'Bota curta', en: 'Short boots', hu: 'Rövid csizma' } },
-    { value: 'high-boots', labels: { pt: 'Bota alta', en: 'High boots', hu: 'Magas szárú csizma' } },
-    { value: 'resistant-sandals', labels: { pt: 'Sandália resistente', en: 'Sturdy sandals', hu: 'Strapabíró szandál' } },
-    { value: 'waterproof', labels: { pt: 'Calçado impermeável', en: 'Waterproof footwear', hu: 'Vízálló lábbeli' } },
-  ] },
-  { key: 'accessories', labels: { pt: 'Acessórios', en: 'Accessories', hu: 'Kiegészítők' }, options: [
-    { value: 'none', labels: { pt: 'Nenhum acessório', en: 'No accessories', hu: 'Nincsenek kiegészítők' } },
-    { value: 'glasses', labels: { pt: 'Óculos', en: 'Glasses', hu: 'Szemüveg' } },
-    { value: 'watch-bracelet', labels: { pt: 'Relógio ou pulseira', en: 'Watch or bracelet', hu: 'Óra vagy karkötő' } },
-    { value: 'necklace', labels: { pt: 'Colar', en: 'Necklace', hu: 'Nyaklánc' } },
-    { value: 'fishing-pendant', labels: { pt: 'Pingente de pesca', en: 'Fishing pendant', hu: 'Horgászmedál' } },
-  ] },
+const CHARACTER_VISUAL_PROFILES = ['feminine', 'masculine', 'neutral'];
+
+function _visualTriple(pt, en, hu) {
+  return { pt, en, hu };
+}
+
+function _visualOptions(categoryKey, labelsByProfile) {
+  const result = {};
+  CHARACTER_VISUAL_PROFILES.forEach(profile => {
+    result[profile] = labelsByProfile[profile].map((labels, index) => ({
+      value: `${profile}-${categoryKey}-${index + 1}`,
+      labels,
+    }));
+  });
+  return result;
+}
+
+function _visualCategory(key, labels, labelsByProfile) {
+  return { key, labels, optionsByProfile: _visualOptions(key, labelsByProfile) };
+}
+
+const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
+  _visualCategory('skinTone', _visualTriple('Tom de pele', 'Skin tone', 'Bőrtónus'), {
+    feminine: [
+      _visualTriple('Pele muito clara', 'Very light skin', 'Nagyon világos bőr'),
+      _visualTriple('Pele clara quente', 'Warm light skin', 'Meleg világos bőr'),
+      _visualTriple('Pele média', 'Medium skin', 'Közepes bőrtónus'),
+      _visualTriple('Pele castanha', 'Brown skin', 'Barna bőr'),
+      _visualTriple('Pele escura', 'Dark skin', 'Sötét bőr'),
+    ],
+    masculine: [
+      _visualTriple('Pele muito clara', 'Very light skin', 'Nagyon világos bőr'),
+      _visualTriple('Pele clara quente', 'Warm light skin', 'Meleg világos bőr'),
+      _visualTriple('Pele média', 'Medium skin', 'Közepes bőrtónus'),
+      _visualTriple('Pele castanha', 'Brown skin', 'Barna bőr'),
+      _visualTriple('Pele escura', 'Dark skin', 'Sötét bőr'),
+    ],
+    neutral: [
+      _visualTriple('Pele muito clara', 'Very light skin', 'Nagyon világos bőr'),
+      _visualTriple('Pele clara quente', 'Warm light skin', 'Meleg világos bőr'),
+      _visualTriple('Pele média', 'Medium skin', 'Közepes bőrtónus'),
+      _visualTriple('Pele castanha', 'Brown skin', 'Barna bőr'),
+      _visualTriple('Pele escura', 'Dark skin', 'Sötét bőr'),
+    ],
+  }),
+  _visualCategory('bodyShape', _visualTriple('Forma do corpo', 'Body shape', 'Testalkat'), {
+    feminine: [
+      _visualTriple('Delicado', 'Delicate', 'Finom testalkatú'),
+      _visualTriple('Esguio', 'Slender', 'Karcsú'),
+      _visualTriple('Médio', 'Average', 'Átlagos'),
+      _visualTriple('Curvilíneo', 'Curvy', 'Kerekded'),
+      _visualTriple('Atlético', 'Athletic', 'Sportos'),
+    ],
+    masculine: [
+      _visualTriple('Compacto', 'Compact', 'Zömök'),
+      _visualTriple('Esbelto', 'Slender', 'Karcsú'),
+      _visualTriple('Médio', 'Average', 'Átlagos'),
+      _visualTriple('Largo', 'Broad', 'Széles'),
+      _visualTriple('Robusto', 'Robust', 'Erőteljes'),
+    ],
+    neutral: [
+      _visualTriple('Suave', 'Soft', 'Lágy'),
+      _visualTriple('Esguio', 'Slender', 'Karcsú'),
+      _visualTriple('Médio', 'Average', 'Átlagos'),
+      _visualTriple('Andrógino', 'Androgynous', 'Androgün'),
+      _visualTriple('Equilibrado', 'Balanced', 'Kiegyensúlyozott'),
+    ],
+  }),
+  _visualCategory('height', _visualTriple('Altura', 'Height', 'Magasság'), {
+    feminine: [
+      _visualTriple('Baixa', 'Short', 'Alacsony'),
+      _visualTriple('Média-baixa', 'Medium-short', 'Közepesen alacsony'),
+      _visualTriple('Média', 'Medium', 'Közepes'),
+      _visualTriple('Média-alta', 'Medium-tall', 'Közepesen magas'),
+      _visualTriple('Alta', 'Tall', 'Magas'),
+    ],
+    masculine: [
+      _visualTriple('Baixa', 'Short', 'Alacsony'),
+      _visualTriple('Média-baixa', 'Medium-short', 'Közepesen alacsony'),
+      _visualTriple('Média', 'Medium', 'Közepes'),
+      _visualTriple('Média-alta', 'Medium-tall', 'Közepesen magas'),
+      _visualTriple('Alta', 'Tall', 'Magas'),
+    ],
+    neutral: [
+      _visualTriple('Baixa', 'Short', 'Alacsony'),
+      _visualTriple('Média-baixa', 'Medium-short', 'Közepesen alacsony'),
+      _visualTriple('Média', 'Medium', 'Közepes'),
+      _visualTriple('Média-alta', 'Medium-tall', 'Közepesen magas'),
+      _visualTriple('Alta', 'Tall', 'Magas'),
+    ],
+  }),
+  _visualCategory('faceShape', _visualTriple('Formato do rosto', 'Face shape', 'Arcforma'), {
+    feminine: [
+      _visualTriple('Oval delicado', 'Soft oval', 'Finom ovális'),
+      _visualTriple('Redondo suave', 'Soft round', 'Lágyan kerek'),
+      _visualTriple('Angular', 'Angular', 'Szögletes'),
+      _visualTriple('Alongado', 'Oblong', 'Hosszúkás'),
+      _visualTriple('Coração', 'Heart-shaped', 'Szív alakú'),
+    ],
+    masculine: [
+      _visualTriple('Oval', 'Oval', 'Ovális'),
+      _visualTriple('Redondo', 'Round', 'Kerek'),
+      _visualTriple('Quadrado', 'Square', 'Szögletes'),
+      _visualTriple('Alongado', 'Oblong', 'Hosszúkás'),
+      _visualTriple('Triangular', 'Triangular', 'Háromszögletű'),
+    ],
+    neutral: [
+      _visualTriple('Oval', 'Oval', 'Ovális'),
+      _visualTriple('Redondo suave', 'Soft round', 'Lágyan kerek'),
+      _visualTriple('Angular suave', 'Soft angular', 'Lágyan szögletes'),
+      _visualTriple('Alongado', 'Oblong', 'Hosszúkás'),
+      _visualTriple('Andrógino', 'Androgynous', 'Androgün'),
+    ],
+  }),
+  _visualCategory('eyeDetails', _visualTriple('Olhos e detalhes faciais', 'Eyes and facial details', 'Szemek és arcvonások'), {
+    feminine: [
+      _visualTriple('Olhar aberto', 'Open gaze', 'Nyílt tekintet'),
+      _visualTriple('Olhar suave', 'Soft gaze', 'Szelíd tekintet'),
+      _visualTriple('Olhar atento', 'Attentive gaze', 'Figyelmes tekintet'),
+      _visualTriple('Olhar expressivo', 'Expressive gaze', 'Kifejező tekintet'),
+      _visualTriple('Olhar curioso', 'Curious gaze', 'Kíváncsi tekintet'),
+    ],
+    masculine: [
+      _visualTriple('Olhar aberto', 'Open gaze', 'Nyílt tekintet'),
+      _visualTriple('Olhar firme', 'Steady gaze', 'Határozott tekintet'),
+      _visualTriple('Olhar atento', 'Attentive gaze', 'Figyelmes tekintet'),
+      _visualTriple('Olhar curioso', 'Curious gaze', 'Kíváncsi tekintet'),
+      _visualTriple('Olhar tranquilo', 'Calm gaze', 'Nyugodt tekintet'),
+    ],
+    neutral: [
+      _visualTriple('Olhar aberto', 'Open gaze', 'Nyílt tekintet'),
+      _visualTriple('Olhar suave', 'Soft gaze', 'Szelíd tekintet'),
+      _visualTriple('Olhar atento', 'Attentive gaze', 'Figyelmes tekintet'),
+      _visualTriple('Olhar curioso', 'Curious gaze', 'Kíváncsi tekintet'),
+      _visualTriple('Olhar tranquilo', 'Calm gaze', 'Nyugodt tekintet'),
+    ],
+  }),
+  _visualCategory('eyeColor', _visualTriple('Cor dos olhos', 'Eye color', 'Szemszín'), {
+    feminine: [
+      _visualTriple('Castanho escuro', 'Dark brown', 'Sötétbarna'),
+      _visualTriple('Castanho claro', 'Light brown', 'Világosbarna'),
+      _visualTriple('Verde', 'Green', 'Zöld'),
+      _visualTriple('Azul', 'Blue', 'Kék'),
+      _visualTriple('Cinza', 'Gray', 'Szürke'),
+    ],
+    masculine: [
+      _visualTriple('Castanho escuro', 'Dark brown', 'Sötétbarna'),
+      _visualTriple('Castanho claro', 'Light brown', 'Világosbarna'),
+      _visualTriple('Verde', 'Green', 'Zöld'),
+      _visualTriple('Azul', 'Blue', 'Kék'),
+      _visualTriple('Cinza', 'Gray', 'Szürke'),
+    ],
+    neutral: [
+      _visualTriple('Castanho escuro', 'Dark brown', 'Sötétbarna'),
+      _visualTriple('Castanho claro', 'Light brown', 'Világosbarna'),
+      _visualTriple('Verde', 'Green', 'Zöld'),
+      _visualTriple('Azul', 'Blue', 'Kék'),
+      _visualTriple('Cinza', 'Gray', 'Szürke'),
+    ],
+  }),
+  _visualCategory('hairStyle', _visualTriple('Cabelo', 'Hair', 'Haj'), {
+    feminine: [
+      _visualTriple('Curto liso', 'Short straight', 'Rövid, egyenes'),
+      _visualTriple('Curto cacheado', 'Short curly', 'Rövid, göndör'),
+      _visualTriple('Médio ondulado', 'Medium wavy', 'Középhosszú, hullámos'),
+      _visualTriple('Longo solto', 'Long and loose', 'Hosszú, kibontott'),
+      _visualTriple('Longo preso', 'Long tied back', 'Hosszú, összefogott'),
+    ],
+    masculine: [
+      _visualTriple('Curto liso', 'Short straight', 'Rövid, egyenes'),
+      _visualTriple('Curto cacheado', 'Short curly', 'Rövid, göndör'),
+      _visualTriple('Médio ondulado', 'Medium wavy', 'Középhosszú, hullámos'),
+      _visualTriple('Longo preso', 'Long tied back', 'Hosszú, összefogott'),
+      _visualTriple('Sem cabelo', 'No hair', 'Haj nélkül'),
+    ],
+    neutral: [
+      _visualTriple('Curto liso', 'Short straight', 'Rövid, egyenes'),
+      _visualTriple('Curto cacheado', 'Short curly', 'Rövid, göndör'),
+      _visualTriple('Médio ondulado', 'Medium wavy', 'Középhosszú, hullámos'),
+      _visualTriple('Longo preso', 'Long tied back', 'Hosszú, összefogott'),
+      _visualTriple('Sem cabelo', 'No hair', 'Haj nélkül'),
+    ],
+  }),
+  _visualCategory('hairColor', _visualTriple('Cor do cabelo', 'Hair color', 'Hajszín'), {
+    feminine: [
+      _visualTriple('Preto', 'Black', 'Fekete'),
+      _visualTriple('Castanho escuro', 'Dark brown', 'Sötétbarna'),
+      _visualTriple('Castanho claro', 'Light brown', 'Világosbarna'),
+      _visualTriple('Loiro', 'Blond', 'Szőke'),
+      _visualTriple('Ruivo', 'Red', 'Vörös'),
+    ],
+    masculine: [
+      _visualTriple('Preto', 'Black', 'Fekete'),
+      _visualTriple('Castanho escuro', 'Dark brown', 'Sötétbarna'),
+      _visualTriple('Castanho claro', 'Light brown', 'Világosbarna'),
+      _visualTriple('Loiro', 'Blond', 'Szőke'),
+      _visualTriple('Ruivo', 'Red', 'Vörös'),
+    ],
+    neutral: [
+      _visualTriple('Preto', 'Black', 'Fekete'),
+      _visualTriple('Castanho escuro', 'Dark brown', 'Sötétbarna'),
+      _visualTriple('Castanho claro', 'Light brown', 'Világosbarna'),
+      _visualTriple('Loiro', 'Blond', 'Szőke'),
+      _visualTriple('Ruivo', 'Red', 'Vörös'),
+    ],
+  }),
+  _visualCategory('headCovering', _visualTriple('Cobertura de cabeça', 'Head covering', 'Fejfedő'), {
+    feminine: [
+      _visualTriple('Nenhuma cobertura', 'No covering', 'Nincs fejfedő'),
+      _visualTriple('Boné', 'Cap', 'Sapka'),
+      _visualTriple('Chapéu', 'Hat', 'Kalap'),
+      _visualTriple('Faixa de cabelo', 'Hair band', 'Hajpánt'),
+      _visualTriple('Lenço', 'Scarf', 'Sál'),
+    ],
+    masculine: [
+      _visualTriple('Nenhuma cobertura', 'No covering', 'Nincs fejfedő'),
+      _visualTriple('Boné', 'Cap', 'Sapka'),
+      _visualTriple('Chapéu', 'Hat', 'Kalap'),
+      _visualTriple('Gorro', 'Beanie', 'Kötött sapka'),
+      _visualTriple('Lenço', 'Scarf', 'Sál'),
+    ],
+    neutral: [
+      _visualTriple('Nenhuma cobertura', 'No covering', 'Nincs fejfedő'),
+      _visualTriple('Boné', 'Cap', 'Sapka'),
+      _visualTriple('Chapéu', 'Hat', 'Kalap'),
+      _visualTriple('Gorro', 'Beanie', 'Kötött sapka'),
+      _visualTriple('Lenço ou cobertura culturalmente apropriada', 'Scarf or culturally appropriate covering', 'Sál vagy kulturálisan megfelelő fejfedő'),
+    ],
+  }),
+  _visualCategory('facialHair', _visualTriple('Pelos faciais', 'Facial hair', 'Arcszőrzet'), {
+    feminine: [
+      _visualTriple('Sem pelos faciais', 'No facial hair', 'Nincs arcszőrzet'),
+      _visualTriple('Penugem suave', 'Soft peach fuzz', 'Finom pihék'),
+      _visualTriple('Sardas', 'Freckles', 'Szeplők'),
+      _visualTriple('Marcas de expressão', 'Expression marks', 'Arcvonások'),
+      _visualTriple('Pele lisa', 'Smooth skin', 'Sima bőr'),
+    ],
+    masculine: [
+      _visualTriple('Sem pelos faciais', 'No facial hair', 'Nincs arcszőrzet'),
+      _visualTriple('Bigode', 'Mustache', 'Bajusz'),
+      _visualTriple('Barba curta', 'Short beard', 'Rövid szakáll'),
+      _visualTriple('Barba cheia', 'Full beard', 'Teljes szakáll'),
+      _visualTriple('Cavanhaque', 'Goatee', 'Kecskeszakáll'),
+    ],
+    neutral: [
+      _visualTriple('Sem pelos faciais', 'No facial hair', 'Nincs arcszőrzet'),
+      _visualTriple('Penugem suave', 'Soft peach fuzz', 'Finom pihék'),
+      _visualTriple('Bigode discreto', 'Subtle mustache', 'Diszkrét bajusz'),
+      _visualTriple('Barba curta', 'Short beard', 'Rövid szakáll'),
+      _visualTriple('Sardas', 'Freckles', 'Szeplők'),
+    ],
+  }),
+  _visualCategory('arrivalOutfit', _visualTriple('Roupa de chegada', 'Arrival outfit', 'Érkezési öltözet'), {
+    feminine: [
+      _visualTriple('Casual claro', 'Light casual', 'Világos hétköznapi'),
+      _visualTriple('Casual escuro', 'Dark casual', 'Sötét hétköznapi'),
+      _visualTriple('Confortável', 'Comfortable', 'Kényelmes'),
+      _visualTriple('Urbano', 'Urban', 'Városi'),
+      _visualTriple('Prático', 'Practical', 'Praktikus'),
+    ],
+    masculine: [
+      _visualTriple('Casual claro', 'Light casual', 'Világos hétköznapi'),
+      _visualTriple('Casual escuro', 'Dark casual', 'Sötét hétköznapi'),
+      _visualTriple('Confortável', 'Comfortable', 'Kényelmes'),
+      _visualTriple('Urbano', 'Urban', 'Városi'),
+      _visualTriple('Prático', 'Practical', 'Praktikus'),
+    ],
+    neutral: [
+      _visualTriple('Casual claro', 'Light casual', 'Világos hétköznapi'),
+      _visualTriple('Casual escuro', 'Dark casual', 'Sötét hétköznapi'),
+      _visualTriple('Confortável', 'Comfortable', 'Kényelmes'),
+      _visualTriple('Urbano', 'Urban', 'Városi'),
+      _visualTriple('Prático', 'Practical', 'Praktikus'),
+    ],
+  }),
+  _visualCategory('fishingOutfit', _visualTriple('Roupa de pesca', 'Fishing outfit', 'Horgászöltözet'), {
+    feminine: [
+      _visualTriple('Pescadora clássica', 'Classic angler', 'Klasszikus horgász'),
+      _visualTriple('Rio', 'River', 'Folyóparti'),
+      _visualTriple('Lago', 'Lake', 'Tavi'),
+      _visualTriple('Chuva', 'Rain', 'Esős időre való'),
+      _visualTriple('Trabalho pesado', 'Heavy work', 'Nehéz munkához való'),
+    ],
+    masculine: [
+      _visualTriple('Pescador clássico', 'Classic angler', 'Klasszikus horgász'),
+      _visualTriple('Rio', 'River', 'Folyóparti'),
+      _visualTriple('Lago', 'Lake', 'Tavi'),
+      _visualTriple('Chuva', 'Rain', 'Esős időre való'),
+      _visualTriple('Trabalho pesado', 'Heavy work', 'Nehéz munkához való'),
+    ],
+    neutral: [
+      _visualTriple('Pessoa pescadora clássica', 'Classic angler', 'Klasszikus horgász'),
+      _visualTriple('Rio', 'River', 'Folyóparti'),
+      _visualTriple('Lago', 'Lake', 'Tavi'),
+      _visualTriple('Chuva', 'Rain', 'Esős időre való'),
+      _visualTriple('Trabalho pesado', 'Heavy work', 'Nehéz munkához való'),
+    ],
+  }),
+  _visualCategory('footwear', _visualTriple('Calçados', 'Footwear', 'Lábbeli'), {
+    feminine: [
+      _visualTriple('Tênis simples', 'Simple sneakers', 'Egyszerű sportcipő'),
+      _visualTriple('Bota curta', 'Short boots', 'Rövid csizma'),
+      _visualTriple('Bota alta', 'High boots', 'Magas szárú csizma'),
+      _visualTriple('Sandália resistente', 'Sturdy sandals', 'Strapabíró szandál'),
+      _visualTriple('Calçado impermeável', 'Waterproof footwear', 'Vízálló lábbeli'),
+    ],
+    masculine: [
+      _visualTriple('Tênis simples', 'Simple sneakers', 'Egyszerű sportcipő'),
+      _visualTriple('Bota curta', 'Short boots', 'Rövid csizma'),
+      _visualTriple('Bota alta', 'High boots', 'Magas szárú csizma'),
+      _visualTriple('Sandália resistente', 'Sturdy sandals', 'Strapabíró szandál'),
+      _visualTriple('Calçado impermeável', 'Waterproof footwear', 'Vízálló lábbeli'),
+    ],
+    neutral: [
+      _visualTriple('Tênis simples', 'Simple sneakers', 'Egyszerű sportcipő'),
+      _visualTriple('Bota curta', 'Short boots', 'Rövid csizma'),
+      _visualTriple('Bota alta', 'High boots', 'Magas szárú csizma'),
+      _visualTriple('Sandália resistente', 'Sturdy sandals', 'Strapabíró szandál'),
+      _visualTriple('Calçado impermeável', 'Waterproof footwear', 'Vízálló lábbeli'),
+    ],
+  }),
+  _visualCategory('accessories', _visualTriple('Acessórios', 'Accessories', 'Kiegészítők'), {
+    feminine: [
+      _visualTriple('Nenhum acessório', 'No accessories', 'Nincsenek kiegészítők'),
+      _visualTriple('Óculos', 'Glasses', 'Szemüveg'),
+      _visualTriple('Relógio ou pulseira', 'Watch or bracelet', 'Óra vagy karkötő'),
+      _visualTriple('Colar', 'Necklace', 'Nyaklánc'),
+      _visualTriple('Pingente de pesca', 'Fishing pendant', 'Horgászmedál'),
+    ],
+    masculine: [
+      _visualTriple('Nenhum acessório', 'No accessories', 'Nincsenek kiegészítők'),
+      _visualTriple('Óculos', 'Glasses', 'Szemüveg'),
+      _visualTriple('Relógio ou pulseira', 'Watch or bracelet', 'Óra vagy karkötő'),
+      _visualTriple('Colar', 'Necklace', 'Nyaklánc'),
+      _visualTriple('Pingente de pesca', 'Fishing pendant', 'Horgászmedál'),
+    ],
+    neutral: [
+      _visualTriple('Nenhum acessório', 'No accessories', 'Nincsenek kiegészítők'),
+      _visualTriple('Óculos', 'Glasses', 'Szemüveg'),
+      _visualTriple('Relógio ou pulseira', 'Watch or bracelet', 'Óra vagy karkötő'),
+      _visualTriple('Colar', 'Necklace', 'Nyaklánc'),
+      _visualTriple('Pingente de pesca', 'Fishing pendant', 'Horgászmedál'),
+    ],
+  }),
 ];
+
+function getCharacterVisualCategories(profile) {
+  const selectedProfile = CHARACTER_VISUAL_PROFILES.includes(profile) ? profile : 'neutral';
+  return CHARACTER_VISUAL_CATEGORY_DEFINITIONS.map(category => ({
+    key: category.key,
+    labels: category.labels,
+    options: category.optionsByProfile[selectedProfile],
+  }));
+}
+
+// Compatibilidade para código/QA que ainda consulta o catálogo sem perfil.
+const CHARACTER_VISUAL_CATEGORIES = getCharacterVisualCategories('neutral');
 
 function characterVisualLabel(item, lang) {
   return (item.labels && (item.labels[lang] || item.labels.pt)) || '';

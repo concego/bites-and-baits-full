@@ -228,8 +228,10 @@ const Game = (() => {
     // ── Menu Principal ─────────────────────────────────────────────────────
     $('btn-story').addEventListener('click', () => {
       gameMode = 'normal';
+      const profile = Character.load().genderProfile;
+      const visualCategories = getCharacterVisualCategories(profile);
       if (!Character.isConfirmed()) openCharacterCreate();
-      else if (!Character.isComplete(CHARACTER_VISUAL_CATEGORIES.map(category => category.key))) openCharacterVisual();
+      else if (!Character.isComplete(visualCategories.map(category => category.key), profile)) openCharacterVisual();
       else showStoryHub();
     });
     ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
@@ -361,13 +363,13 @@ const Game = (() => {
   }
 
   // ── Criação visual da personagem ─────────────────────────────────────────
-  function _visualCategoryByKey(key) {
-    return CHARACTER_VISUAL_CATEGORIES.find(category => category.key === key);
+  function _visualCategories() {
+    return getCharacterVisualCategories(Character.load().genderProfile);
   }
 
   function _readVisualAppearance() {
     const appearance = {};
-    CHARACTER_VISUAL_CATEGORIES.forEach(category => {
+    _visualCategories().forEach(category => {
       const select = $(`character-visual-${category.key}`);
       appearance[category.key] = select ? select.value : '';
     });
@@ -378,7 +380,7 @@ const Game = (() => {
     if (!ui.characterVisualSummary) return;
     const lang = I18n.getLang() || 'pt';
     const appearance = _readVisualAppearance();
-    const parts = CHARACTER_VISUAL_CATEGORIES.map(category => {
+    const parts = _visualCategories().map(category => {
       const option = category.options.find(item => item.value === appearance[category.key]);
       if (!option) return `${characterVisualLabel(category, lang)}: ${I18n.t('character_visual_placeholder')}`;
       return `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`;
@@ -388,11 +390,13 @@ const Game = (() => {
 
   function openCharacterVisual() {
     if (!ui.characterVisualFields) return;
-    const current = Character.load().appearance || {};
+    const current = Character.load();
+    const appearance = current.appearance || {};
+    const categories = getCharacterVisualCategories(current.genderProfile);
     const lang = I18n.getLang() || 'pt';
     ui.characterVisualFields.innerHTML = '';
 
-    CHARACTER_VISUAL_CATEGORIES.forEach(category => {
+    categories.forEach(category => {
       const fieldset = document.createElement('fieldset');
       fieldset.className = 'character-visual-field';
       const legend = document.createElement('legend');
@@ -429,8 +433,10 @@ const Game = (() => {
   }
 
   function _confirmCharacterVisual() {
+    const profile = Character.load().genderProfile;
+    const categories = getCharacterVisualCategories(profile);
     const appearance = _readVisualAppearance();
-    const firstMissing = CHARACTER_VISUAL_CATEGORIES.find(category => !appearance[category.key]);
+    const firstMissing = categories.find(category => !appearance[category.key]);
     if (firstMissing) {
       const missing = $(`character-visual-${firstMissing.key}`);
       missing?.setAttribute('aria-invalid', 'true');
@@ -439,7 +445,7 @@ const Game = (() => {
       speak(I18n.t('character_visual_error'));
       return;
     }
-    Character.saveAppearance(appearance);
+    Character.saveAppearance(appearance, profile);
     speak(I18n.t('character_saved'));
     showStoryHub();
   }

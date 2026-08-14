@@ -8,6 +8,7 @@ const Character = (() => {
     name: '',
     genderProfile: '',
     appearance: {},
+    appearanceProfile: '',
     confirmed: false,
   };
 
@@ -30,7 +31,16 @@ const Character = (() => {
     const cleanName = String(name || '').trim().replace(/\s+/g, ' ').slice(0, 40);
     const cleanGender = String(genderProfile || '').trim();
     if (!cleanName || !cleanGender) return null;
-    return save({ name: cleanName, genderProfile: cleanGender, confirmed: true });
+    const current = load();
+    const profileChanged = !!(current.genderProfile && current.genderProfile !== cleanGender);
+    return save({
+      ...current,
+      name: cleanName,
+      genderProfile: cleanGender,
+      appearance: profileChanged ? {} : current.appearance,
+      appearanceProfile: profileChanged ? '' : current.appearanceProfile,
+      confirmed: true,
+    });
   }
 
   function isConfirmed() {
@@ -38,20 +48,24 @@ const Character = (() => {
     return !!(current.confirmed && current.name && current.genderProfile);
   }
 
-  function saveAppearance(appearance) {
+  function saveAppearance(appearance, profile) {
     const current = load();
     const nextAppearance = { ...(appearance || {}) };
-    return save({ ...current, appearance: nextAppearance });
+    return save({ ...current, appearance: nextAppearance, appearanceProfile: String(profile || '') });
   }
 
-  function hasAppearance(categoryKeys) {
+  function hasAppearance(categoryKeys, profile) {
     const current = load();
     const keys = Array.isArray(categoryKeys) ? categoryKeys : [];
-    return !!(keys.length && keys.every(key => current.appearance && current.appearance[key]));
+    return !!(
+      keys.length &&
+      current.appearanceProfile === String(profile || '') &&
+      keys.every(key => current.appearance && current.appearance[key])
+    );
   }
 
-  function isComplete(categoryKeys) {
-    return isConfirmed() && hasAppearance(categoryKeys);
+  function isComplete(categoryKeys, profile) {
+    return isConfirmed() && hasAppearance(categoryKeys, profile);
   }
 
   function clear() {
