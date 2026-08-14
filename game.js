@@ -157,6 +157,8 @@ const Game = (() => {
       characterFormStatus: $('character-form-status'),
       characterVisualFields: $('character-visual-fields'),
       characterVisualSummary: $('character-visual-summary'),
+      characterAvatarPreview: $('character-avatar-preview'),
+      characterAvatar: $('character-avatar'),
       stateLabel:     $('state-label'),
       tensionCont:    $('tension-container'),
       tensionBar:     $('tension-bar'),
@@ -376,6 +378,15 @@ const Game = (() => {
     return appearance;
   }
 
+  function _renderCharacterAvatar(target, appearanceOverride) {
+    if (!target || typeof CharacterAvatar === 'undefined') return;
+    const current = Character.load();
+    const character = appearanceOverride
+      ? { ...current, appearance: appearanceOverride }
+      : current;
+    CharacterAvatar.render(target, character);
+  }
+
   function _updateVisualSummary() {
     if (!ui.characterVisualSummary) return;
     const lang = I18n.getLang() || 'pt';
@@ -422,12 +433,14 @@ const Game = (() => {
       select.addEventListener('change', () => {
         select.removeAttribute('aria-invalid');
         _updateVisualSummary();
+        _renderCharacterAvatar(ui.characterAvatarPreview, _readVisualAppearance());
       });
       fieldset.appendChild(select);
       ui.characterVisualFields.appendChild(fieldset);
     });
 
     _updateVisualSummary();
+    _renderCharacterAvatar(ui.characterAvatarPreview, _readVisualAppearance());
     showScreen('characterVisual');
     ui.characterVisualFields.querySelector('select')?.focus();
   }
@@ -446,6 +459,7 @@ const Game = (() => {
       return;
     }
     Character.saveAppearance(appearance, profile);
+    _renderCharacterAvatar(ui.characterAvatar, appearance);
     speak(I18n.t('character_saved'));
     showStoryHub();
   }
@@ -745,6 +759,7 @@ const Game = (() => {
 
       // 1. Troca de tela PRIMEIRO — imediato, sem await
       showScreen('game');
+      _renderCharacterAvatar(ui.characterAvatar, null);
 
       // 2. Sensores e áudio: fire-and-forget, nunca bloqueiam
       Sensors.requestPermission().then(ok => {

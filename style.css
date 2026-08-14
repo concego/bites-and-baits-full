@@ -313,15 +313,10 @@ html, body {
   margin-top: -50px;
 }
 
-/* Corpo simples com CSS */
-#fisher::before {
-  content: '🧍';
-  font-size: 48px;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-}
+/* Avatar SVG modular — complemento visual; o resumo textual permanece acessível. */
+#fisher::before { content: none; }
+#character-avatar { position: absolute; left: 50%; bottom: 0; width: 80px; height: 100px; transform: translateX(-50%); pointer-events: none; }
+#character-avatar .character-avatar-svg { display: block; width: 80px; height: 100px; }
 
 #rod {
   position: absolute;
