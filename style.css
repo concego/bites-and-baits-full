@@ -492,6 +492,9 @@ html, body {
   max-width: 420px;
   margin: 0 auto;
   text-align: center;
+  background: rgba(0,0,0,0.62);
+  border-color: rgba(255,255,255,0.55);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.35);
   z-index: 40;
 }
 
