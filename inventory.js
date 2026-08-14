@@ -165,11 +165,19 @@ const Inventory = (() => {
     return _load().length;
   }
 
-  // Capacidade padrão para pesca da margem, quando nenhum barco está equipado.
+  // Capacidade da pesca da margem: vem do cesto equipado.
+  // O fallback mantém saves antigos jogáveis enquanto o equipamento é migrado.
   const DEFAULT_HOLD_CAPACITY = 8;
+  const DEFAULT_BASKET_ID = 'basket_basic';
 
-  /** Retorna a capacidade de carga do barco ativo (ou da pesca da margem). */
+  /** Retorna a capacidade do barco ativo ou do cesto, se estiver na margem. */
   function holdCapacity(boatId = getActiveBoat()) {
+    if (!boatId) {
+      const basketId = getEquip().basket || DEFAULT_BASKET_ID;
+      const basket = (typeof SHOP_CATALOG !== 'undefined')
+        ? SHOP_CATALOG.find(i => i.id === basketId && i.type === 'basket') : null;
+      return basket?.holdCap ?? DEFAULT_HOLD_CAPACITY;
+    }
     const vessel = (typeof VESSELS_CATALOG !== 'undefined')
       ? VESSELS_CATALOG.find(v => v.id === boatId) : null;
     return vessel?.holdCap ?? DEFAULT_HOLD_CAPACITY;
@@ -280,11 +288,12 @@ const Inventory = (() => {
 
   function _loadEquip() {
     const starter = {
-      bait:  'worm',
-      rod:   'rod_basic',
-      line:  'line_mono',
-      hook:  'hook_basic',
-      float: 'float_basic',
+      bait:    'worm',
+      rod:     'rod_basic',
+      line:    'line_mono',
+      hook:    'hook_basic',
+      float:   'float_basic',
+      basket:  'basket_basic',
     };
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_EQUIP));

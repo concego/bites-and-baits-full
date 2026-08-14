@@ -53,85 +53,103 @@ const SHOP_CATALOG = [
     emoji: '🎣', price: 20, qty: 2,  stock: null,
   },
 
+  // ── CESTOS PARA PESCA DA MARGEM ─────────────────────────────────────────
+  // Cestos só limitam a carga quando nenhum barco está ativo.
+  {
+    id: 'basket_basic',      type: 'basket', nameKey: 'shop_name_basket_basic',
+    descKey: 'shop_desc_basket_basic', emoji: '🧺', price: 0,   qty: 1,
+    stock: null, tier: 1, holdCap: 8,
+  },
+  {
+    id: 'basket_reinforced', type: 'basket', nameKey: 'shop_name_basket_reinforced',
+    descKey: 'shop_desc_basket_reinforced', emoji: '🧺', price: 60,  qty: 1,
+    stock: null, tier: 2, holdCap: 12,
+  },
+  {
+    id: 'basket_large',      type: 'basket', nameKey: 'shop_name_basket_large',
+    descKey: 'shop_desc_basket_large', emoji: '🧺', price: 150, qty: 1,
+    stock: null, tier: 3, holdCap: 16,
+  },
+
   // ── VARAS ──────────────────────────────────────────────────────────────
   {
-    id: 'rod_basic',    type: 'rod',  nameKey: 'rod_basic',    descKey: 'shop_desc_rod_basic',
+    id: 'rod_basic',    type: 'rod',  nameKey: 'shop_name_rod_basic',    descKey: 'shop_desc_rod_basic',
     emoji: '🎋', price: 0,   qty: 1, stock: null, tier: 1,
     modifiers: { pullMult: 1.0, snapReduct: 0 },
   },
   {
-    id: 'rod_medium',   type: 'rod',  nameKey: 'rod_medium',   descKey: 'shop_desc_rod_medium',
+    id: 'rod_medium',   type: 'rod',  nameKey: 'shop_name_rod_medium',   descKey: 'shop_desc_rod_medium',
     emoji: '🎋', price: 80,  qty: 1, stock: null, tier: 2,
     modifiers: { pullMult: 1.3, snapReduct: 0.05 },
   },
   {
-    id: 'rod_carbon',   type: 'rod',  nameKey: 'rod_carbon',   descKey: 'shop_desc_rod_carbon',
+    id: 'rod_carbon',   type: 'rod',  nameKey: 'shop_name_rod_carbon',   descKey: 'shop_desc_rod_carbon',
     emoji: '🎋', price: 200, qty: 1, stock: null, tier: 3,
     modifiers: { pullMult: 1.7, snapReduct: 0.10 },
   },
   {
-    id: 'rod_pro',      type: 'rod',  nameKey: 'rod_pro',      descKey: 'shop_desc_rod_pro',
+    id: 'rod_pro',      type: 'rod',  nameKey: 'shop_name_rod_pro',      descKey: 'shop_desc_rod_pro',
     emoji: '🎋', price: 420, qty: 1, stock: null, tier: 4,
     modifiers: { pullMult: 2.1, snapReduct: 0.15 },
   },
   {
-    id: 'rod_master',   type: 'rod',  nameKey: 'rod_master',   descKey: 'shop_desc_rod_master',
+    id: 'rod_master',   type: 'rod',  nameKey: 'shop_name_rod_master',   descKey: 'shop_desc_rod_master',
     emoji: '🎋', price: 800, qty: 1, stock: null, tier: 5,
     modifiers: { pullMult: 2.6, snapReduct: 0.20 },
   },
 
   // ── LINHAS ─────────────────────────────────────────────────────────────
   {
-    id: 'line_mono',    type: 'line', nameKey: 'line_mono',    descKey: 'shop_desc_line_mono',
+    id: 'line_mono',    type: 'line', nameKey: 'shop_name_line_mono',    descKey: 'shop_desc_line_mono',
     emoji: '🧵', price: 0,   qty: 1, stock: null, tier: 1,
     modifiers: { snapReduct: 0 },
   },
   {
-    id: 'line_fluoro',  type: 'line', nameKey: 'line_fluoro',  descKey: 'shop_desc_line_fluoro',
+    id: 'line_fluoro',  type: 'line', nameKey: 'shop_name_line_fluoro',  descKey: 'shop_desc_line_fluoro',
     emoji: '🧵', price: 60,  qty: 1, stock: null, tier: 2,
     modifiers: { snapReduct: 0.10 },
   },
   {
-    id: 'line_braided', type: 'line', nameKey: 'line_braided', descKey: 'shop_desc_line_braided',
+    id: 'line_braided', type: 'line', nameKey: 'shop_name_line_braid', descKey: 'shop_desc_line_braid',
     emoji: '🧵', price: 150, qty: 1, stock: null, tier: 3,
     modifiers: { snapReduct: 0.22 },
   },
   {
-    id: 'line_dyneema', type: 'line', nameKey: 'line_dyneema', descKey: 'shop_desc_line_dyneema',
+    id: 'line_dyneema', type: 'line', nameKey: 'shop_name_line_dyneema', descKey: 'shop_desc_line_dyneema',
     emoji: '🧵', price: 350, qty: 1, stock: null, tier: 4,
     modifiers: { snapReduct: 0.35 },
   },
 
   // ── ANZÓIS ─────────────────────────────────────────────────────────────
   {
-    id: 'hook_basic',   type: 'hook', nameKey: 'hook_basic',   descKey: 'shop_desc_hook_basic',
+    id: 'hook_basic',   type: 'hook', nameKey: 'shop_name_hook_basic',   descKey: 'shop_desc_hook_basic',
     emoji: '🪝', price: 0,  qty: 1, stock: null, tier: 1,
     modifiers: { hookRate: 1.0 },
   },
   {
-    id: 'hook_offset',  type: 'hook', nameKey: 'hook_offset',  descKey: 'shop_desc_hook_offset',
+    id: 'hook_offset',  type: 'hook', nameKey: 'shop_name_hook_circle',  descKey: 'shop_desc_hook_circle',
     emoji: '🪝', price: 40, qty: 1, stock: null, tier: 2,
     modifiers: { hookRate: 1.25 },
   },
   {
-    id: 'hook_treble',  type: 'hook', nameKey: 'hook_treble',  descKey: 'shop_desc_hook_treble',
+    id: 'hook_treble',  type: 'hook', nameKey: 'shop_name_hook_treble',  descKey: 'shop_desc_hook_treble',
     emoji: '🪝', price: 90, qty: 1, stock: null, tier: 3,
     modifiers: { hookRate: 1.55 },
   },
 
   // ── BOIAS ──────────────────────────────────────────────────────────────
   {
-    id: 'float_basic',   type: 'float', nameKey: 'float_basic',   descKey: 'shop_desc_float_basic',
+    id: 'float_basic',   type: 'float', nameKey: 'shop_name_float_basic',   descKey: 'shop_desc_float_basic',
     emoji: '🎈', price: 0,  qty: 1, stock: null, tier: 1,
     modifiers: { biteWindow: 1.0 },
   },
   {
-    id: 'float_sensitive', type: 'float', nameKey: 'float_sensitive', descKey: 'shop_desc_float_sensitive',
+    id: 'float_sensitive', type: 'float', nameKey: 'shop_name_float_sensor', descKey: 'shop_desc_float_sensor',
     emoji: '🎈', price: 50, qty: 1, stock: null, tier: 2,
     modifiers: { biteWindow: 1.4 },
   },
   {
-    id: 'float_pro',     type: 'float', nameKey: 'float_pro',     descKey: 'shop_desc_float_pro',
+    id: 'float_pro',     type: 'float', nameKey: 'shop_name_float_pro',     descKey: 'shop_desc_float_pro',
     emoji: '🎈', price: 130, qty: 1, stock: null, tier: 3,
     modifiers: { biteWindow: 1.9 },
   },

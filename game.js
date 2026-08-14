@@ -1128,13 +1128,28 @@ const Game = (() => {
     if (ui.baitQty)   ui.baitQty.textContent   = `×${qty}`;
   }
 
-  /** Atualiza o indicador acessível de carga do barco. */
+  /** Atualiza o indicador acessível de carga do barco ou do cesto. */
   function refreshHoldHud() {
     if (gameMode !== 'normal') return;
     const used = Inventory.holdUsed();
-    const cap  = Inventory.holdCapacity();
-    if (ui.holdCount) ui.holdCount.textContent = `${used}/${cap}`;
+    const boat = Inventory.getActiveBoat();
+    const cap  = Inventory.holdCapacity(boat);
     const indicator = $('hold-indicator');
+    if (!boat) {
+      const equip = Inventory.getEquip();
+      const basketId = equip.basket || 'basket_basic';
+      const basket = (typeof SHOP_CATALOG !== 'undefined')
+        ? SHOP_CATALOG.find(i => i.id === basketId && i.type === 'basket') : null;
+      const basketName = basket ? I18n.t(basket.nameKey) : I18n.t('shop_name_basket_basic');
+      if (ui.holdCount) ui.holdCount.textContent = `${used}/${cap}`;
+      if (indicator) {
+        indicator.classList.toggle('hold-full', used >= cap);
+        indicator.setAttribute('aria-label',
+          `${I18n.t('hold_title') || 'Carga'}: ${used} de ${cap} peixes. ${basketName}.`);
+      }
+      return;
+    }
+    if (ui.holdCount) ui.holdCount.textContent = `${used}/${cap}`;
     if (indicator) {
       indicator.classList.toggle('hold-full', used >= cap);
       indicator.setAttribute('aria-label', `${I18n.t('hold_title') || 'Carga'}: ${used} de ${cap} peixes`);
@@ -1144,7 +1159,8 @@ const Game = (() => {
   function _announceHoldFull() {
     refreshHoldHud();
     const full = I18n.t('hold_full') || 'Carga cheia!';
-    const hint = I18n.t('hold_full_hint') || 'Venda peixes no inventário ou use um barco com maior capacidade.';
+    const hintKey = Inventory.getActiveBoat() ? 'hold_full_hint' : 'hold_full_hint_basket';
+    const hint = I18n.t(hintKey) || 'Venda peixes ou melhore o cesto.';
     speak(`${full} ${hint}`);
   }
 
@@ -2037,11 +2053,11 @@ const Game = (() => {
     const equipEmpty = $('inv-equip-empty');
     equipList.innerHTML = '';
 
-    const defaults = ['rod_basic','line_mono','hook_basic','float_basic'];
+    const defaults = ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'];
     const allOwned = [...new Set([...defaults, ...owned])];
 
     // Agrupar por slot para exibir o item equipado por slot
-    const SLOT_MAP = { rod:'rod', line:'line', hook:'hook', float:'float' };
+    const SLOT_MAP = { rod:'rod', line:'line', hook:'hook', float:'float', basket:'basket' };
 
     if (allOwned.length === 0) {
       equipEmpty.classList.remove('hidden');
@@ -2142,10 +2158,10 @@ const Game = (() => {
 
   // ── Painel COMPRAR ────────────────────────────────────────────────────────
   function _renderShopBuy() {
-    const typeToTab  = { bait:'baits', rod:'rods', line:'lines', hook:'hooks', float:'floats' };
+    const typeToTab  = { bait:'baits', basket:'baskets', rod:'rods', line:'lines', hook:'hooks', float:'floats' };
     const equip      = Inventory.getEquip();
     const ownedEquip = Inventory.getOwnedEquip();
-    const defaults   = ['rod_basic','line_mono','hook_basic','float_basic'];
+    const defaults   = ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'];
 
     Object.values(typeToTab).forEach(tab => {
       const el = $('buy-tab-' + tab);
@@ -2253,7 +2269,7 @@ const Game = (() => {
     const fbEl   = $('shop-feedback');
     const equip  = Inventory.getEquip();
     const owned  = Inventory.getOwnedEquip();
-    const defaults = ['rod_basic','line_mono','hook_basic','float_basic'];
+    const defaults = ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'];
 
     // ── Peixes (excluir protegidos) ─────────────────────────────────────────
     const fishes    = Inventory.getAll().filter(function(f) { return !Inventory.isProtected(f.id); });
