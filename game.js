@@ -1288,31 +1288,12 @@ const Game = (() => {
 
   /** Atualiza os modelos visuais da vara e da isca na cena de pesca. */
   function _renderFishingGearVisuals() {
-    const equip = Inventory.getEquip();
-    const rod   = getShopItem(equip.rod);
-    const bait  = BAIT_CATALOG[equip.bait];
-    if (ui.rod) {
-      ui.rod.innerHTML = rod?.sprite
-        ? Visuals.iconMarkup(rod.sprite, 'rod-scene-svg') : '';
-    }
-    if (ui.lure) {
-      ui.lure.innerHTML = bait?.sprite
-        ? Visuals.iconMarkup(bait.sprite, 'lure-svg') : '';
-      ui.lure.classList.toggle('lure-svg-active', !!bait?.sprite);
-    }
+    FishingHudView.renderGearVisuals();
   }
 
   /** Atualiza o indicador de isca no HUD do modo normal */
   function refreshBaitHud() {
-    _renderFishingGearVisuals();
-    if (gameMode !== 'normal') return;
-    const equip  = Inventory.getEquip();
-    const baitId = equip.bait;
-    const bait   = BAIT_CATALOG[baitId];
-    const qty    = Inventory.baitCount(baitId);
-    if (ui.baitEmoji) ui.baitEmoji.innerHTML = bait ? Visuals.iconMarkup(bait.sprite, 'bb-svg-icon bb-svg-icon--hud') : '?';
-    if (ui.baitName)  ui.baitName.textContent  = bait ? I18n.t(bait.nameKey) : baitId;
-    if (ui.baitQty)   ui.baitQty.textContent   = `×${qty}`;
+    FishingHudView.refreshBait({ mode: gameMode });
   }
 
   /**
@@ -1337,18 +1318,11 @@ const Game = (() => {
 
   /** Atualiza o indicador acessível de carga do barco ou do cesto. */
   function refreshHoldHud() {
-    if (gameMode !== 'normal') return;
-    const used = Inventory.holdUsed();
-    const boat = _holdCapacityBoat();
-    const cap  = Inventory.holdCapacity(boat);
-    const containerName = _holdContainerName(boat);
-    const indicator = $('hold-indicator');
-    if (ui.holdCount) ui.holdCount.textContent = `${used}/${cap}`;
-    if (indicator) {
-      indicator.classList.toggle('hold-full', used >= cap);
-      indicator.setAttribute('aria-label',
-        `${I18n.t('hold_title') || 'Carga'}: ${used} de ${cap} peixes. ${containerName}.`);
-    }
+    FishingHudView.refreshHold({
+      mode: gameMode,
+      getCapacityBoat: _holdCapacityBoat,
+      getContainerName: _holdContainerName,
+    });
   }
 
   function _announceHoldFull() {
