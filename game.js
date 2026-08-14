@@ -2009,57 +2009,12 @@ const Game = (() => {
     });
 
     // ── Aba Iscas ───────────────────────────────────────────────────────────
-    const baits     = Inventory.getBaits();
-    const baitList  = $('inv-baits-list');
-    const baitEmpty = $('inv-baits-empty');
-    baitList.innerHTML = '';
-    const baitEntries = Object.entries(baits).filter(([,qty]) => qty > 0);
-
-    if (baitEntries.length === 0) {
-      baitEmpty.classList.remove('hidden');
-    } else {
-      baitEmpty.classList.add('hidden');
-      baitEntries.forEach(([baitId, qty]) => {
-        const def       = BAIT_CATALOG[baitId] || { emoji: '?', nameKey: baitId };
-        const isEquipped = equip.bait === baitId;
-        const li = document.createElement('li');
-        li.className = 'inv-item inv-bait-item';
-        li.innerHTML = `
-          <span class="inv-item-icon" aria-hidden="true">${def.sprite ? Visuals.iconMarkup(def.sprite, 'bb-svg-icon bb-svg-icon--small') : def.emoji}</span>
-          <div class="inv-item-info">
-            <span class="inv-item-name">${t(def.nameKey) || def.nameKey}
-              ${isEquipped ? `<span class="inv-badge-equip">${t('inv_equipped_badge')}</span>` : ''}
-            </span>
-            <span class="inv-item-detail">${t('shop_stock_label', qty)}</span>
-          </div>
-          <div class="inv-item-actions">
-            <button class="btn-inv-examine-bait btn-secondary"
-                    data-bait-id="${baitId}"
-                    aria-label="${t('inv_examine')} ${t(def.nameKey) || baitId}">
-              ${t('inv_examine')}
-            </button>
-            <button class="btn-equip-bait ${isEquipped ? 'btn-equipped' : 'btn-secondary'}"
-                    data-bait-id="${baitId}"
-                    aria-pressed="${isEquipped}"
-                    ${isEquipped ? 'disabled' : ''}>
-              ${isEquipped ? t('shop_equipped') : t('shop_equip')}
-            </button>
-          </div>`;
-        li.querySelector('.btn-inv-examine-bait').addEventListener('click', e => {
-          const bid  = e.currentTarget.dataset.baitId;
-          const name = t(BAIT_CATALOG[bid]?.nameKey || bid);
-          const desc = t('shop_desc_' + bid) || '';
-          _invFeedback(fbEl, t('inv_examine_bait', name, desc), true);
-        });
-        if (!isEquipped) {
-          li.querySelector('.btn-equip-bait').addEventListener('click', e => {
-            Inventory.equipBait(e.currentTarget.dataset.baitId);
-            renderInventory();
-          });
-        }
-        baitList.appendChild(li);
-      });
-    }
+    InventoryBaitView.render({
+      translate: t,
+      equippedBait: equip.bait,
+      feedback: _invFeedback.bind(null, fbEl),
+      rerender: renderInventory,
+    });
 
     // ── Aba Equipamentos ────────────────────────────────────────────────────
     const owned      = Inventory.getOwnedEquip();
