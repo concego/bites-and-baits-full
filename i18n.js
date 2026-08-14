@@ -22,7 +22,7 @@ const I18n = (() => {
       character_create_title: 'Crie sua personagem',
       character_create_intro: 'Defina quem você será antes de começar sua nova vida na ilha.',
       character_name_label: 'Nome da personagem',
-      character_name_hint: 'Digite o nome que será usado na história e nos diálogos.'
+      character_name_hint: 'Digite o nome que será usado na história e nos diálogos.',
       character_gender_label: 'Gênero e forma textual',
       character_gender_hint: 'Escolha como a narrativa deve se referir a você.',
       character_gender_placeholder: 'Selecione uma opção',
@@ -33,7 +33,7 @@ const I18n = (() => {
       character_back: 'Voltar',
       character_error_name: 'Digite um nome para continuar.',
       character_error_gender: 'Escolha uma opção de gênero e forma textual para continuar.',
-      character_saved: 'Personagem criada. Você já pode começar sua nova vida na ilha.'
+      character_saved: 'Personagem criada. Você já pode começar sua nova vida na ilha.',
       btn_inventory:    '🎒 Inventário',
       btn_shop:         '🏪 Loja',
       // Hub da História
@@ -512,7 +512,7 @@ const I18n = (() => {
       character_create_title: 'Create your character',
       character_create_intro: 'Define who you will be before beginning your new life on the island.',
       character_name_label: 'Character name',
-      character_name_hint: 'Enter the name that will be used throughout the story and dialogue.'
+      character_name_hint: 'Enter the name that will be used throughout the story and dialogue.',
       character_gender_label: 'Gender and grammatical profile',
       character_gender_hint: 'Choose how the narrative should refer to you.',
       character_gender_placeholder: 'Select an option',
@@ -523,7 +523,7 @@ const I18n = (() => {
       character_back: 'Back',
       character_error_name: 'Enter a name to continue.',
       character_error_gender: 'Choose a gender and grammatical profile to continue.',
-      character_saved: 'Character created. You can now begin your new life on the island.'
+      character_saved: 'Character created. You can now begin your new life on the island.',
       btn_inventory:    '🎒 Inventory',
       btn_shop:         '🏪 Shop',
       // Story Hub
@@ -1093,7 +1093,7 @@ btn_story:        'Történet',
       character_create_title: 'Karakter létrehozása',
       character_create_intro: 'Döntsd el, ki leszel, mielőtt elkezded új életedet a szigeten.',
       character_name_label: 'A karakter neve',
-      character_name_hint: 'Írd be a nevet, amely a történetben és a párbeszédekben szerepel majd.'
+      character_name_hint: 'Írd be a nevet, amely a történetben és a párbeszédekben szerepel majd.',
       character_gender_label: 'Nem és nyelvtani forma',
       character_gender_hint: 'Válaszd ki, hogyan hivatkozzon rád a történet.',
       character_gender_placeholder: 'Válassz egy lehetőséget',
@@ -1104,7 +1104,7 @@ btn_story:        'Történet',
       character_back: 'Vissza',
       character_error_name: 'A folytatáshoz írj be egy nevet.',
       character_error_gender: 'A folytatáshoz válassz nemet és nyelvtani formát.',
-      character_saved: 'A karakter létrejött. Most elkezdheted új életedet a szigeten.'
+      character_saved: 'A karakter létrejött. Most elkezdheted új életedet a szigeten.',
       btn_inventory:    '🎒 Leltár',
       btn_shop:         '🏪 Bolt',
       story_hub_title:    'Történet mód',
