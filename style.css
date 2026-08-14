@@ -1186,6 +1186,33 @@ html, body {
   flex-direction: column;
   gap: 2px;
 }
+/* Equipamentos: texto ocupa a largura livre e ações descem para uma faixa própria. */
+.inv-equip-item {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
+  row-gap: 6px;
+}
+.inv-equip-item .inv-item-icon {
+  grid-column: 1;
+  grid-row: 1;
+}
+.inv-equip-item .inv-item-info {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+}
+.inv-equip-item .inv-item-actions {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-content: flex-start;
+  width: 100%;
+}
+.inv-equip-item .inv-item-name,
+.inv-equip-item .inv-item-detail {
+  overflow-wrap: anywhere;
+}
 .inv-item-name {
   font-size: 0.9rem;
   font-weight: 700;
