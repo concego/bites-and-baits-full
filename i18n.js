@@ -537,7 +537,7 @@ const I18n = (() => {
       character_visual_confirm: 'Confirm appearance',
       character_visual_back: 'Back to identity',
       character_visual_placeholder: 'Select an option',
-      character_visual_error: 'Choose an option in every category to continue.'
+      character_visual_error: 'Choose an option in every category to continue.',
       btn_inventory:    '🎒 Inventory',
       btn_shop:         '🏪 Shop',
       // Story Hub
@@ -1125,7 +1125,7 @@ btn_story:        'Történet',
       character_visual_confirm: 'Megjelenés megerősítése',
       character_visual_back: 'Vissza az identitáshoz',
       character_visual_placeholder: 'Válassz egy lehetőséget',
-      character_visual_error: 'A folytatáshoz válassz egy lehetőséget minden kategóriában.'
+      character_visual_error: 'A folytatáshoz válassz egy lehetőséget minden kategóriában.',
       btn_inventory:    '🎒 Leltár',
       btn_shop:         '🏪 Bolt',
       story_hub_title:    'Történet mód',
