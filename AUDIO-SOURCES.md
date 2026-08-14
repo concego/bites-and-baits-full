@@ -32,11 +32,12 @@ Crédito mantido por cortesia: **You're Perfect Studio / Memoraphile**.
 
 ## Trilhas específicas das telas da cidade — versão de teste
 
-As faixas abaixo são candidatas para a primeira rodada de testes por tela. Todas foram encontradas no OpenGameArt e estão marcadas como CC0 na página de origem:
+As faixas abaixo são candidatas para a rodada atual de testes por tela. Todas foram encontradas no OpenGameArt e estão marcadas como CC0 na página de origem:
 
-- `assets/sounds/house_menu.mp3` — **beary_fishy_menu_screen_by_memoraphile_CC0.mp3**, da coleção *Gone Fishin'*. Fonte: https://opengameart.org/content/gone-fishin
+- `assets/sounds/house_menu.ogg` — **Etirwer (Looped)**, de Kistol. Faixa acústica simples de violão, loopável e descrita como adequada para repetir sem cliques. Fonte: https://lpc.opengameart.org/content/etirwer
 - `assets/sounds/shop_menu.mp3` — **Item Shop.mp3**, de controllerhead. Fonte: https://opengameart.org/content/item-shop
-- `assets/sounds/travel_menu.mp3` — **here.mp3**, de obscure music, descrita na página como uma faixa country com elementos techno/atmosféricos. Fonte: https://opengameart.org/content/out-of-world-trippy-techno-country-track
+- `assets/sounds/travel_menu.ogg` — **caravan.ogg.ogg**, de yd. Faixa minimalista de ambiente desértico, usada aqui como candidata de estrada/viagem. Fonte: https://opengameart.org/content/desert-theme
+- `assets/sounds/vessel_menu.mp3` — **beary_fishy_menu_screen_by_memoraphile_CC0.mp3**, da coleção *Gone Fishin'*. Movida da Casa para o Estaleiro conforme o feedback do teste. Fonte: https://opengameart.org/content/gone-fishin
 
 Estas são faixas de teste, não um compromisso final de estilo. O volume é mantido no mesmo patamar discreto da música geral, e a confirmação final depende da navegação e da avaliação do usuário.
 

@@ -229,7 +229,7 @@ const Game = (() => {
     $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop');  _startCityScreenMusic('shop'); });
     $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); _startCityScreenMusic('city'); });
     $('btn-hub-travel').addEventListener('click', () => { renderTravel(); showScreen('travel'); _startCityScreenMusic('travel'); });
-    $('btn-hub-vessel').addEventListener('click', () => { renderVessel(); showScreen('vessel'); _startCityScreenMusic('city'); });
+    $('btn-hub-vessel').addEventListener('click', () => { renderVessel(); showScreen('vessel'); _startCityScreenMusic('vessel'); });
     $('btn-hub-home').addEventListener('click',   () => { renderHouse();  showScreen('house');  _startCityScreenMusic('house');  });
     $('btn-house-back').addEventListener('click', () => showStoryHub());
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
@@ -1560,6 +1560,7 @@ const Game = (() => {
       house:  () => Audio.startHouseMusic(),
       shop:   () => Audio.startShopMusic(),
       travel: () => Audio.startTravelMusic(),
+      vessel: () => Audio.startVesselMusic(),
     };
     const start = starters[screen] || starters.city;
     Audio.init().then(() => {

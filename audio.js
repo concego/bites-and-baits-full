@@ -35,9 +35,10 @@ const Audio = (() => {
     ambient_lake_birds:  'assets/sounds/ambient_lake_birds.mp3',
     zone_transition:     'assets/sounds/zone_transition.mp3',
     city_menu:           'assets/sounds/city_menu.mp3',
-    house_menu:          'assets/sounds/house_menu.mp3',
+    house_menu:          'assets/sounds/house_menu.ogg',
     shop_menu:           'assets/sounds/shop_menu.mp3',
-    travel_menu:         'assets/sounds/travel_menu.mp3',
+    travel_menu:         'assets/sounds/travel_menu.ogg',
+    vessel_menu:         'assets/sounds/vessel_menu.mp3',
   };
 
   function init() {
@@ -386,6 +387,10 @@ const Audio = (() => {
     startMenuMusic('travel_menu');
   }
 
+  function startVesselMusic() {
+    startMenuMusic('vessel_menu');
+  }
+
   function stopCityMusic() {
     if (cityMusicNode) {
       try { cityMusicNode.stop(); } catch(e) {}
@@ -687,7 +692,7 @@ const Audio = (() => {
 
   return { init, play, stop, startAmbient, stopAmbient, startMenuMusic,
            startCityMusic, startHouseMusic, startShopMusic, startTravelMusic,
-           stopCityMusic,
+           startVesselMusic, stopCityMusic,
            playZoneTransition, vibrate, chomp, snap,
            startReel, setReelMode, stopReel, fishResist,
            fishApproach, fishRetreat, tensionAlert,
