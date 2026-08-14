@@ -684,7 +684,7 @@ const Game = (() => {
 
       case 'CASTING':
         // Modo normal: a capacidade impede iniciar uma pescaria que não poderá ser armazenada.
-        if (gameMode === 'normal' && !Inventory.hasHoldSpace()) {
+        if (gameMode === 'normal' && !Inventory.hasHoldSpace(_holdCapacityBoat())) {
           enterState('IDLE');
           _announceHoldFull();
           break;
@@ -1128,11 +1128,23 @@ const Game = (() => {
     if (ui.baitQty)   ui.baitQty.textContent   = `×${qty}`;
   }
 
+  /**
+   * Define qual carga vale para a pescaria atual.
+   * Mapas de margem usam o cesto, mesmo que o jogador ainda tenha um barco
+   * ativo de uma viagem anterior. Só mapas com barcos permitidos usam o porão.
+   */
+  function _holdCapacityBoat() {
+    if (!activeMap || !Array.isArray(activeMap.allowedBoats) || activeMap.allowedBoats.length === 0) {
+      return null;
+    }
+    return Inventory.getActiveBoat();
+  }
+
   /** Atualiza o indicador acessível de carga do barco ou do cesto. */
   function refreshHoldHud() {
     if (gameMode !== 'normal') return;
     const used = Inventory.holdUsed();
-    const boat = Inventory.getActiveBoat();
+    const boat = _holdCapacityBoat();
     const cap  = Inventory.holdCapacity(boat);
     const indicator = $('hold-indicator');
     if (!boat) {
@@ -1159,7 +1171,7 @@ const Game = (() => {
   function _announceHoldFull() {
     refreshHoldHud();
     const full = I18n.t('hold_full') || 'Carga cheia!';
-    const hintKey = Inventory.getActiveBoat() ? 'hold_full_hint' : 'hold_full_hint_basket';
+    const hintKey = _holdCapacityBoat() ? 'hold_full_hint' : 'hold_full_hint_basket';
     const hint = I18n.t(hintKey) || 'Venda peixes ou melhore o cesto.';
     speak(`${full} ${hint}`);
   }
