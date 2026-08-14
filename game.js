@@ -16,6 +16,7 @@ const Game = (() => {
 
   const $ = id => document.getElementById(id);
   const t = (key, ...args) => I18n.t(key, ...args);
+  const { speak, sayKey, sayCatchKey } = A11yAnnouncer;
 
   let screens = {};
   let ui      = {};
@@ -2868,40 +2869,6 @@ const Game = (() => {
 
   /** Toca som apenas se som estiver ativado nas preferências */
   function _play(id) { if (A11y.get('sound')) Audio.play(id); }
-
-  function speak(text) {
-    if (!ui.announcer) return;
-    ui.announcer.textContent = '';
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      ui.announcer.textContent = text;
-    }));
-  }
-
-  /**
-   * Fala uma chave i18n escolhendo automaticamente a versão detalhada
-   * quando o toggle de narração está ativo.
-   * Uso: sayKey('ready')  →  speak(I18n.t('speak_ready'))  ou  speak(I18n.t('vspeak_ready'))
-   * Para strings com argumentos: sayKey('caught', fishName, sizeDesc, score)
-   */
-  function sayKey(key, ...args) {
-    const verbose = typeof A11y !== 'undefined' && A11y.get('verboseVoice');
-    const fullKey = verbose ? `vspeak_${key}` : `speak_${key}`;
-    speak(I18n.t(fullKey, ...args));
-  }
-
-  // Capturas precisam de uma atualização separada do live region: no PC,
-  // leitores como o NVDA podem ignorar a troca quando ela ocorre junto da
-  // transição visual do peixe para o estado CAUGHT.
-  function sayCatchKey(key, ...args) {
-    const verbose = typeof A11y !== 'undefined' && A11y.get('verboseVoice');
-    const fullKey = verbose ? `vspeak_${key}` : `speak_${key}`;
-    const message = I18n.t(fullKey, ...args);
-    if (!ui.announcer) return;
-    ui.announcer.textContent = '';
-    setTimeout(() => {
-      if (ui.announcer) ui.announcer.textContent = message;
-    }, 80);
-  }
 
   function setTiltHint(arrow, text) {
     ui.tiltArrow.textContent = arrow;
