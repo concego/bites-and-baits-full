@@ -52,7 +52,6 @@ const Game = (() => {
   let activeZone       = null;   // zona ativa no mapa atual
   let _lastCaughtItem  = null;   // último item adicionado ao inventário
   let _lastCatchInfo   = null;   // dados persistidos da última captura
-  let _cityMusicRequest = 0;     // evita iniciar uma trilha antiga após troca rápida de tela
   let tension          = 0;      // 0..100
   let fishPull         = 0;
   let _fishStrengthMult = 1.0;  // multiplicador gradual de força (1.0 = 100%, 0.3 = cansado)
@@ -1696,22 +1695,7 @@ const Game = (() => {
 
   /** Inicia a trilha correspondente à tela da cidade. */
   function _startCityScreenMusic(screen) {
-    const request = ++_cityMusicRequest;
-    if (!A11y.get('sound')) {
-      Audio.stopCityMusic();
-      return;
-    }
-    const starters = {
-      city:   () => Audio.startCityMusic(),
-      house:  () => Audio.startHouseMusic(),
-      shop:   () => Audio.startShopMusic(),
-      travel: () => Audio.startTravelMusic(),
-      vessel: () => Audio.startVesselMusic(),
-    };
-    const start = starters[screen] || starters.city;
-    Audio.init().then(() => {
-      if (request === _cityMusicRequest) start();
-    }).catch(() => {});
+    CityMusic.start(screen);
   }
 
   /** Exibe o hub da cidade */
