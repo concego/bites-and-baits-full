@@ -365,7 +365,9 @@ const Audio = (() => {
     cityMusicGain = ctx.createGain();
     cityMusicNode.buffer = buffers[track];
     cityMusicNode.loop = true;
-    cityMusicGain.gain.value = 0.13;
+    // A faixa de Viajar precisa de um pequeno reforço para equilibrar a
+    // masterização mais baixa da candidata Caravan, sem elevar as demais.
+    cityMusicGain.gain.value = track === 'travel_menu' ? 0.16 : 0.13;
     cityMusicNode.connect(cityMusicGain);
     cityMusicGain.connect(ctx.destination);
     cityMusicNode.start();
