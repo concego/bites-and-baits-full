@@ -221,7 +221,7 @@ const Game = (() => {
       applyI18n();   // atualiza aria-labels dos toggles com idioma correto
       showScreen('start');
     }
-    _lastCatchInfo = _loadLastCatchInfo();
+    _lastCatchInfo = LastCatchStorage.load();
     _refreshLastCatchSummary();
 
     $('btn-lang-pt').addEventListener('click', () => selectLang('pt'));
@@ -756,7 +756,7 @@ const Game = (() => {
     try {
       gameMode = mode;
       // Cada modo mantém seu próprio histórico de última captura.
-      _lastCatchInfo = _loadLastCatchInfo(gameMode);
+      _lastCatchInfo = LastCatchStorage.load(gameMode);
 
       // 1. Troca de tela PRIMEIRO — imediato, sem await
       showScreen('game');
@@ -999,7 +999,7 @@ const Game = (() => {
           mode: gameMode,
           score,
         };
-        _saveLastCatchInfo(_lastCatchInfo);
+        LastCatchStorage.save(_lastCatchInfo);
         _refreshLastCatchSummary();
 
         setLabel(I18n.t('state_caught', fishName(currentFish)));
@@ -1361,35 +1361,6 @@ const Game = (() => {
   }
 
   // ── Última captura ───────────────────────────────────────────────────────
-  const LAST_CATCH_STORAGE_KEYS = {
-    normal: 'bb_last_catch_story',
-    free:   'bb_last_catch_free',
-  };
-  const LEGACY_LAST_CATCH_KEY = 'bb_last_catch';
-
-  function _loadLastCatchInfo(mode = gameMode) {
-    const key = LAST_CATCH_STORAGE_KEYS[mode] || LAST_CATCH_STORAGE_KEYS.normal;
-    try {
-      const saved = localStorage.getItem(key);
-      if (saved) return JSON.parse(saved);
-      // Migra o histórico antigo para História, sem misturá-lo com Pesca Livre.
-      if (mode === 'normal') {
-        const legacy = localStorage.getItem(LEGACY_LAST_CATCH_KEY);
-        if (legacy) {
-          localStorage.setItem(key, legacy);
-          return JSON.parse(legacy);
-        }
-      }
-    } catch { /* segue sem histórico */ }
-    return null;
-  }
-
-  function _saveLastCatchInfo(info) {
-    const key = LAST_CATCH_STORAGE_KEYS[info.mode] || LAST_CATCH_STORAGE_KEYS.normal;
-    try { localStorage.setItem(key, JSON.stringify(info)); }
-    catch { /* noop */ }
-  }
-
   function _refreshLastCatchSummary() {
     const summary = ui.lastCatchSummary;
     if (!summary) return;
