@@ -772,6 +772,8 @@ const Game = (() => {
       }).catch(() => {});
 
       // 3. HUDs
+      const gameScreen = $('screen-game');
+      if (gameScreen) gameScreen.classList.toggle('free-mode', gameMode === 'free');
       const scoreHud = $('score-hud');
       if (scoreHud) scoreHud.classList.toggle('hidden', gameMode !== 'free');
       if (ui.normalHud) ui.normalHud.classList.toggle('hidden', gameMode !== 'normal');
@@ -793,6 +795,8 @@ const Game = (() => {
         const _bk = gameMode === 'free' ? 'btn_back_main' : 'btn_back_hub';
         btnMenuEl.setAttribute('data-i18n', _bk);
         btnMenuEl.textContent = I18n.t(_bk);
+        // O botão deve nascer visível na Pesca Livre; o estado normal o oculta.
+        btnMenuEl.classList.toggle('hidden', gameMode === 'normal');
       }
 
       score = 0;

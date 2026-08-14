@@ -479,6 +479,21 @@ html, body {
   right: 16px;
   z-index: 20;
 }
+/* Na Pesca Livre, o retorno fica em uma faixa própria e continua visível
+   mesmo em telas estreitas ou com a área de status mais alta. */
+#screen-game.free-mode #status-panel {
+  padding-bottom: 78px;
+}
+#screen-game.free-mode #btn-menu {
+  left: 16px;
+  right: 16px;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  width: calc(100% - 32px);
+  max-width: 420px;
+  margin: 0 auto;
+  text-align: center;
+  z-index: 40;
+}
 
 /* Utilitários */
 .hidden { display: none !important; }
