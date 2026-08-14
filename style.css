@@ -308,15 +308,15 @@ html, body {
 /* ===== PESCADOR ===== */
 #fisher {
   position: relative;
-  width: 60px;
-  height: 80px;
-  margin-top: -50px;
+  width: 90px;
+  height: 136px;
+  margin-top: -100px;
 }
 
 /* Avatar SVG modular — complemento visual; o resumo textual permanece acessível. */
 #fisher::before { content: none; }
-#character-avatar { position: absolute; left: 50%; bottom: 0; width: 80px; height: 100px; transform: translateX(-50%); pointer-events: none; }
-#character-avatar .character-avatar-svg { display: block; width: 80px; height: 100px; }
+#character-avatar { position: absolute; left: 50%; bottom: 0; width: 100px; height: 136px; transform: translateX(-50%); pointer-events: none; }
+#character-avatar .character-avatar-svg { display: block; width: 100px; height: 136px; }
 
 #rod {
   position: absolute;
