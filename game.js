@@ -621,6 +621,7 @@ const Game = (() => {
       if (btnContinue) btnContinue.classList.toggle('hidden', gameMode === 'free');
 
       // Indicadores de isca e capacidade da embarcação
+      _renderFishingGearVisuals();
       if (gameMode === 'normal') {
         refreshBaitHud();
         refreshHoldHud();
@@ -1121,14 +1122,31 @@ const Game = (() => {
   // ── Mordida ───────────────────────────────────────────────────────────────
   // ── Equipamento / Iscas ───────────────────────────────────────────────────
 
+  /** Atualiza os modelos visuais da vara e da isca na cena de pesca. */
+  function _renderFishingGearVisuals() {
+    const equip = Inventory.getEquip();
+    const rod   = getShopItem(equip.rod);
+    const bait  = BAIT_CATALOG[equip.bait];
+    if (ui.rod) {
+      ui.rod.innerHTML = rod?.sprite
+        ? Visuals.iconMarkup(rod.sprite, 'rod-scene-svg') : '';
+    }
+    if (ui.lure) {
+      ui.lure.innerHTML = bait?.sprite
+        ? Visuals.iconMarkup(bait.sprite, 'lure-svg') : '';
+      ui.lure.classList.toggle('lure-svg-active', !!bait?.sprite);
+    }
+  }
+
   /** Atualiza o indicador de isca no HUD do modo normal */
   function refreshBaitHud() {
+    _renderFishingGearVisuals();
     if (gameMode !== 'normal') return;
     const equip  = Inventory.getEquip();
     const baitId = equip.bait;
     const bait   = BAIT_CATALOG[baitId];
     const qty    = Inventory.baitCount(baitId);
-    if (ui.baitEmoji) ui.baitEmoji.textContent = bait ? bait.emoji : '?';
+    if (ui.baitEmoji) ui.baitEmoji.innerHTML = bait ? Visuals.iconMarkup(bait.sprite, 'bb-svg-icon bb-svg-icon--hud') : '?';
     if (ui.baitName)  ui.baitName.textContent  = bait ? I18n.t(bait.nameKey) : baitId;
     if (ui.baitQty)   ui.baitQty.textContent   = `×${qty}`;
   }
@@ -1418,7 +1436,7 @@ const Game = (() => {
 
       const label = document.createElement('span');
       label.className = 'bait-item-label';
-      label.textContent = `${bait.emoji} ${I18n.t(bait.nameKey)}`;
+      label.innerHTML = `${bait.sprite ? Visuals.iconMarkup(bait.sprite, 'bb-svg-icon bb-svg-icon--small') : bait.emoji} ${I18n.t(bait.nameKey)}`;
 
       const qtyEl = document.createElement('span');
       qtyEl.className = 'bait-item-qty';
@@ -1695,6 +1713,7 @@ const Game = (() => {
       li.setAttribute('role', 'listitem');
       li.innerHTML =
         `<div class="vessel-card-info">
+           <span class="vessel-card-visual" aria-hidden="true">${Visuals.boatMarkup(v.sprite)}</span>
            <span class="vessel-card-name">${I18n.t('boat_' + v.id) || v.id}</span>
            <span class="vessel-card-desc">${I18n.t(v.descKey) || ''}</span>
            <span class="vessel-card-price">${v.price} 🪙 · Porão: ${v.holdCap} peixes</span>
@@ -1726,6 +1745,7 @@ const Game = (() => {
         li.setAttribute('role', 'listitem');
         li.innerHTML =
           `<div class="vessel-card-info">
+             <span class="vessel-card-visual" aria-hidden="true">${Visuals.boatMarkup(v.sprite)}</span>
              <span class="vessel-card-name">${I18n.t('boat_' + v.id) || v.id}</span>
              <span class="vessel-card-desc">${I18n.t(v.descKey) || ''}</span>
              <span class="vessel-card-price">Porão: ${v.holdCap} peixes</span>
@@ -1806,7 +1826,7 @@ const Game = (() => {
     const vessel = boatId ? VESSELS_CATALOG.find(v => v.id === boatId) : null;
     const icon = vessel?.emoji || (needsBoat ? '🚣' : '');
     ui.boatVisual?.classList.toggle('hidden', !needsBoat);
-    if (ui.boatVisualIcon) ui.boatVisualIcon.textContent = icon;
+    if (ui.boatVisualIcon) ui.boatVisualIcon.innerHTML = vessel?.sprite ? Visuals.boatMarkup(vessel.sprite, 'boat-visual-svg') : icon;
     if (ui.boatContext) {
       ui.boatContext.textContent = needsBoat
         ? `${I18n.t(map.nameKey)} — ${I18n.t('boat_context_in')} ${I18n.t(vessel?.nameKey || ('boat_' + (allowed[0] || 'canoe')))}.`
@@ -1835,6 +1855,8 @@ const Game = (() => {
       const hasRod  = _hasRequiredRod(m, equipped);
       const li = document.createElement('li');
       li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
+      const travelBoatId = _mapBoatId(m, ownedEquip) || _mapAllowedBoats(m)[0] || null;
+      const travelBoat = travelBoatId ? VESSELS_CATALOG.find(v => v.id === travelBoatId) : null;
 
       let actionsHtml;
       if (isActive && !hasBoat) {
@@ -1866,7 +1888,7 @@ const Game = (() => {
         <span class="travel-item-emoji" aria-hidden="true">${m.emoji || '🏞️'}</span>
         <div class="travel-item-info">
           <span class="travel-item-name">${I18n.t(m.nameKey) || m.id}</span>
-          ${_mapAllowedBoats(m).length ? `<span class="travel-item-vessel" aria-hidden="true">🚣</span>` : ''}
+          ${travelBoat?.sprite ? Visuals.boatMarkup(travelBoat.sprite, 'travel-item-vessel-svg') : ''}
         </div>
         <div class="travel-item-actions">${actionsHtml}</div>`;
 
@@ -2129,7 +2151,7 @@ const Game = (() => {
         const li = document.createElement('li');
         li.className = 'inv-item inv-bait-item';
         li.innerHTML = `
-          <span class="inv-item-icon" aria-hidden="true">${def.emoji}</span>
+          <span class="inv-item-icon" aria-hidden="true">${def.sprite ? Visuals.iconMarkup(def.sprite, 'bb-svg-icon bb-svg-icon--small') : def.emoji}</span>
           <div class="inv-item-info">
             <span class="inv-item-name">${t(def.nameKey) || def.nameKey}
               ${isEquipped ? `<span class="inv-badge-equip">${t('inv_equipped_badge')}</span>` : ''}
@@ -2190,7 +2212,7 @@ const Game = (() => {
         const li = document.createElement('li');
         li.className = 'inv-item inv-equip-item';
         li.innerHTML = `
-          <span class="inv-item-icon" aria-hidden="true">${shopItem.emoji}</span>
+          <span class="inv-item-icon" aria-hidden="true">${shopItem.sprite ? Visuals.iconMarkup(shopItem.sprite, 'bb-svg-icon bb-svg-icon--small') : shopItem.emoji}</span>
           <div class="inv-item-info">
             <span class="inv-item-name">${t(shopItem.nameKey) || shopItem.id}
               ${isEquipped ? `<span class="inv-badge-equip">${t('inv_equipped_badge')}</span>` : ''}
@@ -2343,7 +2365,7 @@ const Game = (() => {
 
       card.innerHTML =
         '<div class="shop-card-header">' +
-        '<span class="shop-item-emoji" aria-hidden="true">' + item.emoji + '</span>' +
+        '<span class="shop-item-visual" aria-hidden="true">' + (item.sprite ? Visuals.iconMarkup(item.sprite, 'bb-svg-icon bb-svg-icon--shop') : item.emoji) + '</span>' +
         '<div class="shop-item-meta">' +
         '<span class="shop-item-name">' + (t(item.nameKey) || item.id) + ' ' + tierBadge + '</span>' +
         '<span class="shop-item-desc">' + (t(item.descKey) || '') + '</span>' +
@@ -2495,7 +2517,7 @@ const Game = (() => {
         const li = document.createElement('li');
         li.className = 'inv-item';
         li.innerHTML =
-          '<span class="inv-item-icon" aria-hidden="true">' + def.emoji + '</span>' +
+          '<span class="inv-item-icon" aria-hidden="true">' + (def.sprite ? Visuals.iconMarkup(def.sprite, 'bb-svg-icon bb-svg-icon--small') : def.emoji) + '</span>' +
           '<div class="inv-item-info">' +
           '<span class="inv-item-name">' + baitName + '</span>' +
           '<span class="inv-item-detail">' + t('shop_sell_in_stock', qty) + ' · ' + t('shop_sell_unit', unitSell) + '</span>' +
@@ -2551,7 +2573,7 @@ const Game = (() => {
         const li = document.createElement('li');
         li.className = 'inv-item';
         li.innerHTML =
-          '<span class="inv-item-icon" aria-hidden="true">' + shopItem.emoji + '</span>' +
+          '<span class="inv-item-icon" aria-hidden="true">' + (shopItem.sprite ? Visuals.iconMarkup(shopItem.sprite, 'bb-svg-icon bb-svg-icon--small') : shopItem.emoji) + '</span>' +
           '<div class="inv-item-info">' +
           '<span class="inv-item-name">' + equipName + '</span>' +
           '<span class="inv-item-detail">' + t('shop_sell_unit', sellPrice) + '</span>' +
@@ -2618,6 +2640,7 @@ const Game = (() => {
     equip[itemType] = itemId;
     localStorage.setItem('bb_equip', JSON.stringify(equip));
     _recalcGearMods();
+    _renderFishingGearVisuals();
   }
 
   /** Reconstrói bb_gear_mods a partir dos slots atualmente equipados. */

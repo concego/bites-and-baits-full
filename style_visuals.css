@@ -1,0 +1,15 @@
+/* Arte SVG — camada visual independente dos dados e da acessibilidade. */
+.bb-svg-icon { display: inline-block; width: 56px; height: 56px; flex: 0 0 auto; vertical-align: middle; }
+.bb-svg-icon--small { width: 44px; height: 44px; }
+.bb-svg-icon--shop { width: 52px; height: 52px; }
+.bb-svg-icon--hud { width: 30px; height: 30px; }
+.shop-item-visual { width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 52px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.28)); }
+.boat-visual-svg { width: 100px; height: 50px; display: block; filter: drop-shadow(0 3px 2px rgba(0,0,0,.35)); }
+.vessel-card-visual { display: block; width: 130px; height: 66px; margin-bottom: 4px; }
+.vessel-card-visual .bb-boat-icon { width: 130px; height: 66px; display: block; }
+.travel-item-vessel-svg { width: 48px; height: 24px; display: inline-block; vertical-align: middle; }
+.bait-item-label { display: inline-flex; align-items: center; gap: 6px; }
+#rod { width: 72px; height: 72px; background: none; border-radius: 0; }
+.rod-scene-svg { display: block; width: 72px; height: 72px; }
+.lure-svg { display: block; width: 24px; height: 24px; }
+#lure.lure-svg-active { width: 24px; height: 24px; background: none; box-shadow: none; }

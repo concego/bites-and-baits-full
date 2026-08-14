@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bites & Baits — modelos SVG de embarcações. viewBox 0 0 240 120. -->
+<svg xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .boat-stroke { stroke:#18212b; stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+    .boat-fine { stroke:#18212b; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  </style>
+  <symbol id="boat-canoe" viewBox="0 0 240 120">
+    <path d="M22 72 Q120 104 218 72 Q184 101 120 104 Q56 101 22 72Z" fill="#a96735" class="boat-stroke"/>
+    <path d="M38 70 Q120 88 202 70" fill="none" class="boat-fine"/>
+    <path d="M74 61H166M91 58V76M149 58V76" class="boat-fine" fill="none"/>
+    <path d="M120 58V21M120 22L91 60M120 22L149 60" class="boat-stroke" fill="none"/>
+  </symbol>
+  <symbol id="boat-barco-aluminio" viewBox="0 0 240 120">
+    <path d="M20 67 H213 L188 94 H61Z" fill="#b9c7d1" class="boat-stroke"/>
+    <path d="M50 67 L63 43 H149 L174 67" fill="#dce8ec" class="boat-stroke"/>
+    <path d="M72 44V67M140 44V67M63 54H153" class="boat-fine" fill="none"/>
+    <path d="M90 43V26H145V43" fill="#647887" class="boat-stroke"/>
+    <path d="M24 99 Q120 110 216 99" fill="none" stroke="#4c9fc4" stroke-width="5"/>
+  </symbol>
+  <symbol id="boat-lancha" viewBox="0 0 240 120">
+    <path d="M18 69 H213 Q197 96 151 99 H55Z" fill="#d85d54" class="boat-stroke"/>
+    <path d="M57 68 L76 35 H159 L183 68" fill="#f5f7f8" class="boat-stroke"/>
+    <path d="M77 36V67M157 36V67M77 49H160" class="boat-fine" fill="none"/>
+    <path d="M33 101 Q120 113 217 100" fill="none" stroke="#4c9fc4" stroke-width="5"/>
+    <path d="M191 72V54" class="boat-stroke" fill="none"/>
+  </symbol>
+  <symbol id="boat-veleiro" viewBox="0 0 240 120">
+    <path d="M18 76 H218 Q190 98 120 100 Q50 98 18 76Z" fill="#4f9271" class="boat-stroke"/>
+    <path d="M120 76V16M120 18L61 73H120Z" fill="#f5f7f8" class="boat-stroke"/>
+    <path d="M123 21L178 72H123Z" fill="#f2c84b" class="boat-stroke"/>
+    <path d="M31 103 Q120 112 211 103" fill="none" stroke="#4c9fc4" stroke-width="5"/>
+  </symbol>
+  <symbol id="boat-iate" viewBox="0 0 240 120">
+    <path d="M15 69 H224 Q203 98 120 100 Q43 98 15 69Z" fill="#f5f7f8" class="boat-stroke"/>
+    <path d="M51 69 L70 39 H174 L196 69" fill="#dce8ec" class="boat-stroke"/>
+    <path d="M71 40V69M173 40V69M73 52H178" class="boat-fine" fill="none"/>
+    <path d="M32 103 Q120 113 211 103" fill="none" stroke="#4c9fc4" stroke-width="5"/>
+    <path d="M92 39V28H154V39" fill="#d85d54" class="boat-stroke"/>
+  </symbol>
+  <symbol id="boat-navio-pesca" viewBox="0 0 240 120">
+    <path d="M14 70 H226 Q200 101 119 103 Q41 101 14 70Z" fill="#647887" class="boat-stroke"/>
+    <path d="M46 70V43H169V70M169 43H192V70" fill="#dce8ec" class="boat-stroke"/>
+    <path d="M67 43V25H151V43M82 25V15M138 25V15" fill="#d85d54" class="boat-stroke"/>
+    <path d="M88 25H141M60 55H177" class="boat-fine" fill="none"/>
+    <path d="M28 106 Q120 115 214 106" fill="none" stroke="#4c9fc4" stroke-width="6"/>
+    <path d="M191 43V21M191 22L211 34" class="boat-stroke" fill="none"/>
+  </symbol>
+</svg>

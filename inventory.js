@@ -27,13 +27,13 @@
 
 /** Catálogo de iscas — nameKey mapeado no i18n */
 const BAIT_CATALOG = {
-  worm:      { id: 'worm',      nameKey: 'bait_worm',      emoji: '🪱' },
-  cricket:   { id: 'cricket',   nameKey: 'bait_cricket',   emoji: '🦗' },
-  fly:       { id: 'fly',       nameKey: 'bait_fly',       emoji: '🪰' },
-  spoon:     { id: 'spoon',     nameKey: 'bait_spoon',     emoji: '🥄' },
-  live_bait: { id: 'live_bait', nameKey: 'bait_live_bait', emoji: '🐟' },
-  shrimp:    { id: 'shrimp',    nameKey: 'bait_shrimp',    emoji: '🦐' },
-  jig:       { id: 'jig',       nameKey: 'bait_jig',       emoji: '🎣' },
+  worm:      { id: 'worm',      nameKey: 'bait_worm',      emoji: '🪱', sprite: 'gear-bait-worm' },
+  cricket:   { id: 'cricket',   nameKey: 'bait_cricket',   emoji: '🦗', sprite: 'gear-bait-cricket' },
+  fly:       { id: 'fly',       nameKey: 'bait_fly',       emoji: '🪰', sprite: 'gear-bait-fly' },
+  spoon:     { id: 'spoon',     nameKey: 'bait_spoon',     emoji: '🥄', sprite: 'gear-bait-spoon' },
+  live_bait: { id: 'live_bait', nameKey: 'bait_live_bait', emoji: '🐟', sprite: 'gear-bait-live-bait' },
+  shrimp:    { id: 'shrimp',    nameKey: 'bait_shrimp',    emoji: '🦐', sprite: 'gear-bait-shrimp' },
+  jig:       { id: 'jig',       nameKey: 'bait_jig',       emoji: '🎣', sprite: 'gear-bait-jig' },
 };
 
 const Inventory = (() => {
