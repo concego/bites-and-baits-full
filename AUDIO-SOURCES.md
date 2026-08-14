@@ -30,6 +30,16 @@ A faixa foi escolhida por ser instrumental, loopável e marcada com country, blu
 Licença usada: **CC0 / Public Domain**. A página também lista CC-BY 4.0 e OGA-BY 3.0 como opções de licença.
 Crédito mantido por cortesia: **You're Perfect Studio / Memoraphile**.
 
+## Trilhas específicas das telas da cidade — versão de teste
+
+As faixas abaixo são candidatas para a primeira rodada de testes por tela. Todas foram encontradas no OpenGameArt e estão marcadas como CC0 na página de origem:
+
+- `assets/sounds/house_menu.mp3` — **beary_fishy_menu_screen_by_memoraphile_CC0.mp3**, da coleção *Gone Fishin'*. Fonte: https://opengameart.org/content/gone-fishin
+- `assets/sounds/shop_menu.mp3` — **Item Shop.mp3**, de controllerhead. Fonte: https://opengameart.org/content/item-shop
+- `assets/sounds/travel_menu.mp3` — **here.mp3**, de obscure music, descrita na página como uma faixa country com elementos techno/atmosféricos. Fonte: https://opengameart.org/content/out-of-world-trippy-techno-country-track
+
+Estas são faixas de teste, não um compromisso final de estilo. O volume é mantido no mesmo patamar discreto da música geral, e a confirmação final depende da navegação e da avaliação do usuário.
+
 ## Uso no jogo
 
 - Margem do Rio Doce: ambiente de rio com pássaros, mixado com uma camada discreta da correnteza do Rio Doce (volume reduzido).

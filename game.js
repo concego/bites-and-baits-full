@@ -51,6 +51,7 @@ const Game = (() => {
   let activeZone       = null;   // zona ativa no mapa atual
   let _lastCaughtItem  = null;   // último item adicionado ao inventário
   let _lastCatchInfo   = null;   // dados persistidos da última captura
+  let _cityMusicRequest = 0;     // evita iniciar uma trilha antiga após troca rápida de tela
   let tension          = 0;      // 0..100
   let fishPull         = 0;
   let _fishStrengthMult = 1.0;  // multiplicador gradual de força (1.0 = 100%, 0.3 = cansado)
@@ -225,11 +226,11 @@ const Game = (() => {
 
     // ── Hub da História ────────────────────────────────────────────────────
     // Hub da cidade
-    $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop'); });
-    $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); });
-    $('btn-hub-travel').addEventListener('click', () => { renderTravel(); showScreen('travel'); });
-    $('btn-hub-vessel').addEventListener('click', () => { renderVessel(); showScreen('vessel'); });
-    $('btn-hub-home').addEventListener('click',   () => { renderHouse();  showScreen('house');  });
+    $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop');  _startCityScreenMusic('shop'); });
+    $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); _startCityScreenMusic('city'); });
+    $('btn-hub-travel').addEventListener('click', () => { renderTravel(); showScreen('travel'); _startCityScreenMusic('travel'); });
+    $('btn-hub-vessel').addEventListener('click', () => { renderVessel(); showScreen('vessel'); _startCityScreenMusic('city'); });
+    $('btn-hub-home').addEventListener('click',   () => { renderHouse();  showScreen('house');  _startCityScreenMusic('house');  });
     $('btn-house-back').addEventListener('click', () => showStoryHub());
     $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
     // Tela de viagem
@@ -1547,14 +1548,31 @@ const Game = (() => {
     }
   }
 
+  /** Inicia a trilha correspondente à tela da cidade. */
+  function _startCityScreenMusic(screen) {
+    const request = ++_cityMusicRequest;
+    if (!A11y.get('sound')) {
+      Audio.stopCityMusic();
+      return;
+    }
+    const starters = {
+      city:   () => Audio.startCityMusic(),
+      house:  () => Audio.startHouseMusic(),
+      shop:   () => Audio.startShopMusic(),
+      travel: () => Audio.startTravelMusic(),
+    };
+    const start = starters[screen] || starters.city;
+    Audio.init().then(() => {
+      if (request === _cityMusicRequest) start();
+    }).catch(() => {});
+  }
+
   /** Exibe o hub da cidade */
   function showStoryHub() {
     _refreshHubHUD();
     Audio.stopAmbient();
     showScreen('storyHub');
-    if (A11y.get('sound')) {
-      Audio.init().then(() => Audio.startCityMusic()).catch(() => {});
-    }
+    _startCityScreenMusic('city');
   }
 
   /** Salva o mapa ativo e atualiza o estado interno */
@@ -2623,6 +2641,11 @@ const Game = (() => {
       s.classList.remove('active');
       s.setAttribute('inert', '');
     });
+
+    // A música de menu só existe nas telas da cidade. Ao sair delas,
+    // interrompe a trilha para não vazar para pesca, instruções ou opções.
+    const cityMusicScreens = ['storyHub', 'house', 'shop', 'travel', 'inventory', 'vessel'];
+    if (!cityMusicScreens.includes(name)) Audio.stopCityMusic();
 
     // Barra inferior só fica visível dentro da tela de jogo (modo normal)
     // Fora do jogo, garante que não intercepta cliques em nenhuma outra tela

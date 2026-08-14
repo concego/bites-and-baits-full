@@ -35,6 +35,9 @@ const Audio = (() => {
     ambient_lake_birds:  'assets/sounds/ambient_lake_birds.mp3',
     zone_transition:     'assets/sounds/zone_transition.mp3',
     city_menu:           'assets/sounds/city_menu.mp3',
+    house_menu:          'assets/sounds/house_menu.mp3',
+    shop_menu:           'assets/sounds/shop_menu.mp3',
+    travel_menu:         'assets/sounds/travel_menu.mp3',
   };
 
   function init() {
@@ -350,17 +353,37 @@ const Audio = (() => {
     ambientKey = null;
   }
 
-  function startCityMusic() {
-    if (!ctx || cityMusicNode || !buffers.city_menu) return;
+  function startMenuMusic(track = 'city_menu') {
+    if (!ctx || !buffers[track]) return;
     if (ctx.state === 'suspended') ctx.resume();
+
+    // Só uma trilha de menu pode tocar por vez. Isso evita sobreposição
+    // ao trocar rapidamente entre os ícones da cidade.
+    stopCityMusic();
     cityMusicNode = ctx.createBufferSource();
     cityMusicGain = ctx.createGain();
-    cityMusicNode.buffer = buffers.city_menu;
+    cityMusicNode.buffer = buffers[track];
     cityMusicNode.loop = true;
     cityMusicGain.gain.value = 0.13;
     cityMusicNode.connect(cityMusicGain);
     cityMusicGain.connect(ctx.destination);
     cityMusicNode.start();
+  }
+
+  function startCityMusic() {
+    startMenuMusic('city_menu');
+  }
+
+  function startHouseMusic() {
+    startMenuMusic('house_menu');
+  }
+
+  function startShopMusic() {
+    startMenuMusic('shop_menu');
+  }
+
+  function startTravelMusic() {
+    startMenuMusic('travel_menu');
   }
 
   function stopCityMusic() {
@@ -662,7 +685,9 @@ const Audio = (() => {
   function chomp() { _chomp(); }
   function snap()  { _snap(); }
 
-  return { init, play, stop, startAmbient, stopAmbient, startCityMusic, stopCityMusic,
+  return { init, play, stop, startAmbient, stopAmbient, startMenuMusic,
+           startCityMusic, startHouseMusic, startShopMusic, startTravelMusic,
+           stopCityMusic,
            playZoneTransition, vibrate, chomp, snap,
            startReel, setReelMode, stopReel, fishResist,
            fishApproach, fishRetreat, tensionAlert,
