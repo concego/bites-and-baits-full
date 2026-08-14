@@ -37,6 +37,8 @@ const Game = (() => {
         _updateToggleBtn(btn, A11y.get(btn.dataset.pref));
       });
     }
+    const holdButton = $('btn-bar-hold');
+    if (holdButton) holdButton.setAttribute('aria-label', I18n.t('bar_hold'));
   }
 
   // ── Estado global ─────────────────────────────────────────────────────────
@@ -279,6 +281,8 @@ const Game = (() => {
 
     // ── Barra inferior (modo história) ────────────────────────────────────
     $('btn-bar-equip').addEventListener('click', () => openEquipPanel());
+    $('btn-bar-hold').addEventListener('click', () => openHoldPanel());
+    $('btn-hold-close').addEventListener('click', () => closeHoldPanel());
     $('btn-bar-zone')?.addEventListener('click', () => openZoneModal());
     $('btn-zone-modal-back')?.addEventListener('click', () => closeZoneModal());
     $('btn-bar-hub').addEventListener('click', () => {
@@ -1140,31 +1144,27 @@ const Game = (() => {
     return Inventory.getActiveBoat();
   }
 
+  function _holdContainerName(boat = _holdCapacityBoat()) {
+    if (boat) return I18n.t('boat_' + boat) || boat;
+    const basketId = Inventory.getEquip().basket || 'basket_basic';
+    const basket = (typeof SHOP_CATALOG !== 'undefined')
+      ? SHOP_CATALOG.find(i => i.id === basketId && i.type === 'basket') : null;
+    return basket ? I18n.t(basket.nameKey) : I18n.t('shop_name_basket_basic');
+  }
+
   /** Atualiza o indicador acessível de carga do barco ou do cesto. */
   function refreshHoldHud() {
     if (gameMode !== 'normal') return;
     const used = Inventory.holdUsed();
     const boat = _holdCapacityBoat();
     const cap  = Inventory.holdCapacity(boat);
+    const containerName = _holdContainerName(boat);
     const indicator = $('hold-indicator');
-    if (!boat) {
-      const equip = Inventory.getEquip();
-      const basketId = equip.basket || 'basket_basic';
-      const basket = (typeof SHOP_CATALOG !== 'undefined')
-        ? SHOP_CATALOG.find(i => i.id === basketId && i.type === 'basket') : null;
-      const basketName = basket ? I18n.t(basket.nameKey) : I18n.t('shop_name_basket_basic');
-      if (ui.holdCount) ui.holdCount.textContent = `${used}/${cap}`;
-      if (indicator) {
-        indicator.classList.toggle('hold-full', used >= cap);
-        indicator.setAttribute('aria-label',
-          `${I18n.t('hold_title') || 'Carga'}: ${used} de ${cap} peixes. ${basketName}.`);
-      }
-      return;
-    }
     if (ui.holdCount) ui.holdCount.textContent = `${used}/${cap}`;
     if (indicator) {
       indicator.classList.toggle('hold-full', used >= cap);
-      indicator.setAttribute('aria-label', `${I18n.t('hold_title') || 'Carga'}: ${used} de ${cap} peixes`);
+      indicator.setAttribute('aria-label',
+        `${I18n.t('hold_title') || 'Carga'}: ${used} de ${cap} peixes. ${containerName}.`);
     }
   }
 
@@ -1297,6 +1297,93 @@ const Game = (() => {
     // Retorna foco ao botão de equipamento na barra inferior
     const target = $('btn-bar-equip') || $('btn-menu');
     if (target) target.focus();
+  }
+
+  /** Abre a carga durante a pescaria, sem sair da tela de jogo. */
+  function openHoldPanel() {
+    if (gameMode !== 'normal' || !['IDLE', 'CAUGHT'].includes(state)) return;
+    renderHoldPanel();
+    const panel = $('hold-panel');
+    panel?.classList.remove('hidden');
+    const firstAction = panel?.querySelector('.hold-release-btn:not([disabled])') || $('btn-hold-close');
+    if (firstAction) firstAction.focus();
+  }
+
+  function closeHoldPanel() {
+    $('hold-panel')?.classList.add('hidden');
+    const target = $('btn-bar-hold') || $('btn-bar-equip') || $('btn-menu');
+    if (target) target.focus();
+  }
+
+  /** Renderiza a carga ativa e permite liberar peixes não protegidos. */
+  function renderHoldPanel() {
+    const list = $('hold-fish-list');
+    const summary = $('hold-panel-summary');
+    if (!list || !summary) return;
+
+    const boat = _holdCapacityBoat();
+    const used = Inventory.holdUsed();
+    const cap = Inventory.holdCapacity(boat);
+    const containerName = _holdContainerName(boat);
+    summary.textContent = `${I18n.t('hold_title') || 'Carga'}: ${used} de ${cap} peixes — ${containerName}.`;
+    list.innerHTML = '';
+
+    const fishes = Inventory.getAll();
+    if (fishes.length === 0) {
+      const empty = document.createElement('li');
+      empty.className = 'inv-item hold-empty';
+      empty.textContent = I18n.t('hold_empty') || 'Nenhum peixe na carga.';
+      list.appendChild(empty);
+      return;
+    }
+
+    fishes.forEach(fish => {
+      const name = I18n.t(fish.nameKey) || fish.nameKey || fish.fishId;
+      const protectedFish = Inventory.isProtected(fish.id);
+      const li = document.createElement('li');
+      li.className = 'inv-item hold-fish-item';
+
+      const info = document.createElement('div');
+      info.className = 'inv-item-info';
+      const nameEl = document.createElement('span');
+      nameEl.className = 'inv-item-name';
+      nameEl.textContent = name;
+      const detail = document.createElement('span');
+      detail.className = 'inv-item-detail';
+      detail.textContent = I18n.t('hold_fish_detail', fish.weight.toFixed(2), fish.value);
+      info.append(nameEl, detail);
+
+      const actions = document.createElement('div');
+      actions.className = 'inv-item-actions';
+      const button = document.createElement('button');
+      button.className = 'btn-secondary hold-release-btn';
+      button.textContent = protectedFish
+        ? (I18n.t('hold_protected') || '🔒 Protegido')
+        : (I18n.t('hold_release') || 'Soltar');
+      button.setAttribute('aria-label', protectedFish
+        ? `${name}, ${I18n.t('hold_protected') || 'protegido'}`
+        : `${I18n.t('hold_release') || 'Soltar'} ${name}`);
+      button.disabled = protectedFish;
+      button.addEventListener('click', () => {
+        if (protectedFish) return;
+        const prompt = I18n.t('hold_release_confirm', name) || `Soltar ${name}?`;
+        if (!window.confirm(prompt)) return;
+        if (!Inventory.removeItem(fish.id)) {
+          speak(I18n.t('hold_release_failed') || 'Não foi possível soltar este peixe.');
+          return;
+        }
+        const nextUsed = Inventory.holdUsed();
+        refreshHoldHud();
+        renderHoldPanel();
+        const status = I18n.t('hold_release_done', name, nextUsed, cap)
+          || `${name} solto. Carga: ${nextUsed} de ${cap}.`;
+        speak(status);
+        $('hold-panel-summary')?.setAttribute('aria-label', status);
+      });
+      actions.appendChild(button);
+      li.append(info, actions);
+      list.appendChild(li);
+    });
   }
 
   /** Alterna entre a vista de categorias e a de iscas */

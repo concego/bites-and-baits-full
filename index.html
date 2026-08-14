@@ -603,6 +603,10 @@
         <span class="bar-icon" aria-hidden="true">⚙️</span>
         <span class="bar-label" data-i18n="bar_equip"></span>
       </button>
+      <button id="btn-bar-hold" class="bar-btn" aria-label="Abrir carga">
+        <span class="bar-icon" aria-hidden="true">📦</span>
+        <span class="bar-label" data-i18n="bar_hold"></span>
+      </button>
       <button id="btn-bar-zone" class="bar-btn hidden" aria-label="Mudar zona de pesca">
         <span class="bar-icon" aria-hidden="true">🎣</span>
         <span class="bar-label" data-i18n="bar_zone"></span>
@@ -641,6 +645,18 @@
           </ul>
         </div>
 
+      </div>
+    </div>
+
+    <!-- Painel de Carga — consulta e liberação de peixes durante a pescaria -->
+    <div id="hold-panel" class="equip-panel hidden" role="dialog"
+         aria-modal="true" aria-labelledby="hold-heading" aria-describedby="hold-panel-summary">
+      <div class="equip-dialog hold-dialog">
+        <h2 id="hold-heading" data-i18n="hold_panel_title"></h2>
+        <p id="hold-panel-summary" class="hold-panel-summary" aria-live="polite"></p>
+        <p class="hold-panel-hint" data-i18n="hold_panel_hint"></p>
+        <ul id="hold-fish-list" class="inv-list hold-fish-list" role="list"></ul>
+        <button id="btn-hold-close" class="btn-secondary" data-i18n="hold_panel_close"></button>
       </div>
     </div>
 

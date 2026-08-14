@@ -736,8 +736,37 @@ html, body {
   margin-bottom: 10px;
   color: var(--accent);
 }
+.hold-dialog {
+  max-width: 460px;
+}
+.hold-panel-summary {
+  margin: 0;
+  color: var(--yellow);
+  font-weight: 700;
+}
+.hold-panel-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.75);
+}
+.hold-fish-list {
+  max-height: 45vh;
+  overflow-y: auto;
+}
+.hold-fish-item .btn-secondary {
+  white-space: nowrap;
+}
+.hold-fish-item .btn-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.hold-empty {
+  justify-content: center;
+  color: rgba(255,255,255,0.75);
+}
 
-.last-catch-list {
+.last-catch-list { 
   display: flex;
   flex-direction: column;
   gap: 10px;
