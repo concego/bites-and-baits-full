@@ -4,8 +4,8 @@
  */
 const Visuals = (() => {
   const files = {
-    gear: 'assets/art/gear-symbols.svg',
-    boat: 'assets/art/boat-symbols.svg',
+    gear: 'assets/art/gear-symbols.svg?v=c303350',
+    boat: 'assets/art/boat-symbols.svg?v=6deb4aa',
   };
 
   function fileFor(sprite) {
