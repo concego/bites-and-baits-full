@@ -1,49 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Bites & Baits — modelos SVG de embarcações. viewBox 0 0 240 120. -->
+<!-- Bites & Baits — embarcações SVG locais. Arte visual separada de dados e gameplay. -->
 <svg xmlns="http://www.w3.org/2000/svg">
   <style>
     .boat-stroke { stroke:#18212b; stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
     .boat-fine { stroke:#18212b; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .boat-highlight { stroke:#f5f7f8; stroke-width:2; stroke-linecap:round; fill:none; opacity:.7; }
+    .water-line { stroke:#4c9fc4; stroke-width:5; stroke-linecap:round; fill:none; }
   </style>
+
+  <!-- CANOA — casco de madeira, banco, remos e corda de proa -->
   <symbol id="boat-canoe" viewBox="0 0 240 120">
-    <path d="M22 72 Q120 104 218 72 Q184 101 120 104 Q56 101 22 72Z" fill="#a96735" class="boat-stroke"/>
-    <path d="M38 70 Q120 88 202 70" fill="none" class="boat-fine"/>
-    <path d="M74 61H166M91 58V76M149 58V76" class="boat-fine" fill="none"/>
-    <path d="M120 58V21M120 22L91 60M120 22L149 60" class="boat-stroke" fill="none"/>
+    <path d="M20 72Q120 106 220 72Q190 104 120 108Q50 104 20 72Z" fill="#9b5a2d" class="boat-stroke"/>
+    <path d="M31 74Q120 94 209 74" fill="none" stroke="#d89451" stroke-width="5"/>
+    <path d="M39 81Q120 100 201 81" class="boat-fine" fill="none" opacity=".7"/>
+    <path d="M70 63H170M82 61V78M158 61V78" class="boat-stroke" fill="#c37a3c"/>
+    <path d="M120 61V22M120 23L88 63M120 23L152 63" class="boat-stroke" fill="none"/>
+    <path d="M120 22L126 17" class="boat-fine" fill="none"/>
+    <path d="M57 65L27 43M183 65L213 43" stroke="#c58a4b" stroke-width="5" stroke-linecap="round"/>
+    <path d="M24 42L30 43M210 42L216 43" class="boat-fine" fill="none"/>
+    <path d="M30 102Q120 114 210 102" class="water-line"/>
+    <path d="M50 106Q70 112 87 108M153 108Q175 113 193 106" class="boat-highlight"/>
   </symbol>
+
+  <!-- BARCO DE ALUMÍNIO — casco metálico, bancos, borda rebitada e motor -->
   <symbol id="boat-barco-aluminio" viewBox="0 0 240 120">
-    <path d="M20 67 H213 L188 94 H61Z" fill="#b9c7d1" class="boat-stroke"/>
-    <path d="M50 67 L63 43 H149 L174 67" fill="#dce8ec" class="boat-stroke"/>
-    <path d="M72 44V67M140 44V67M63 54H153" class="boat-fine" fill="none"/>
-    <path d="M90 43V26H145V43" fill="#647887" class="boat-stroke"/>
-    <path d="M24 99 Q120 110 216 99" fill="none" stroke="#4c9fc4" stroke-width="5"/>
+    <path d="M18 67H216L190 96H57Z" fill="#aabcc5" class="boat-stroke"/>
+    <path d="M24 68Q120 82 210 68" fill="none" stroke="#e8f0f2" stroke-width="4"/>
+    <path d="M49 67L64 41H151L178 67" fill="#dce8ec" class="boat-stroke"/>
+    <path d="M66 43V67M145 43V67M63 54H158" class="boat-fine" fill="none"/>
+    <path d="M88 42V24H147V42" fill="#647887" class="boat-stroke"/>
+    <path d="M95 29H140" class="boat-highlight"/>
+    <path d="M72 70H169M79 78H161" class="boat-fine" fill="none"/>
+    <path d="M196 67V88L208 96M205 88H220" class="boat-stroke" fill="none"/>
+    <circle cx="36" cy="74" r="2" fill="#f2c84b"/><circle cx="49" cy="77" r="2" fill="#f2c84b"/><circle cx="184" cy="78" r="2" fill="#f2c84b"/>
+    <path d="M20 101Q120 113 220 101" class="water-line"/>
+    <path d="M45 106Q65 112 87 108M151 108Q176 113 198 106" class="boat-highlight"/>
   </symbol>
+
+  <!-- LANCHA — casco vermelho, cabine envidraçada, console e motor -->
   <symbol id="boat-lancha" viewBox="0 0 240 120">
-    <path d="M18 69 H213 Q197 96 151 99 H55Z" fill="#d85d54" class="boat-stroke"/>
-    <path d="M57 68 L76 35 H159 L183 68" fill="#f5f7f8" class="boat-stroke"/>
-    <path d="M77 36V67M157 36V67M77 49H160" class="boat-fine" fill="none"/>
-    <path d="M33 101 Q120 113 217 100" fill="none" stroke="#4c9fc4" stroke-width="5"/>
-    <path d="M191 72V54" class="boat-stroke" fill="none"/>
+    <path d="M16 69H216Q198 98 150 101H53Z" fill="#c8504b" class="boat-stroke"/>
+    <path d="M24 70Q111 86 207 70" fill="none" stroke="#f3a35e" stroke-width="5"/>
+    <path d="M53 68L74 33H162L187 68" fill="#f4f7f8" class="boat-stroke"/>
+    <path d="M77 36V66M157 36V66M78 49H160" class="boat-fine" fill="none"/>
+    <path d="M82 38L111 38L104 62H76ZM116 38H153L159 62H109Z" fill="#6faec4" stroke="#18212b" stroke-width="2"/>
+    <path d="M75 69H180" class="boat-fine" fill="none"/>
+    <path d="M95 67V51H126V67" fill="#d85d54" class="boat-stroke"/>
+    <circle cx="111" cy="58" r="5" fill="#f2c84b" stroke="#18212b" stroke-width="1.5"/>
+    <path d="M191 72V51M191 52L204 57" class="boat-stroke" fill="none"/>
+    <path d="M194 78V92L207 98M202 91H219" class="boat-stroke" fill="none"/>
+    <path d="M19 103Q120 115 220 102" class="water-line"/>
+    <path d="M46 108Q70 114 91 109M154 109Q179 115 202 107" class="boat-highlight"/>
   </symbol>
+
+  <!-- VELEIRO — casco verde, mastro, duas velas com costuras e leme -->
   <symbol id="boat-veleiro" viewBox="0 0 240 120">
-    <path d="M18 76 H218 Q190 98 120 100 Q50 98 18 76Z" fill="#4f9271" class="boat-stroke"/>
-    <path d="M120 76V16M120 18L61 73H120Z" fill="#f5f7f8" class="boat-stroke"/>
-    <path d="M123 21L178 72H123Z" fill="#f2c84b" class="boat-stroke"/>
-    <path d="M31 103 Q120 112 211 103" fill="none" stroke="#4c9fc4" stroke-width="5"/>
+    <path d="M16 76H222Q191 101 120 103Q48 101 16 76Z" fill="#438766" class="boat-stroke"/>
+    <path d="M27 78Q120 91 211 78" fill="none" stroke="#8ed0a7" stroke-width="4"/>
+    <path d="M120 76V14" class="boat-stroke" fill="none"/>
+    <path d="M119 17L57 73H119Z" fill="#f5f7f8" class="boat-stroke"/>
+    <path d="M124 20L181 73H124Z" fill="#f2c84b" class="boat-stroke"/>
+    <path d="M68 63L108 27M82 70L112 42M136 31L166 61M145 39L174 67" class="boat-fine" fill="none" opacity=".7"/>
+    <path d="M120 14L134 14M120 20L111 30" class="boat-fine" fill="none"/>
+    <path d="M71 78H176" class="boat-fine" fill="none"/>
+    <path d="M183 76V96" class="boat-stroke" fill="none"/>
+    <path d="M31 105Q120 115 211 105" class="water-line"/>
+    <path d="M53 110Q75 115 94 111M149 111Q173 116 193 110" class="boat-highlight"/>
   </symbol>
+
+  <!-- IATE — casco branco, faixa azul, cabine panorâmica, radar e luzes -->
   <symbol id="boat-iate" viewBox="0 0 240 120">
-    <path d="M15 69 H224 Q203 98 120 100 Q43 98 15 69Z" fill="#f5f7f8" class="boat-stroke"/>
-    <path d="M51 69 L70 39 H174 L196 69" fill="#dce8ec" class="boat-stroke"/>
-    <path d="M71 40V69M173 40V69M73 52H178" class="boat-fine" fill="none"/>
-    <path d="M32 103 Q120 113 211 103" fill="none" stroke="#4c9fc4" stroke-width="5"/>
-    <path d="M92 39V28H154V39" fill="#d85d54" class="boat-stroke"/>
+    <path d="M13 69H227Q204 99 120 102Q40 99 13 69Z" fill="#f5f7f8" class="boat-stroke"/>
+    <path d="M22 72Q120 88 219 72" fill="none" stroke="#4c9fc4" stroke-width="7"/>
+    <path d="M49 68L70 36H176L199 68" fill="#dce8ec" class="boat-stroke"/>
+    <path d="M72 39V67M174 39V67M73 52H180" class="boat-fine" fill="none"/>
+    <path d="M78 41H116L111 63H72ZM121 41H168L175 63H116Z" fill="#79b9cb" stroke="#18212b" stroke-width="2"/>
+    <path d="M90 36V24H156V36" fill="#d85d54" class="boat-stroke"/>
+    <path d="M101 24V18M145 24V18" class="boat-fine" fill="none"/>
+    <path d="M91 76H179M98 82H171" class="boat-fine" fill="none"/>
+    <circle cx="58" cy="75" r="2.5" fill="#f2c84b"/><circle cx="72" cy="78" r="2.5" fill="#f2c84b"/><circle cx="184" cy="78" r="2.5" fill="#f2c84b"/>
+    <path d="M31 104Q120 115 211 104" class="water-line"/>
+    <path d="M53 109Q75 115 94 111M148 111Q173 116 193 109" class="boat-highlight"/>
   </symbol>
+
+  <!-- NAVIO DE PESCA — casco grande, cabine, guindaste, antenas e convés -->
   <symbol id="boat-navio-pesca" viewBox="0 0 240 120">
-    <path d="M14 70 H226 Q200 101 119 103 Q41 101 14 70Z" fill="#647887" class="boat-stroke"/>
-    <path d="M46 70V43H169V70M169 43H192V70" fill="#dce8ec" class="boat-stroke"/>
-    <path d="M67 43V25H151V43M82 25V15M138 25V15" fill="#d85d54" class="boat-stroke"/>
-    <path d="M88 25H141M60 55H177" class="boat-fine" fill="none"/>
-    <path d="M28 106 Q120 115 214 106" fill="none" stroke="#4c9fc4" stroke-width="6"/>
-    <path d="M191 43V21M191 22L211 34" class="boat-stroke" fill="none"/>
+    <path d="M12 70H229Q201 102 119 105Q38 102 12 70Z" fill="#5e7380" class="boat-stroke"/>
+    <path d="M20 74Q119 89 222 74" fill="none" stroke="#a9c1c5" stroke-width="5"/>
+    <path d="M43 70V41H171V70M171 43H195V70" fill="#dce8ec" class="boat-stroke"/>
+    <path d="M67 42V23H153V42M82 23V12M138 23V12" fill="#d85d54" class="boat-stroke"/>
+    <path d="M74 27H145M59 55H177" class="boat-fine" fill="none"/>
+    <path d="M76 29H112V39H76ZM119 29H146V39H119Z" fill="#72aebe" stroke="#18212b" stroke-width="1.5"/>
+    <circle cx="62" cy="62" r="3" fill="#f2c84b"/><circle cx="75" cy="64" r="3" fill="#f2c84b"/><circle cx="183" cy="62" r="3" fill="#f2c84b"/>
+    <path d="M194 43V19M194 20L215 32M194 31L177 57" class="boat-stroke" fill="none"/>
+    <path d="M179 57Q190 65 202 57" class="boat-fine" fill="none"/>
+    <path d="M28 106Q120 117 216 106" class="water-line"/>
+    <path d="M51 111Q75 117 96 112M148 112Q174 118 198 111" class="boat-highlight"/>
   </symbol>
 </svg>
