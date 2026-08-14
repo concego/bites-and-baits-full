@@ -4,7 +4,7 @@
  */
 const Visuals = (() => {
   const files = {
-    gear: 'assets/art/gear-symbols.svg?v=c303350',
+    gear: 'assets/art/gear-symbols.svg?v=3ed5296',
     boat: 'assets/art/boat-symbols.svg?v=6deb4aa',
   };
 
