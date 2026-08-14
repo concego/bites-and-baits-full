@@ -2794,43 +2794,7 @@ const Game = (() => {
 
   // ── UI helpers ────────────────────────────────────────────────────────────
   function showScreen(name) {
-    console.log('[BB] showScreen:', name);
-    // Desativa e bloqueia TODAS as telas conhecidas
-    Object.entries(screens).forEach(([, s]) => {
-      if (!s) return;
-      s.classList.remove('active');
-      s.setAttribute('inert', '');
-    });
-
-    // A música de menu só existe nas telas da cidade. Ao sair delas,
-    // interrompe a trilha para não vazar para pesca, instruções ou opções.
-    const cityMusicScreens = ['storyHub', 'house', 'shop', 'travel', 'inventory', 'vessel'];
-    if (!cityMusicScreens.includes(name)) Audio.stopCityMusic();
-
-    // Barra inferior só fica visível dentro da tela de jogo (modo normal)
-    // Fora do jogo, garante que não intercepta cliques em nenhuma outra tela
-    if (name !== 'game') {
-      const bar = $('game-bottom-bar');
-      if (bar) bar.classList.add('hidden');
-    }
-
-    // Ativa só a tela pedida
-    const target = screens[name];
-    if (!target) return;
-    target.classList.add('active');
-    target.removeAttribute('inert');
-
-    // Move foco para o h2 (ou primeiro botão) — leitor anuncia ao entrar
-    requestAnimationFrame(() => {
-      const heading = target.querySelector('h2');
-      if (heading) {
-        heading.setAttribute('tabindex', '-1');
-        heading.focus();
-        return;
-      }
-      const btn = target.querySelector('button:not([disabled])');
-      if (btn) btn.focus();
-    });
+    ScreenNavigation.show(screens, name);
   }
 
   function setLabel(text)  { if (ui.stateLabel) ui.stateLabel.textContent = text; }
