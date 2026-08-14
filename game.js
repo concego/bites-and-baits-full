@@ -1691,15 +1691,7 @@ const Game = (() => {
 
   /** Atualiza o HUD de moedas + tempo no hub da cidade */
   function _refreshHubHUD() {
-    const coinsEl = $('hub-coins');
-    if (coinsEl) coinsEl.textContent = Inventory.coins();
-    if (typeof GameTime !== 'undefined') {
-      const hud = GameTime.formatHUD();
-      const dateEl  = $('hub-date');
-      const clockEl = $('hub-clock');
-      if (dateEl)  dateEl.textContent  = hud.date;
-      if (clockEl) clockEl.textContent = hud.time;
-    }
+    HubHUD.refresh();
   }
 
   /** Inicia a trilha correspondente à tela da cidade. */
