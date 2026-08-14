@@ -1442,50 +1442,10 @@ const Game = (() => {
 
   /** Renderiza a lista de iscas disponíveis no painel */
   function _renderBaitList() {
-    const baits  = Inventory.getBaits();
-    const equip  = Inventory.getEquip();
-    ui.baitList.innerHTML = '';
-
-    const ids = Object.keys(BAIT_CATALOG);
-    if (ids.every(id => (baits[id] ?? 0) === 0)) {
-      const li = document.createElement('li');
-      li.className = 'bait-item bait-empty';
-      li.textContent = I18n.t('equip_no_bait');
-      ui.baitList.appendChild(li);
-      return;
-    }
-
-    ids.forEach(id => {
-      const qty  = baits[id] ?? 0;
-      const bait = BAIT_CATALOG[id];
-      const isEq = equip.bait === id;
-
-      const li  = document.createElement('li');
-      li.className = `bait-item${isEq ? ' bait-equipped' : ''}${qty === 0 ? ' bait-out' : ''}`;
-
-      const label = document.createElement('span');
-      label.className = 'bait-item-label';
-      label.innerHTML = `${bait.sprite ? Visuals.iconMarkup(bait.sprite, 'bb-svg-icon bb-svg-icon--small') : bait.emoji} ${I18n.t(bait.nameKey)}`;
-
-      const qtyEl = document.createElement('span');
-      qtyEl.className = 'bait-item-qty';
-      qtyEl.textContent = I18n.t('equip_qty', qty);
-
-      const btn = document.createElement('button');
-      btn.className = 'btn-bait-select';
-      btn.textContent = isEq ? I18n.t('equip_selected') : I18n.t('equip_select');
-      btn.disabled = qty === 0 || isEq;
-      btn.setAttribute('aria-pressed', isEq ? 'true' : 'false');
-      btn.addEventListener('click', () => {
-        if (Inventory.equipBait(id)) {
-          speak(I18n.t('equip_consume_ok', I18n.t(bait.nameKey), Inventory.baitCount(id)));
-          refreshBaitHud();
-          closeEquipPanel();
-        }
-      });
-
-      li.append(label, qtyEl, btn);
-      ui.baitList.appendChild(li);
+    BaitPanelView.render({
+      announce: speak,
+      refreshHud: refreshBaitHud,
+      closePanel: closeEquipPanel,
     });
   }
 
