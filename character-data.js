@@ -7,6 +7,7 @@ const Character = (() => {
   const DEFAULT = {
     name: '',
     genderProfile: '',
+    appearance: {},
     confirmed: false,
   };
 
@@ -37,9 +38,25 @@ const Character = (() => {
     return !!(current.confirmed && current.name && current.genderProfile);
   }
 
+  function saveAppearance(appearance) {
+    const current = load();
+    const nextAppearance = { ...(appearance || {}) };
+    return save({ ...current, appearance: nextAppearance });
+  }
+
+  function hasAppearance(categoryKeys) {
+    const current = load();
+    const keys = Array.isArray(categoryKeys) ? categoryKeys : [];
+    return !!(keys.length && keys.every(key => current.appearance && current.appearance[key]));
+  }
+
+  function isComplete(categoryKeys) {
+    return isConfirmed() && hasAppearance(categoryKeys);
+  }
+
   function clear() {
     try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ }
   }
 
-  return { load, save, confirmIdentity, isConfirmed, clear, STORAGE_KEY };
+  return { load, save, confirmIdentity, isConfirmed, saveAppearance, hasAppearance, isComplete, clear, STORAGE_KEY };
 })();

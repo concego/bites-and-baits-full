@@ -128,6 +128,7 @@ const Game = (() => {
       lang:         $('screen-lang'),
       start:        $('screen-start'),
       characterCreate: $('screen-character-create'),
+      characterVisual: $('screen-character-visual'),
       storyHub:     $('screen-story-hub'),
       game:         $('screen-game'),
       result:       $('screen-result'),
@@ -154,6 +155,8 @@ const Game = (() => {
       characterGender: $('character-gender'),
       characterFormError: $('character-form-error'),
       characterFormStatus: $('character-form-status'),
+      characterVisualFields: $('character-visual-fields'),
+      characterVisualSummary: $('character-visual-summary'),
       stateLabel:     $('state-label'),
       tensionCont:    $('tension-container'),
       tensionBar:     $('tension-bar'),
@@ -225,11 +228,14 @@ const Game = (() => {
     // ── Menu Principal ─────────────────────────────────────────────────────
     $('btn-story').addEventListener('click', () => {
       gameMode = 'normal';
-      if (Character.isConfirmed()) showStoryHub();
-      else openCharacterCreate();
+      if (!Character.isConfirmed()) openCharacterCreate();
+      else if (!Character.isComplete(CHARACTER_VISUAL_CATEGORIES.map(category => category.key))) openCharacterVisual();
+      else showStoryHub();
     });
     ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
     $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
+    $('btn-character-visual-back')?.addEventListener('click', openCharacterCreate);
+    $('btn-character-visual-confirm')?.addEventListener('click', _confirmCharacterVisual);
     $('btn-free').addEventListener('click',  () => startGame('free'));
     $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
     $('btn-back').addEventListener('click',  () => showScreen('start'));
@@ -354,6 +360,90 @@ const Game = (() => {
     btn.setAttribute('aria-label', name ? `${name}, ${state}` : state);
   }
 
+  // ── Criação visual da personagem ─────────────────────────────────────────
+  function _visualCategoryByKey(key) {
+    return CHARACTER_VISUAL_CATEGORIES.find(category => category.key === key);
+  }
+
+  function _readVisualAppearance() {
+    const appearance = {};
+    CHARACTER_VISUAL_CATEGORIES.forEach(category => {
+      const select = $(`character-visual-${category.key}`);
+      appearance[category.key] = select ? select.value : '';
+    });
+    return appearance;
+  }
+
+  function _updateVisualSummary() {
+    if (!ui.characterVisualSummary) return;
+    const lang = I18n.getLang() || 'pt';
+    const appearance = _readVisualAppearance();
+    const parts = CHARACTER_VISUAL_CATEGORIES.map(category => {
+      const option = category.options.find(item => item.value === appearance[category.key]);
+      if (!option) return `${characterVisualLabel(category, lang)}: ${I18n.t('character_visual_placeholder')}`;
+      return `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`;
+    });
+    ui.characterVisualSummary.textContent = parts.join('. ') + '.';
+  }
+
+  function openCharacterVisual() {
+    if (!ui.characterVisualFields) return;
+    const current = Character.load().appearance || {};
+    const lang = I18n.getLang() || 'pt';
+    ui.characterVisualFields.innerHTML = '';
+
+    CHARACTER_VISUAL_CATEGORIES.forEach(category => {
+      const fieldset = document.createElement('fieldset');
+      fieldset.className = 'character-visual-field';
+      const legend = document.createElement('legend');
+      legend.textContent = characterVisualLabel(category, lang);
+      fieldset.appendChild(legend);
+
+      const select = document.createElement('select');
+      select.id = `character-visual-${category.key}`;
+      select.name = category.key;
+      select.required = true;
+      select.setAttribute('aria-label', characterVisualLabel(category, lang));
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = I18n.t('character_visual_placeholder');
+      select.appendChild(placeholder);
+      category.options.forEach(option => {
+        const item = document.createElement('option');
+        item.value = option.value;
+        item.textContent = characterVisualLabel(option, lang);
+        select.appendChild(item);
+      });
+      select.value = current[category.key] || '';
+      select.addEventListener('change', () => {
+        select.removeAttribute('aria-invalid');
+        _updateVisualSummary();
+      });
+      fieldset.appendChild(select);
+      ui.characterVisualFields.appendChild(fieldset);
+    });
+
+    _updateVisualSummary();
+    showScreen('characterVisual');
+    ui.characterVisualFields.querySelector('select')?.focus();
+  }
+
+  function _confirmCharacterVisual() {
+    const appearance = _readVisualAppearance();
+    const firstMissing = CHARACTER_VISUAL_CATEGORIES.find(category => !appearance[category.key]);
+    if (firstMissing) {
+      const missing = $(`character-visual-${firstMissing.key}`);
+      missing?.setAttribute('aria-invalid', 'true');
+      if (ui.characterVisualSummary) ui.characterVisualSummary.textContent = I18n.t('character_visual_error');
+      missing?.focus();
+      speak(I18n.t('character_visual_error'));
+      return;
+    }
+    Character.saveAppearance(appearance);
+    speak(I18n.t('character_saved'));
+    showStoryHub();
+  }
+
   // ── Criação inicial da personagem ───────────────────────────────────────
   function openCharacterCreate() {
     const current = Character.load();
@@ -388,8 +478,7 @@ const Game = (() => {
     if (ui.characterFormStatus) ui.characterFormStatus.textContent = I18n.t('character_saved');
     speak(I18n.t('character_saved'));
 
-    // Ponte temporária até a cena de correspondência ser implementada.
-    setTimeout(() => showStoryHub(), 350);
+    openCharacterVisual();
   }
 
   // ── Linha SVG dinâmica ────────────────────────────────────────────────────

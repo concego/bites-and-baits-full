@@ -228,6 +228,23 @@
       </div>
     </div>
 
+    <!-- ── Criação da aparência ──────────────────────────────────────── -->
+    <div id="screen-character-visual" class="screen character-create-screen" role="dialog" aria-modal="true" aria-labelledby="character-visual-title">
+      <div class="character-create-card character-visual-card">
+        <h2 id="character-visual-title" data-i18n="character_visual_title"></h2>
+        <p data-i18n="character_visual_intro"></p>
+        <div id="character-visual-fields" class="character-visual-fields"></div>
+        <section class="character-summary" aria-labelledby="character-summary-title">
+          <h3 id="character-summary-title" data-i18n="character_summary_title"></h3>
+          <p id="character-visual-summary" aria-live="polite"></p>
+        </section>
+        <div class="character-form-actions">
+          <button id="btn-character-visual-back" type="button" class="btn-ghost" data-i18n="character_visual_back"></button>
+          <button id="btn-character-visual-confirm" type="button" class="btn-primary" data-i18n="character_visual_confirm"></button>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Hub da Cidade ─────────────────────────────────────────────── -->
     <div id="screen-story-hub" class="screen">
       <header class="story-hub-header">
@@ -868,6 +885,7 @@
   <script src="sensors.js"></script>
   <script src="visuals.js"></script>
   <script src="character-data.js"></script>
+  <script src="character-visual-data.js"></script>
   <script src="game.js"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
