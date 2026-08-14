@@ -1189,9 +1189,9 @@ html, body {
 }
 /* Equipamentos: texto ocupa a largura livre e ações descem para uma faixa própria. */
 .inv-equip-item {
-  display: grid;
-  grid-template-columns: 52px minmax(160px, 1fr);
-  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
@@ -1199,18 +1199,15 @@ html, body {
   row-gap: 6px;
 }
 .inv-equip-item .inv-item-icon {
-  grid-column: 1;
-  grid-row: 1;
+  flex: 0 0 52px;
 }
 .inv-equip-item .inv-item-info {
-  grid-column: 2;
-  grid-row: 1;
+  flex: 1 1 calc(100% - 62px);
   width: auto;
-  min-width: 0;
+  min-width: 160px;
 }
 .inv-equip-item .inv-item-actions {
-  grid-column: 1 / -1;
-  grid-row: 2;
+  flex: 0 0 100%;
   justify-content: flex-start;
   width: 100%;
 }
