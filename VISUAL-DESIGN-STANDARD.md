@@ -73,9 +73,13 @@ O estado visual nunca é a única comunicação: ele deve ser acompanhado por te
 
 ## 6. Padrão por grupo
 
-### Personagens
+### Personagens e NPCs
 
-Silhueta de corpo, rosto, cabelo, roupa, calçado, acessórios e variações de contexto. Aparência não altera atributos nem gameplay.
+Personagens jogáveis e NPCs devem ser gerados pelo mesmo sistema modular de criação de personagem: dados separados da aparência, camadas reutilizáveis e avatar SVG local. Isso mantém a linguagem visual consistente e permite que novos personagens usem o mesmo pipeline sem criar uma arquitetura paralela.
+
+O escopo visual dos NPCs é mais amplo que o da personagem jogável, especialmente na faixa etária. O sistema deve prever variações que cubram crianças, adolescentes, adultos e pessoas idosas, além de diferentes corpos, rostos, cabelos, pelos faciais, roupas, calçados e acessórios. A idade deve ser um dado narrativo/visual controlado, não uma inferência automática a partir de uma única característica.
+
+Cada NPC pode ter identidade, idade, aparência, roupa de contexto e estado narrativo próprios. Aparência e idade não alteram atributos ou gameplay por padrão; quando uma regra narrativa precisar de um dado, ela deve ser declarada separadamente nos dados do personagem. Nome, função, estado e falas continuam disponíveis em texto acessível, independentemente do avatar.
 
 ### Peixes
 
