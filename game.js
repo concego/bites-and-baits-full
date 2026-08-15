@@ -388,6 +388,8 @@ const Game = (() => {
       getElement: id => $(id),
     });
     showScreen('characterVisual');
+    // A criação visual usa a mesma atmosfera musical da Casa.
+    CityMusic.start('house');
     ui.characterVisualFields.querySelector('select')?.focus();
   }
 
@@ -399,6 +401,8 @@ const Game = (() => {
     if (ui.characterFormError) ui.characterFormError.textContent = '';
     if (ui.characterFormStatus) ui.characterFormStatus.textContent = '';
     showScreen('characterCreate');
+    // A criação da identidade também usa a trilha da Casa.
+    CityMusic.start('house');
     ui.characterName?.focus();
   }
 
