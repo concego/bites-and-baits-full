@@ -1657,6 +1657,16 @@ const Game = (() => {
   function _handleInternalMenuClick(event) {
     const target = event.target.closest?.('button');
     if (!target) return;
+    if (target.id === 'btn-cat-baits') {
+      event.stopPropagation();
+      _showEquipView('baits');
+      _renderBaitList();
+      const firstBtn = ui.baitList?.querySelector('button:not([disabled])')
+        || ui.baitList?.querySelector('button')
+        || $('btn-equip-back');
+      firstBtn?.focus();
+      return;
+    }
     if (target.classList.contains('shop-mode-tab')) {
       event.stopPropagation();
       document.querySelectorAll('.shop-mode-tab').forEach(btn => {
