@@ -56,14 +56,14 @@ const I18n = (() => {
       opening_show_transition: 'Continuar',
       opening_time_passage: 'Passagem de tempo',
       opening_arrival_title: 'Uma nova vida começa',
-      opening_arrival_body: (name) => `${name} pega suas coisas e segue viagem para a ilha. Depois de algum tempo, a cidade aparece no horizonte.`,
+      opening_arrival_body: (name) => `${name} pega suas coisas e segue viagem para a Ilha Barra Serena. Depois de algum tempo, a Vila Barra Serena aparece no horizonte.`, 
       opening_arrive_city: 'Chegar à cidade',
       btn_inventory:    '🎒 Inventário',
       btn_shop:         '🏪 Loja',
       // Hub da História
       story_hub_title:    'Modo História',
       // Hub da Cidade
-      city_hub_title:     '🏙️ Cidade',
+      city_hub_title:     '🏙️ Vila Barra Serena',
       btn_hub_home:       '🏠 Casa / Terreno',
       btn_hub_vessel:     '⛵ Estaleiro',
       // Casa
@@ -570,14 +570,14 @@ const I18n = (() => {
       opening_show_transition: 'Continue',
       opening_time_passage: 'Time passes',
       opening_arrival_title: 'A new life begins',
-      opening_arrival_body: (name) => `${name} gathers their things and travels to the island. After some time, the town appears on the horizon.`,
+      opening_arrival_body: (name) => `${name} gathers their things and travels to Barra Serena Island. After some time, Barra Serena Village appears on the horizon.`,
       opening_arrive_city: 'Arrive in town',
       btn_inventory:    '🎒 Inventory',
       btn_shop:         '🏪 Shop',
       // Story Hub
       story_hub_title:    'Story Mode',
       // City Hub
-      city_hub_title:     '🏙️ City',
+      city_hub_title:     '🏙️ Barra Serena Village',
       btn_hub_home:       '🏠 Home / Land',
       btn_hub_vessel:     '⛵ Boatyard',
       // House
@@ -1175,12 +1175,12 @@ btn_story:        'Történet',
       opening_show_transition: 'Folytatás',
       opening_time_passage: 'Idő múlik',
       opening_arrival_title: 'Új élet kezdődik',
-      opening_arrival_body: (name) => `${name} összepakol, és elindul a szigetre. Egy kis idő múlva feltűnik a város a láthatáron.`,
+      opening_arrival_body: (name) => `${name} összepakol, és elindul Barra Serena szigetére. Egy kis idő múlva feltűnik Barra Serena faluja a láthatáron.`,
       opening_arrive_city: 'Megérkezés a városba',
       btn_inventory:    '🎒 Leltár',
       btn_shop:         '🏪 Bolt',
       story_hub_title:    'Történet mód',
-      city_hub_title:     '🏙️ Város',
+      city_hub_title:     '🏙️ Barra Serena faluja',
       btn_hub_home:       '🏠 Otthon / Telek',
       btn_hub_vessel:     '⛵ Hajóépítő',
       // Ház
