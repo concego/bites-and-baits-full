@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css" />
   <link rel="stylesheet" href="style-narrative.css" />
+  <link rel="stylesheet" href="style-back-navigation.css" />
   <link rel="stylesheet" href="shop.css" />
   <link rel="stylesheet" href="style_append.css" />
 </head>
@@ -233,6 +234,7 @@
     <!-- ── Criação inicial da personagem ─────────────────────────────── -->
     <div id="screen-character-create" class="screen character-create-screen" role="dialog" aria-modal="true" aria-labelledby="character-create-title">
       <div class="character-create-card">
+        <button id="btn-character-back" type="button" class="btn-ghost screen-back-top" data-i18n="character_back"></button>
         <h2 id="character-create-title" data-i18n="character_create_title"></h2>
         <p data-i18n="character_create_intro"></p>
 
@@ -258,7 +260,6 @@
           <p id="character-form-status" class="form-feedback feedback-ok" aria-live="polite"></p>
 
           <div class="character-form-actions">
-            <button id="btn-character-back" type="button" class="btn-ghost" data-i18n="character_back"></button>
             <button id="btn-character-confirm" type="submit" class="btn-primary" data-i18n="character_confirm"></button>
           </div>
         </form>
@@ -268,6 +269,7 @@
     <!-- ── Criação da aparência ──────────────────────────────────────── -->
     <div id="screen-character-visual" class="screen character-create-screen" role="dialog" aria-modal="true" aria-labelledby="character-visual-title">
       <div class="character-create-card character-visual-card">
+        <button id="btn-character-visual-back" type="button" class="btn-ghost screen-back-top" data-i18n="character_visual_back"></button>
         <h2 id="character-visual-title" data-i18n="character_visual_title"></h2>
         <p data-i18n="character_visual_intro"></p>
         <div class="character-visual-preview" aria-hidden="true">
@@ -279,7 +281,6 @@
           <p id="character-visual-summary" aria-live="polite"></p>
         </section>
         <div class="character-form-actions">
-          <button id="btn-character-visual-back" type="button" class="btn-ghost" data-i18n="character_visual_back"></button>
           <button id="btn-character-visual-confirm" type="button" class="btn-primary" data-i18n="character_visual_confirm"></button>
         </div>
       </div>
@@ -299,6 +300,7 @@
 
     <!-- ── Hub da Cidade ─────────────────────────────────────────────── -->
     <div id="screen-story-hub" class="screen">
+      <button id="btn-hub-back" class="btn-ghost screen-back-top" data-i18n="btn_back_main"></button>
       <header class="story-hub-header">
         <h2 data-i18n="city_hub_title"></h2>
         <div class="hub-status-row">
@@ -321,12 +323,12 @@
         <button id="btn-hub-inv"    class="btn-city"          data-i18n="btn_hub_inv"></button>
       </nav>
 
-      <button id="btn-hub-back" class="btn-ghost" data-i18n="btn_back_main"></button>
     </div>
 
     <!-- ── Tela da Casa ──────────────────────────────────────────────────── -->
     <div id="screen-house" class="screen" role="dialog" aria-modal="true"
          aria-labelledby="house-title">
+      <button id="btn-house-back" class="btn-ghost screen-back-top" data-i18n="btn_back"></button>
       <header class="panel-header">
         <h2 id="house-title" data-i18n="house_title"></h2>
       </header>
@@ -346,12 +348,12 @@
       <!-- Mensagem quando já está no nível máximo -->
       <p id="house-maxed-msg" class="house-maxed" hidden data-i18n="house_maxed"></p>
 
-      <button id="btn-house-back" class="btn-ghost" data-i18n="btn_back"></button>
     </div>
 
     <!-- ── Tela de Viagem (seleção de destino) ───────────────────────────── -->
     <div id="screen-travel" class="screen" role="dialog" aria-modal="true"
          aria-labelledby="travel-title">
+      <button id="btn-travel-back" class="btn-ghost screen-back-top" data-i18n="btn_back"></button>
       <header class="panel-header">
         <h2 id="travel-title" data-i18n="travel_title"></h2>
       </header>
@@ -369,12 +371,12 @@
       <ul id="travel-dest-list" class="travel-list" role="list"
           aria-label="Destinos disponíveis"></ul>
 
-      <button id="btn-travel-back" class="btn-ghost" data-i18n="btn_back"></button>
     </div>
 
     <!-- ── Estaleiro (stub) ───────────────────────────────────────────── -->
     <div id="screen-vessel" class="screen" role="dialog" aria-modal="true"
          aria-labelledby="vessel-title">
+      <button id="btn-vessel-back" class="btn-ghost screen-back-top" data-i18n="btn_back"></button>
       <header class="panel-header">
         <h2 id="vessel-title" data-i18n="vessel_title"></h2>
       </header>
@@ -391,7 +393,6 @@
         <ul id="vessel-owned-list" class="vessel-list" role="list"></ul>
       </section>
 
-      <button id="btn-vessel-back" class="btn-ghost" data-i18n="btn_back"></button>
     </div>
 
     <!-- ── Tela de opções ─────────────────────────────────────────────── -->
@@ -404,6 +405,7 @@
       -->
       <div role="dialog" aria-modal="true" aria-labelledby="options-heading" class="options-dialog">
 
+        <button id="btn-options-back" class="btn-primary screen-back-top" data-i18n="btn_back"></button>
         <h2 id="options-heading" data-i18n="options_title"></h2>
 
         <!-- Seção: Idioma -->
@@ -527,13 +529,13 @@
           </div><!-- /.a11y-toggle-list -->
         </div><!-- /.options-section acessibilidade -->
 
-        <button id="btn-options-back" class="btn-primary" data-i18n="btn_back"></button>
 
       </div><!-- /.options-dialog -->
     </div><!-- /#screen-options -->
 
     <!-- ── Tela de instruções ──────────────────────────────────────────── -->
     <div id="screen-instructions" class="screen">
+      <button id="btn-back" class="btn-primary screen-back-top" data-i18n="btn_back"></button>
       <h2 data-i18n="how_to_play"></h2>
 
       <!-- O que é o jogo -->
@@ -582,7 +584,6 @@
         </ul>
       </div>
 
-      <button id="btn-back" class="btn-primary" data-i18n="btn_back"></button>
     </div>
 
     <!-- ── Tela de jogo ────────────────────────────────────────────────── -->
@@ -728,6 +729,7 @@
     <div id="equip-panel" class="equip-panel hidden" role="dialog"
          aria-modal="true" aria-labelledby="equip-heading">
       <div class="equip-dialog">
+        <button id="btn-equip-close" class="btn-secondary panel-close-top" data-i18n="equip_close"></button>
         <h2 id="equip-heading" data-i18n="equip_title"></h2>
 
         <!-- Vista: categorias -->
@@ -740,7 +742,6 @@
               </button>
             </li>
           </ul>
-          <button id="btn-equip-close" class="btn-secondary" data-i18n="equip_close"></button>
         </div>
 
         <!-- Vista: iscas -->
@@ -759,16 +760,17 @@
     <div id="hold-panel" class="equip-panel hidden" role="dialog"
          aria-modal="true" aria-labelledby="hold-heading" aria-describedby="hold-panel-summary">
       <div class="equip-dialog hold-dialog">
+        <button id="btn-hold-close" class="btn-secondary panel-close-top" data-i18n="hold_panel_close"></button>
         <h2 id="hold-heading" data-i18n="hold_panel_title"></h2>
         <p id="hold-panel-summary" class="hold-panel-summary" aria-live="polite"></p>
         <p class="hold-panel-hint" data-i18n="hold_panel_hint"></p>
         <ul id="hold-fish-list" class="inv-list hold-fish-list" role="list"></ul>
-        <button id="btn-hold-close" class="btn-secondary" data-i18n="hold_panel_close"></button>
       </div>
     </div>
 
     <!-- ── Tela de resultado ───────────────────────────────────────────── -->
     <div id="screen-result" class="screen">
+      <button id="btn-menu2" class="btn-secondary screen-back-top" data-i18n="btn_menu"></button>
       <div id="result-icon">
         <svg id="result-fish-svg" aria-hidden="true" width="140" height="70">
           <use id="result-fish-use" href="#fish-lambari"/>
@@ -787,8 +789,7 @@
           <span class="stat-unit" data-i18n="stat_unit"></span>
         </div>
       </div>
-      <button id="btn-continue" class="btn-primary"   data-i18n="btn_again"></button>
-      <button id="btn-menu2"    class="btn-secondary" data-i18n="btn_menu"></button>
+      <button id="btn-continue" class="btn-primary" data-i18n="btn_again"></button>
     </div>
 
   <!-- ── Tela de Inventário (vender peixes) ────────────────────────────── -->
@@ -966,10 +967,10 @@
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"
        aria-modal="true" aria-labelledby="zone-modal-title" inert>
     <div class="modal-box">
+      <button id="btn-zone-modal-back" class="btn-ghost panel-close-top" data-i18n="btn_back"></button>
       <h2 id="zone-modal-title" data-i18n="zone_modal_title"></h2>
       <ul id="zone-modal-list" class="zone-list" role="list"
           aria-label="Zonas de pesca disponíveis"></ul>
-      <button id="btn-zone-modal-back" class="btn-ghost" data-i18n="btn_back"></button>
     </div>
   </div>
 

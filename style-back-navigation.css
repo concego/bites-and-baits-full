@@ -1,0 +1,33 @@
+/* Navegação de retorno: o caminho de saída fica sempre no topo. */
+.screen-back-top {
+  align-self: flex-start;
+  flex: 0 0 auto;
+  margin: 0 0 12px;
+}
+
+#screen-story-hub > .screen-back-top {
+  margin: 12px 16px 0;
+}
+
+#screen-house > .screen-back-top,
+#screen-travel > .screen-back-top,
+#screen-vessel > .screen-back-top {
+  margin-top: 0;
+}
+
+.panel-close-top {
+  align-self: flex-start;
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+}
+
+/* Na pesca livre, sair também fica no topo, fora do caminho das ações. */
+#btn-menu {
+  top: 16px;
+  bottom: auto;
+}
+
+#screen-game.free-mode #btn-menu {
+  top: 12px;
+  bottom: auto;
+}
