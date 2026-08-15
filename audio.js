@@ -37,7 +37,7 @@ const Audio = (() => {
     city_menu:           'assets/sounds/city_menu.mp3',
     house_menu:          'assets/sounds/house_menu.ogg',
     shop_menu:           'assets/sounds/shop_menu.mp3',
-    travel_menu:         'assets/sounds/travel_menu.ogg',
+    travel_menu:         'assets/sounds/travel_menu.wav',
     vessel_menu:         'assets/sounds/vessel_menu.mp3',
   };
 

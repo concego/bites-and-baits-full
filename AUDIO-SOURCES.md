@@ -36,7 +36,8 @@ As faixas abaixo são candidatas para a rodada atual de testes por tela. Todas f
 
 - `assets/sounds/house_menu.ogg` — **Etirwer (Looped)**, de Kistol. Faixa acústica simples de violão, loopável e descrita como adequada para repetir sem cliques. Fonte: https://lpc.opengameart.org/content/etirwer
 - `assets/sounds/shop_menu.mp3` — **Item Shop.mp3**, de controllerhead. Fonte: https://opengameart.org/content/item-shop
-- `assets/sounds/travel_menu.ogg` — **caravan.ogg.ogg**, de yd. Faixa minimalista de ambiente desértico, usada aqui como candidata de estrada/viagem. Fonte: https://opengameart.org/content/desert-theme
+- `assets/sounds/travel_menu.wav` — **A Small Fire Will Do (Calming Loop)**, de Trex0n. Loop de violão acústico com clima de vila, casa e fogueira, escolhido para substituir a faixa introspectiva da viagem. Licença CC0. Fonte: https://opengameart.org/content/a-small-fire-will-do-calming-loop
+- `assets/sounds/travel_menu.ogg` — **caravan.ogg.ogg**, de yd. Faixa anterior, mantida no repositório como referência/rollback. Fonte: https://opengameart.org/content/desert-theme
 - `assets/sounds/vessel_menu.mp3` — **beary_fishy_menu_screen_by_memoraphile_CC0.mp3**, da coleção *Gone Fishin'*. Movida da Casa para o Estaleiro conforme o feedback do teste. Fonte: https://opengameart.org/content/gone-fishin
 
 Estas são faixas de teste, não um compromisso final de estilo. O volume é mantido no mesmo patamar discreto da música geral, e a confirmação final depende da navegação e da avaliação do usuário.
