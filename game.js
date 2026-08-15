@@ -283,47 +283,47 @@ const Game = (() => {
     });
 
     // ── Inventário (acesso via hub) ────────────────────────────────────────
-    $('btn-inv-back').addEventListener('click', () => showStoryHub());
+    $('btn-inv-back')?.addEventListener('click', () => showStoryHub());
     document.querySelectorAll('#screen-inventory .shop-tab').forEach(tab => {
       tab.addEventListener('click', () => _switchPanelTab('screen-inventory', tab.dataset.tab, 'inv'));
     });
-    $('btn-opt-lang-pt').addEventListener('click', () => selectLang('pt'));
-    $('btn-opt-lang-en').addEventListener('click', () => selectLang('en'));
+    $('btn-opt-lang-pt')?.addEventListener('click', () => selectLang('pt'));
+    $('btn-opt-lang-en')?.addEventListener('click', () => selectLang('en'));
     $('btn-opt-lang-hu')?.addEventListener('click', () => selectLang('hu'));
-    $('btn-menu').addEventListener('click',  () => goToMenu());
-    $('btn-menu2').addEventListener('click', () => goToMenu());
+    $('btn-menu')?.addEventListener('click',  () => goToMenu());
+    $('btn-menu2')?.addEventListener('click', () => goToMenu());
     // F leva o foco aos dados da última captura sem interferir nas setas ou no Espaço.
     document.addEventListener('keydown', _handleLastCatchKey, true);
-    $('btn-continue').addEventListener('click', () => {
+    $('btn-continue')?.addEventListener('click', () => {
       startGame(gameMode);
     });
 
     // ── Barra inferior (modo história) ────────────────────────────────────
-    $('btn-bar-equip').addEventListener('click', () => openEquipPanel());
-    $('btn-bar-hold').addEventListener('click', () => openHoldPanel());
-    $('btn-hold-close').addEventListener('click', () => closeHoldPanel());
+    $('btn-bar-equip')?.addEventListener('click', () => openEquipPanel());
+    $('btn-bar-hold')?.addEventListener('click', () => openHoldPanel());
+    $('btn-hold-close')?.addEventListener('click', () => closeHoldPanel());
     $('btn-bar-zone')?.addEventListener('click', () => openZoneModal());
     $('btn-zone-modal-back')?.addEventListener('click', () => closeZoneModal());
-    $('btn-bar-hub').addEventListener('click', () => {
+    $('btn-bar-hub')?.addEventListener('click', () => {
       Sensors.stop();
       goToMenu();
     });
 
     // Painel de equipamento
-    $('btn-equip-close').addEventListener('click', () => closeEquipPanel());
+    $('btn-equip-close')?.addEventListener('click', () => closeEquipPanel());
 
     // Navegação interna do painel
-    $('btn-cat-baits').addEventListener('click', () => {
+    $('btn-cat-baits')?.addEventListener('click', () => {
       _renderBaitList();
       _showEquipView('baits');
       const firstBtn = ui.baitList.querySelector('button:not([disabled])') ||
                        ui.baitList.querySelector('button') ||
                        $('btn-equip-back');
-      firstBtn.focus();
+      firstBtn?.focus();
     });
-    $('btn-equip-back').addEventListener('click', () => {
+    $('btn-equip-back')?.addEventListener('click', () => {
       _showEquipView('categories');
-      $('btn-cat-baits').focus();
+      $('btn-cat-baits')?.focus();
     });
 
     // Listeners dos toggles de acessibilidade
