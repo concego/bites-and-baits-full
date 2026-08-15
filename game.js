@@ -1559,74 +1559,19 @@ const Game = (() => {
 
   /** Renderiza a tela da casa com nível atual e próximo upgrade. */
   function renderHouse() {
-    const levelIdx  = Inventory.getHouseLevel();
-    const current   = getHouseLevel(levelIdx);
-    const next      = getNextHouseLevel(levelIdx);
-    const coins     = Inventory.coins();
-
-    const currentCard  = $('house-current-card');
-    const upgradeCard  = $('house-upgrade-card');
-    const upgradeSec   = $('house-upgrade-section');
-    const maxedMsg     = $('house-maxed-msg');
-
-    // Monta card do nível atual
-    const ownedBoats = Inventory.getOwnedEquip();
-    const storedDesc = current.boatTypes.length === 0
-      ? I18n.t('house_storage_none') || 'Sem armazenamento para barcos'
-      : `${I18n.t('house_storage_boats') || 'Barcos guardados'}: ${current.boatSlots === 99
-          ? I18n.t('house_storage_unlimited') || 'Ilimitado'
-          : current.boatSlots} · ${current.boatTypes.map(t => I18n.t('boat_cat_' + t) || t).join(', ')}`;
-
-    currentCard.innerHTML =
-      `<div class="house-card-info">
-         <span class="house-card-icon">${current.emoji}</span>
-         <div>
-           <span class="house-card-name">${I18n.t(current.nameKey) || current.id}</span>
-           <span class="house-card-desc">${I18n.t(current.descKey) || ''}</span>
-           <span class="house-card-storage">${storedDesc}</span>
-         </div>
-       </div>`;
-
-    // Upgrade disponível?
-    if (next) {
-      maxedMsg.hidden   = true;
-      upgradeSec.hidden = false;
-
-      const canAfford   = coins >= next.price;
-      const nextStorage = next.boatTypes.length === 0
-        ? I18n.t('house_storage_none') || 'Sem armazenamento'
-        : `${I18n.t('house_storage_boats') || 'Barcos'}: ${next.boatSlots === 99
-            ? I18n.t('house_storage_unlimited') || 'Ilimitado'
-            : next.boatSlots} · ${next.boatTypes.map(t => I18n.t('boat_cat_' + t) || t).join(', ')}`;
-
-      upgradeCard.innerHTML =
-        `<div class="house-card-info">
-           <span class="house-card-icon">${next.emoji}</span>
-           <div>
-             <span class="house-card-name">${I18n.t(next.nameKey) || next.id}</span>
-             <span class="house-card-desc">${I18n.t(next.descKey) || ''}</span>
-             <span class="house-card-storage">${nextStorage}</span>
-             <span class="house-card-price">${next.price} 🪙</span>
-           </div>
-         </div>
-         <button id="btn-house-upgrade" class="btn-primary"
-                 ${canAfford ? '' : 'disabled'}
-                 aria-label="${I18n.t('house_btn_upgrade') || 'Melhorar'} — ${I18n.t(next.nameKey) || next.id}">
-           ${canAfford
-             ? (I18n.t('house_btn_upgrade') || 'Melhorar')
-             : (I18n.t('vessel_no_coins')   || 'Moedas insuficientes')}
-         </button>`;
-
-      $('btn-house-upgrade').onclick = () => {
-        if (!Inventory.spendCoins(next.price)) return;
-        Inventory.upgradeHouse();
-        renderHouse();
-      };
-    } else {
-      upgradeSec.hidden = true;
-      maxedMsg.hidden   = false;
-    }
+    HouseView.render({
+      translate: t,
+      getHouseLevel: getHouseLevel,
+      getNextHouseLevel: getNextHouseLevel,
+      getLevel: () => Inventory.getHouseLevel(),
+      coins: () => Inventory.coins(),
+      getOwnedEquip: () => Inventory.getOwnedEquip(),
+      spendCoins: price => Inventory.spendCoins(price),
+      upgradeHouse: () => Inventory.upgradeHouse(),
+      rerender: renderHouse,
+    });
   }
+
 
   // ── Estaleiro ─────────────────────────────────────────────────────────────
 
