@@ -240,28 +240,28 @@ const Game = (() => {
     $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
     $('btn-character-visual-back')?.addEventListener('click', openCharacterCreate);
     $('btn-character-visual-confirm')?.addEventListener('click', _confirmCharacterVisual);
-    $('btn-free').addEventListener('click',  () => startGame('free'));
-    $('btn-instructions').addEventListener('click', () => showScreen('instructions'));
-    $('btn-back').addEventListener('click',  () => showScreen('start'));
-    $('btn-options').addEventListener('click', () => { _syncToggles(); showScreen('options'); });
-    $('btn-options-back').addEventListener('click', () => showScreen('start'));
+    $('btn-free')?.addEventListener('click',  () => startGame('free'));
+    $('btn-instructions')?.addEventListener('click', () => showScreen('instructions'));
+    $('btn-back')?.addEventListener('click',  () => showScreen('start'));
+    $('btn-options')?.addEventListener('click', () => { _syncToggles(); showScreen('options'); });
+    $('btn-options-back')?.addEventListener('click', () => showScreen('start'));
 
     // ── Hub da História ────────────────────────────────────────────────────
     // Hub da cidade
-    $('btn-hub-shop').addEventListener('click',   () => { renderShop(); showScreen('shop');  _startCityScreenMusic('shop'); });
-    $('btn-hub-inv').addEventListener('click',    () => { renderInventory(); showScreen('inventory'); _startCityScreenMusic('city'); });
-    $('btn-hub-travel').addEventListener('click', () => { renderTravel(); showScreen('travel'); _startCityScreenMusic('travel'); });
-    $('btn-hub-vessel').addEventListener('click', () => { renderVessel(); showScreen('vessel'); _startCityScreenMusic('vessel'); });
-    $('btn-hub-home').addEventListener('click',   () => { renderHouse();  showScreen('house');  _startCityScreenMusic('house');  });
-    $('btn-house-back').addEventListener('click', () => showStoryHub());
-    $('btn-hub-back').addEventListener('click',   () => showScreen('start'));
+    $('btn-hub-shop')?.addEventListener('click',   () => { renderShop(); showScreen('shop');  _startCityScreenMusic('shop'); });
+    $('btn-hub-inv')?.addEventListener('click',    () => { renderInventory(); showScreen('inventory'); _startCityScreenMusic('city'); });
+    $('btn-hub-travel')?.addEventListener('click', () => { renderTravel(); showScreen('travel'); _startCityScreenMusic('travel'); });
+    $('btn-hub-vessel')?.addEventListener('click', () => { renderVessel(); showScreen('vessel'); _startCityScreenMusic('vessel'); });
+    $('btn-hub-home')?.addEventListener('click',   () => { renderHouse();  showScreen('house');  _startCityScreenMusic('house');  });
+    $('btn-house-back')?.addEventListener('click', () => showStoryHub());
+    $('btn-hub-back')?.addEventListener('click',   () => showScreen('start'));
     // Tela de viagem
-    $('btn-travel-back').addEventListener('click',() => showStoryHub());
+    $('btn-travel-back')?.addEventListener('click',() => showStoryHub());
     // Estaleiro
-    $('btn-vessel-back').addEventListener('click',() => showStoryHub());
+    $('btn-vessel-back')?.addEventListener('click',() => showStoryHub());
 
     // ── Loja (acesso via hub) ──────────────────────────────────────────────
-    $('btn-shop-back').addEventListener('click', () => showStoryHub());
+    $('btn-shop-back')?.addEventListener('click', () => showStoryHub());
 
     // Mode-tabs Comprar / Vender
     document.querySelectorAll('.shop-mode-tab').forEach(btn => {
@@ -1426,7 +1426,6 @@ const Game = (() => {
     showScreen('result');
   }
 
-
   function goToMenu() {
     clearTimers();
     Sensors.stop();
@@ -1506,7 +1505,6 @@ const Game = (() => {
     });
   }
 
-
   // ── Estaleiro ─────────────────────────────────────────────────────────────
 
   /** Renderiza a tela do estaleiro com embarcações para comprar e possuídas. */
@@ -1526,7 +1524,6 @@ const Game = (() => {
       rerender: renderVessel,
     });
   }
-
 
   function _hasRequiredRod(map, equip = Inventory.getEquip()) {
     if (!map?.requiredRod) return true;
@@ -1597,7 +1594,6 @@ const Game = (() => {
     });
   }
 
-
   // ── Modal de Zonas de Pesca ──────────────────────────────────────────────
 
   function openZoneModal() {
@@ -1618,7 +1614,6 @@ const Game = (() => {
       updateHud: _updateZoneHud,
     });
   }
-
 
   function closeZoneModal() {
     const modal = $('zone-modal');
@@ -1716,14 +1711,95 @@ const Game = (() => {
     });
 
     // ── Aba Equipamentos ────────────────────────────────────────────────────
-    InventoryEquipmentView.render({
-      translate: t,
-      equipment: equip,
-      feedback: _invFeedback.bind(null, fbEl),
-      equipItem: _equipItem,
-      recalcGearMods: _recalcGearMods,
-      rerender: renderInventory,
-    });
+    const owned      = Inventory.getOwnedEquip();
+    const equipList  = $('inv-equip-list');
+    const equipEmpty = $('inv-equip-empty');
+    equipList.innerHTML = '';
+
+    const defaults = ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'];
+    const allOwned = [...new Set([...defaults, ...owned])];
+
+    // Agrupar por slot para exibir o item equipado por slot
+    const SLOT_MAP = { rod:'rod', line:'line', hook:'hook', float:'float', basket:'basket' };
+
+    if (allOwned.length === 0) {
+      equipEmpty.classList.remove('hidden');
+    } else {
+      equipEmpty.classList.add('hidden');
+      allOwned.forEach(itemId => {
+        const shopItem = (typeof SHOP_CATALOG !== 'undefined')
+          ? SHOP_CATALOG.find(i => i.id === itemId) : null;
+        if (!shopItem) return;
+        const slot       = shopItem.type; // 'rod' | 'line' | 'hook' | 'float'
+        const isEquipped = equip[slot] === itemId;
+        const li = document.createElement('li');
+        li.className = 'inv-item inv-equip-item';
+        li.innerHTML = `
+          <span class="inv-item-icon" aria-hidden="true">${shopItem.sprite ? Visuals.iconMarkup(shopItem.sprite, 'bb-svg-icon bb-svg-icon--small') : shopItem.emoji}</span>
+          <div class="inv-item-info">
+            <span class="inv-item-name">${t(shopItem.nameKey) || shopItem.id}
+              ${isEquipped ? `<span class="inv-badge-equip">${t('inv_equipped_badge')}</span>` : ''}
+            </span>
+            <span class="inv-item-detail">${t(shopItem.descKey) || ''}</span>
+            ${shopItem.tier ? `<span class="shop-tier-badge">${t('shop_tier', shopItem.tier)}</span>` : ''}
+          </div>
+          <div class="inv-item-actions">
+            <button class="btn-inv-protect btn-secondary"
+                    data-item-id="${itemId}"
+                    aria-pressed="${Inventory.isProtected(itemId)}">
+              ${Inventory.isProtected(itemId) ? t('inv_unprotect') : t('inv_protect')}
+            </button>
+            <button class="btn-inv-examine btn-secondary"
+                    data-item-id="${itemId}"
+                    aria-label="${t('inv_examine')} ${t(shopItem.nameKey) || itemId}">
+              ${t('inv_examine')}
+            </button>
+            ${isEquipped
+              ? `<button class="btn-inv-unequip btn-danger"
+                         data-item-id="${itemId}" data-slot="${slot}"
+                         aria-label="${t('inv_unequip_btn')} ${t(shopItem.nameKey) || itemId}">
+                   ${t('inv_unequip_btn')}
+                 </button>`
+              : `<button class="btn-inv-equip btn-secondary"
+                         data-item-id="${itemId}" data-slot="${slot}"
+                         aria-label="${t('inv_equip_btn')} ${t(shopItem.nameKey) || itemId}">
+                   ${t('inv_equip_btn')}
+                 </button>`
+            }
+          </div>`;
+
+        li.querySelector('.btn-inv-protect')?.addEventListener('click', e => {
+          const id = e.currentTarget.dataset.itemId;
+          Inventory.toggleProtect(id);
+          renderInventory();
+        });
+        li.querySelector('.btn-inv-examine')?.addEventListener('click', e => {
+          const id   = e.currentTarget.dataset.itemId;
+          const item = SHOP_CATALOG.find(i => i.id === id);
+          if (!item) return;
+          const mods = Object.entries(item.modifiers || {})
+            .map(([k,v]) => `${k}: ${v}`).join(' | ');
+          _invFeedback(fbEl, `${t(item.nameKey) || id} — Tier ${item.tier || '—'} | ${mods || '—'}`, true);
+        });
+
+        li.querySelector('.btn-inv-equip')?.addEventListener('click', e => {
+          const id   = e.currentTarget.dataset.itemId;
+          const slot = e.currentTarget.dataset.slot;
+          _equipItem(id, slot);
+          Inventory.addEquip(id);
+          renderInventory();
+        });
+
+        li.querySelector('.btn-inv-unequip')?.addEventListener('click', e => {
+          const slot = e.currentTarget.dataset.slot;
+          Inventory.unequipSlot(slot);
+          _recalcGearMods();
+          renderInventory();
+        });
+
+        equipList.appendChild(li);
+      });
+    }
   }
 
   function _invFeedback(el, msg, ok = true) {
@@ -1743,7 +1819,7 @@ const Game = (() => {
     _renderShopSell();
   }
 
-  // ── Painel COMPRAR ────────────────────────────────────────────────────────
+  // ── Painéis da Loja ───────────────────────────────────────────────────────
   function _renderShopBuy() {
     ShopBuyView.render({
       translate: t,
@@ -1757,7 +1833,6 @@ const Game = (() => {
       rerender: renderShop,
     });
   }
-
 
   function _renderShopSell() {
     ShopSellView.render({
@@ -1778,7 +1853,6 @@ const Game = (() => {
       feedback: _shopFeedback,
     });
   }
-
 
   function _handleShopBuy(itemId, itemType, userQty, packQty, unitPrice, fbEl) {
     userQty  = Math.max(1, parseInt(userQty) || 1);
