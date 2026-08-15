@@ -1556,8 +1556,10 @@ const Game = (() => {
   function _renderBoatVisual() {
     const map = activeMap;
     const allowed = _mapAllowedBoats(map);
-    const needsBoat = allowed.length > 0;
-    const boatId = _mapBoatId(map) || allowed[0] || null;
+    // Pesca Livre é independente da progressão e sempre acontece da margem;
+    // barcos só participam das pescarias do modo História.
+    const needsBoat = gameMode !== 'free' && allowed.length > 0;
+    const boatId = needsBoat ? (_mapBoatId(map) || allowed[0] || null) : null;
     const vessel = boatId ? VESSELS_CATALOG.find(v => v.id === boatId) : null;
     const icon = vessel?.emoji || (needsBoat ? '🚣' : '');
     ui.boatVisual?.classList.toggle('hidden', !needsBoat);
