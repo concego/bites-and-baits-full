@@ -1638,103 +1638,31 @@ const Game = (() => {
   }
 
   /** Renderiza a tela de seleção de destino */
-  function renderTravel() { if (typeof _refreshHubHUD === 'function') _refreshHubHUD();
-    const map     = getActiveMap();
-    const nameEl  = $('travel-current-name');
-    const emojiEl = $('travel-current-emoji');
-    if (nameEl)  nameEl.textContent  = I18n.t(map.nameKey) || map.id;
-    if (emojiEl) emojiEl.textContent = map.emoji || '🏞️';
-
-    const list = $('travel-dest-list');
-    if (!list) return;
-    list.innerHTML = '';
-
-    // Barcos e equipamento atualmente disponíveis ao jogador.
-    const ownedEquip = Inventory.getOwnedEquip();
-    const equipped   = Inventory.getEquip();
-    MAPS.forEach(m => {
-      const isActive  = m.id === map.id;
-      const hasBoat = _hasMapBoatAccess(m, ownedEquip);
-      const hasRod  = _hasRequiredRod(m, equipped);
-      const li = document.createElement('li');
-      li.className = 'travel-item' + (isActive ? ' travel-item--active' : '');
-      const travelBoatId = _mapBoatId(m, ownedEquip) || _mapAllowedBoats(m)[0] || null;
-      const travelBoat = travelBoatId ? VESSELS_CATALOG.find(v => v.id === travelBoatId) : null;
-
-      let actionsHtml;
-      if (isActive && !hasBoat) {
-        const lockMsg = `🚣 ${I18n.t('travel_need_boat') || 'Precisa de barco'}: ${_mapBoatLabel(m)}`;
-        actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
-      } else if (isActive && !hasRod) {
-        const lockMsg = `🎋 ${I18n.t('travel_need_rod')}`;
-        actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
-      } else if (isActive) {
-        actionsHtml = `<button class="btn-primary btn-sm travel-btn-fish"
-                               data-map-id="${m.id}"
-                               aria-label="${I18n.t('travel_fish_here')} — ${I18n.t(m.nameKey) || m.id}">
-                         ${I18n.t('travel_fish_here')}
-                       </button>`;
-      } else if (hasBoat) {
-        actionsHtml = `<button class="btn-secondary btn-sm travel-btn-go"
-                               data-map-id="${m.id}"
-                               aria-label="${I18n.t('travel_go_to') || 'Ir para'} ${I18n.t(m.nameKey) || m.id}">
-                         🗺️ ${I18n.t('travel_go') || 'Ir'}
-                       </button>`;
-      } else {
-        const lockMsg = _mapAllowedBoats(m).length
-          ? `🚣 ${I18n.t('travel_need_boat') || 'Precisa de barco'}: ${_mapBoatLabel(m)}`
-          : I18n.t('travel_locked') || '🔒';
-        actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
-      }
-
-      li.innerHTML = `
-        <span class="travel-item-emoji" aria-hidden="true">${m.emoji || '🏞️'}</span>
-        <div class="travel-item-info">
-          <span class="travel-item-name">${I18n.t(m.nameKey) || m.id}</span>
-          ${travelBoat?.sprite ? Visuals.boatMarkup(travelBoat.sprite, 'travel-item-vessel-svg') : ''}
-        </div>
-        <div class="travel-item-actions">${actionsHtml}</div>`;
-
-      // Pescar no mapa atual
-      li.querySelector('.travel-btn-fish')?.addEventListener('click', () => {
-        startGame('normal');
-      });
-
-      // Viajar para outro mapa — cobrar taxa de estaleiro se necessário
-      li.querySelector('.travel-btn-go')?.addEventListener('click', e => {
-        const destId    = e.currentTarget.dataset.mapId;
-        const destMap   = MAP_CATALOG[destId];
-        const boatId    = _mapBoatId(destMap, ownedEquip);
-        if (_mapAllowedBoats(destMap).length && !boatId) {
-          speak(`${I18n.t('travel_need_boat') || 'Precisa de barco'}: ${_mapBoatLabel(destMap)}`);
-          return;
-        }
-        if (boatId && boatId !== Inventory.getActiveBoat()) Inventory.setActiveBoat(boatId);
-        const fee       = Inventory.calcBoatFee(boatId);
-
-        if (fee > 0) {
-          // Verificar se tem moedas suficientes
-          if (Inventory.coins() < fee) {
-            const vessel = VESSELS_CATALOG.find(v => v.id === boatId);
-            const name   = vessel ? (I18n.t(vessel.nameKey) || vessel.id) : boatId;
-            speak(`${I18n.t('vessel_no_coins') || 'Moedas insuficientes'} — ${I18n.t('house_dock_fee') || 'Taxa'}: ${fee} 🪙`);
-            return;
-          }
-          // Cobrar taxa e anunciar
-          Inventory.spendCoins(fee);
-          const vessel = VESSELS_CATALOG.find(v => v.id === boatId);
-          const name   = vessel ? (I18n.t(vessel.nameKey) || vessel.id) : boatId;
-          speak(`${I18n.t('house_fee_paid') || 'Taxa paga'}: ${fee} 🪙`);
-        }
-
-        setActiveMap(destId);
-        showScreen('game');
-        startGame('normal');
-      });
-
-      list.appendChild(li);
+  function renderTravel() {
+    TravelView.render({
+      translate: t,
+      getActiveMap,
+      ownedEquip: () => Inventory.getOwnedEquip(),
+      equipped: () => Inventory.getEquip(),
+      maps: MAPS,
+      vesselCatalog: VESSELS_CATALOG,
+      hasMapBoatAccess: _hasMapBoatAccess,
+      mapBoatId: _mapBoatId,
+      mapAllowedBoats: _mapAllowedBoats,
+      mapBoatLabel: _mapBoatLabel,
+      speak,
+      startGame,
+      setActiveMap,
+      showScreen,
+      calcBoatFee: boatId => Inventory.calcBoatFee(boatId),
+      getActiveBoat: () => Inventory.getActiveBoat(),
+      setActiveBoat: id => Inventory.setActiveBoat(id),
+      coins: () => Inventory.coins(),
+      spendCoins: fee => Inventory.spendCoins(fee),
+      refreshHubHUD: _refreshHubHUD,
     });
   }
+
 
   // ── Modal de Zonas de Pesca ──────────────────────────────────────────────
 
