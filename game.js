@@ -444,6 +444,8 @@ const Game = (() => {
     storyOpeningStep = 'playerLetter';
     _renderStoryOpening();
     showScreen('storyOpening');
+    // A correspondência mantém a mesma atmosfera sonora acolhedora da Casa.
+    CityMusic.start('house');
   }
 
   function _advanceStoryOpening() {
@@ -459,6 +461,8 @@ const Game = (() => {
     }
     localStorage.setItem(STORY_OPENING_KEY, '1');
     showStoryHub();
+    // A frase da carta não deve permanecer na live region depois da chegada.
+    setTimeout(() => speak(''), 250);
   }
 
   function _confirmCharacterVisual() {
