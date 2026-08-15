@@ -280,34 +280,13 @@ const Game = (() => {
     $('btn-character-visual-back')?.addEventListener('click', openCharacterCreate);
     $('btn-character-visual-confirm')?.addEventListener('click', _confirmCharacterVisual);
 
-    // Mode-tabs Comprar / Vender
-    document.querySelectorAll('.shop-mode-tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.shop-mode-tab').forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-        const mode = btn.dataset.mode;
-        $('shop-panel-buy').classList.toggle('hidden',  mode !== 'buy');
-        $('shop-panel-sell').classList.toggle('hidden', mode !== 'sell');
-      });
-    });
-
-    // Sub-guias dentro de cada painel
-    document.querySelectorAll('#shop-panel-buy .shop-tab').forEach(tab => {
-      tab.addEventListener('click', () => _switchPanelTab('shop-panel-buy', tab.dataset.tab, 'buy'));
-    });
-    document.querySelectorAll('#shop-panel-sell .shop-tab').forEach(tab => {
-      tab.addEventListener('click', () => _switchPanelTab('shop-panel-sell', tab.dataset.tab, 'sell'));
-    });
+    // Os menus podem ser renderizados novamente ao entrar neles; os binds
+    // idempotentes são chamados também por renderShop/renderInventory.
+    _bindShopNavigation();
+    _bindInventoryNavigation();
 
     // ── Inventário (acesso via hub) ────────────────────────────────────────
     $('btn-inv-back')?.addEventListener('click', () => showStoryHub());
-    document.querySelectorAll('#screen-inventory .shop-tab').forEach(tab => {
-      tab.addEventListener('click', () => _switchPanelTab('screen-inventory', tab.dataset.tab, 'inv'));
-    });
     $('btn-opt-lang-pt')?.addEventListener('click', () => selectLang('pt'));
     $('btn-opt-lang-en')?.addEventListener('click', () => selectLang('en'));
     $('btn-opt-lang-hu')?.addEventListener('click', () => selectLang('hu'));
@@ -1673,6 +1652,42 @@ const Game = (() => {
 
   // ── Loja / Inventário ─────────────────────────────────────────────────────
 
+  function _bindShopNavigation() {
+    document.querySelectorAll('.shop-mode-tab').forEach(btn => {
+      if (btn.dataset.bbNavBound) return;
+      btn.dataset.bbNavBound = 'true';
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.shop-mode-tab').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        const mode = btn.dataset.mode;
+        $('shop-panel-buy')?.classList.toggle('hidden', mode !== 'buy');
+        $('shop-panel-sell')?.classList.toggle('hidden', mode !== 'sell');
+      });
+    });
+    document.querySelectorAll('#shop-panel-buy .shop-tab').forEach(tab => {
+      if (tab.dataset.bbNavBound) return;
+      tab.dataset.bbNavBound = 'true';
+      tab.addEventListener('click', () => _switchPanelTab('shop-panel-buy', tab.dataset.tab, 'buy'));
+    });
+    document.querySelectorAll('#shop-panel-sell .shop-tab').forEach(tab => {
+      if (tab.dataset.bbNavBound) return;
+      tab.dataset.bbNavBound = 'true';
+      tab.addEventListener('click', () => _switchPanelTab('shop-panel-sell', tab.dataset.tab, 'sell'));
+    });
+  }
+
+  function _bindInventoryNavigation() {
+    document.querySelectorAll('#screen-inventory .shop-tab').forEach(tab => {
+      if (tab.dataset.bbNavBound) return;
+      tab.dataset.bbNavBound = 'true';
+      tab.addEventListener('click', () => _switchPanelTab('screen-inventory', tab.dataset.tab, 'inv'));
+    });
+  }
+
   function switchTab(screenId, tabName) {
     const screen = document.getElementById(screenId);
     screen.querySelectorAll('.shop-tab').forEach(btn => {
@@ -1710,6 +1725,7 @@ const Game = (() => {
 
   /* ── INVENTÁRIO ──────────────────────────────────────────────────────── */
   function renderInventory() {
+    _bindInventoryNavigation();
     // Controla elementos que só existem no modo história
     const isStory = (gameMode === 'normal');
     const sellAllBar = document.querySelector('.inv-sell-all-bar');
@@ -1842,6 +1858,7 @@ const Game = (() => {
 
   /* ── LOJA ────────────────────────────────────────────────────────────── */
   function renderShop() {
+    _bindShopNavigation();
     $('shop-coins').textContent = Inventory.coins();
     $('shop-feedback').classList.add('hidden');
     _renderShopBuy();
