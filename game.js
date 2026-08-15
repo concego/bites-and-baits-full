@@ -1463,35 +1463,22 @@ const Game = (() => {
     Audio.stopAmbient();
     Audio.stopReel();
     setTalkbackSilent(false);
-    ui.resultScore.textContent = score;
-    ui.resultBest.textContent  = best;
-    if (caught && currentFish) {
-      const useEl = $('result-fish-use');
-      if (useEl) useEl.setAttribute('href', `#${currentFish.sprite}`);
-      $('result-fish-svg').style.display = '';
-      ui.resultTitle.textContent = I18n.t('result_caught');
-      if (_lastCaughtItem) {
-        ui.resultDesc.textContent = I18n.t(
-          'result_caught_weight',
-          fishName(currentFish),
-          _lastCaughtItem.weight,
-          _lastCaughtItem.value,
-          Inventory.coins()
-        );
-      } else {
-        ui.resultDesc.textContent = I18n.t('result_caught_desc', fishName(currentFish));
-      }
-    } else {
-      $('result-fish-svg').style.display = 'none';
-      ui.resultIcon.innerHTML    = '<span style="font-size:80px">💔</span>';
-      ui.resultTitle.textContent = I18n.t('result_snapped');
-      ui.resultDesc.textContent  = I18n.t('result_snapped_desc');
-    }
+    ResultView.render({
+      caught,
+      currentFish,
+      lastCaughtItem: _lastCaughtItem,
+      score,
+      best,
+      translate: t,
+      fishName,
+      coins: () => Inventory.coins(),
+    });
     if (typeof GameTime !== 'undefined' && gameMode === 'normal') {
       GameTime.advance('fish');
     }
     showScreen('result');
   }
+
 
   function goToMenu() {
     clearTimers();
