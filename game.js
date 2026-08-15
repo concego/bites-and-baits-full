@@ -274,6 +274,18 @@ const Game = (() => {
       goToMenu();
     });
     $('btn-equip-close')?.addEventListener('click', () => closeEquipPanel());
+    $('btn-cat-baits')?.addEventListener('click', () => {
+      _renderBaitList();
+      _showEquipView('baits');
+      const firstBtn = ui.baitList?.querySelector('button:not([disabled])')
+        || ui.baitList?.querySelector('button')
+        || $('btn-equip-back');
+      firstBtn?.focus();
+    });
+    $('btn-equip-back')?.addEventListener('click', () => {
+      _showEquipView('categories');
+      $('btn-cat-baits')?.focus();
+    });
     // Delegação de emergência para os menus internos: garante que os tabs
     // continuem operacionais mesmo quando a tela é re-renderizada.
     document.addEventListener('click', _handleInternalMenuClick, true);
@@ -299,19 +311,6 @@ const Game = (() => {
       startGame(gameMode);
     });
 
-    // Navegação interna do painel
-    $('btn-cat-baits')?.addEventListener('click', () => {
-      _renderBaitList();
-      _showEquipView('baits');
-      const firstBtn = ui.baitList.querySelector('button:not([disabled])') ||
-                       ui.baitList.querySelector('button') ||
-                       $('btn-equip-back');
-      firstBtn?.focus();
-    });
-    $('btn-equip-back')?.addEventListener('click', () => {
-      _showEquipView('categories');
-      $('btn-cat-baits')?.focus();
-    });
 
     // Listeners dos toggles de acessibilidade
     document.querySelectorAll('.toggle-btn[data-pref]').forEach(btn => {
