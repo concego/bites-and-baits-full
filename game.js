@@ -254,6 +254,15 @@ const Game = (() => {
     $('btn-vessel-back')?.addEventListener('click',() => showStoryHub());
     $('btn-shop-back')?.addEventListener('click', () => showStoryHub());
 
+    // Controles essenciais da pesca são registrados junto da navegação, antes
+    // de qualquer painel opcional.
+    $('btn-menu')?.addEventListener('click', () => goToMenu());
+    $('btn-menu2')?.addEventListener('click', () => goToMenu());
+    if (typeof Sensors !== 'undefined' && typeof Sensors.on === 'function') {
+      Sensors.on('onTilt', handleTilt);
+      Sensors.on('onShake', handleShake);
+    }
+
     ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
     $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
     $('btn-character-visual-back')?.addEventListener('click', openCharacterCreate);
@@ -290,8 +299,6 @@ const Game = (() => {
     $('btn-opt-lang-pt')?.addEventListener('click', () => selectLang('pt'));
     $('btn-opt-lang-en')?.addEventListener('click', () => selectLang('en'));
     $('btn-opt-lang-hu')?.addEventListener('click', () => selectLang('hu'));
-    $('btn-menu')?.addEventListener('click',  () => goToMenu());
-    $('btn-menu2')?.addEventListener('click', () => goToMenu());
     // F leva o foco aos dados da última captura sem interferir nas setas ou no Espaço.
     document.addEventListener('keydown', _handleLastCatchKey, true);
     $('btn-continue')?.addEventListener('click', () => {
@@ -335,8 +342,6 @@ const Game = (() => {
       });
     });
 
-    Sensors.on('onTilt',  handleTilt);
-    Sensors.on('onShake', handleShake);
   }
 
   /** Sincroniza o estado visual dos toggles com as preferências salvas */
