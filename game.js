@@ -274,6 +274,9 @@ const Game = (() => {
       goToMenu();
     });
     $('btn-equip-close')?.addEventListener('click', () => closeEquipPanel());
+    // Delegação de emergência para os menus internos: garante que os tabs
+    // continuem operacionais mesmo quando a tela é re-renderizada.
+    document.addEventListener('click', _handleInternalMenuClick, true);
 
     ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
     $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
@@ -1651,6 +1654,30 @@ const Game = (() => {
   }
 
   // ── Loja / Inventário ─────────────────────────────────────────────────────
+
+  function _handleInternalMenuClick(event) {
+    const target = event.target.closest?.('button');
+    if (!target) return;
+    if (target.classList.contains('shop-mode-tab')) {
+      event.stopPropagation();
+      document.querySelectorAll('.shop-mode-tab').forEach(btn => {
+        const active = btn === target;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      $('shop-panel-buy')?.classList.toggle('hidden', target.dataset.mode !== 'buy');
+      $('shop-panel-sell')?.classList.toggle('hidden', target.dataset.mode !== 'sell');
+      return;
+    }
+    if (target.classList.contains('shop-tab')) {
+      const panel = target.closest('#shop-panel-buy, #shop-panel-sell, #screen-inventory');
+      if (!panel) return;
+      event.stopPropagation();
+      const prefix = panel.id === 'screen-inventory'
+        ? 'inv' : (panel.id === 'shop-panel-buy' ? 'buy' : 'sell');
+      _switchPanelTab(panel.id, target.dataset.tab, prefix);
+    }
+  }
 
   function _bindShopNavigation() {
     document.querySelectorAll('.shop-mode-tab').forEach(btn => {
