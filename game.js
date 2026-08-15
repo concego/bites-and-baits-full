@@ -2017,95 +2017,14 @@ const Game = (() => {
     });
 
     // ── Aba Equipamentos ────────────────────────────────────────────────────
-    const owned      = Inventory.getOwnedEquip();
-    const equipList  = $('inv-equip-list');
-    const equipEmpty = $('inv-equip-empty');
-    equipList.innerHTML = '';
-
-    const defaults = ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'];
-    const allOwned = [...new Set([...defaults, ...owned])];
-
-    // Agrupar por slot para exibir o item equipado por slot
-    const SLOT_MAP = { rod:'rod', line:'line', hook:'hook', float:'float', basket:'basket' };
-
-    if (allOwned.length === 0) {
-      equipEmpty.classList.remove('hidden');
-    } else {
-      equipEmpty.classList.add('hidden');
-      allOwned.forEach(itemId => {
-        const shopItem = (typeof SHOP_CATALOG !== 'undefined')
-          ? SHOP_CATALOG.find(i => i.id === itemId) : null;
-        if (!shopItem) return;
-        const slot       = shopItem.type; // 'rod' | 'line' | 'hook' | 'float'
-        const isEquipped = equip[slot] === itemId;
-        const li = document.createElement('li');
-        li.className = 'inv-item inv-equip-item';
-        li.innerHTML = `
-          <span class="inv-item-icon" aria-hidden="true">${shopItem.sprite ? Visuals.iconMarkup(shopItem.sprite, 'bb-svg-icon bb-svg-icon--small') : shopItem.emoji}</span>
-          <div class="inv-item-info">
-            <span class="inv-item-name">${t(shopItem.nameKey) || shopItem.id}
-              ${isEquipped ? `<span class="inv-badge-equip">${t('inv_equipped_badge')}</span>` : ''}
-            </span>
-            <span class="inv-item-detail">${t(shopItem.descKey) || ''}</span>
-            ${shopItem.tier ? `<span class="shop-tier-badge">${t('shop_tier', shopItem.tier)}</span>` : ''}
-          </div>
-          <div class="inv-item-actions">
-            <button class="btn-inv-protect btn-secondary"
-                    data-item-id="${itemId}"
-                    aria-pressed="${Inventory.isProtected(itemId)}">
-              ${Inventory.isProtected(itemId) ? t('inv_unprotect') : t('inv_protect')}
-            </button>
-            <button class="btn-inv-examine btn-secondary"
-                    data-item-id="${itemId}"
-                    aria-label="${t('inv_examine')} ${t(shopItem.nameKey) || itemId}">
-              ${t('inv_examine')}
-            </button>
-            ${isEquipped
-              ? `<button class="btn-inv-unequip btn-danger"
-                         data-item-id="${itemId}" data-slot="${slot}"
-                         aria-label="${t('inv_unequip_btn')} ${t(shopItem.nameKey) || itemId}">
-                   ${t('inv_unequip_btn')}
-                 </button>`
-              : `<button class="btn-inv-equip btn-secondary"
-                         data-item-id="${itemId}" data-slot="${slot}"
-                         aria-label="${t('inv_equip_btn')} ${t(shopItem.nameKey) || itemId}">
-                   ${t('inv_equip_btn')}
-                 </button>`
-            }
-          </div>`;
-
-        li.querySelector('.btn-inv-protect')?.addEventListener('click', e => {
-          const id = e.currentTarget.dataset.itemId;
-          Inventory.toggleProtect(id);
-          renderInventory();
-        });
-        li.querySelector('.btn-inv-examine')?.addEventListener('click', e => {
-          const id   = e.currentTarget.dataset.itemId;
-          const item = SHOP_CATALOG.find(i => i.id === id);
-          if (!item) return;
-          const mods = Object.entries(item.modifiers || {})
-            .map(([k,v]) => `${k}: ${v}`).join(' | ');
-          _invFeedback(fbEl, `${t(item.nameKey) || id} — Tier ${item.tier || '—'} | ${mods || '—'}`, true);
-        });
-
-        li.querySelector('.btn-inv-equip')?.addEventListener('click', e => {
-          const id   = e.currentTarget.dataset.itemId;
-          const slot = e.currentTarget.dataset.slot;
-          _equipItem(id, slot);
-          Inventory.addEquip(id);
-          renderInventory();
-        });
-
-        li.querySelector('.btn-inv-unequip')?.addEventListener('click', e => {
-          const slot = e.currentTarget.dataset.slot;
-          Inventory.unequipSlot(slot);
-          _recalcGearMods();
-          renderInventory();
-        });
-
-        equipList.appendChild(li);
-      });
-    }
+    InventoryEquipmentView.render({
+      translate: t,
+      equipment: equip,
+      feedback: _invFeedback.bind(null, fbEl),
+      equipItem: _equipItem,
+      recalcGearMods: _recalcGearMods,
+      rerender: renderInventory,
+    });
   }
 
   function _invFeedback(el, msg, ok = true) {
