@@ -1577,104 +1577,22 @@ const Game = (() => {
 
   /** Renderiza a tela do estaleiro com embarcações para comprar e possuídas. */
   function renderVessel() {
-    const owned      = Inventory.getOwnedEquip();
-    const activeBoat = Inventory.getActiveBoat();
-    const coins      = Inventory.coins();
-    const buyList    = $('vessel-buy-list');
-    const ownedList  = $('vessel-owned-list');
-    const ownedSec   = $('vessel-owned-section');
-
-    buyList.innerHTML   = '';
-    ownedList.innerHTML = '';
-
-    const toBuy  = VESSELS_CATALOG.filter(v => !owned.includes(v.id));
-    const toShow = VESSELS_CATALOG.filter(v =>  owned.includes(v.id));
-
-    // ── Disponíveis para compra ──────────────────────────────────────────
-    toBuy.forEach(v => {
-      const canAfford = coins >= v.price;
-      const li = document.createElement('li');
-      li.className = 'vessel-card';
-      li.setAttribute('role', 'listitem');
-      li.innerHTML =
-        `<div class="vessel-card-info">
-           <span class="vessel-card-visual" aria-hidden="true">${Visuals.boatMarkup(v.sprite)}</span>
-           <span class="vessel-card-name">${I18n.t('boat_' + v.id) || v.id}</span>
-           <span class="vessel-card-desc">${I18n.t(v.descKey) || ''}</span>
-           <span class="vessel-card-price">${v.price} 🪙 · Porão: ${v.holdCap} peixes</span>
-         </div>
-         <div class="vessel-card-actions">
-           <button class="btn-primary btn-buy-vessel"
-                   data-vessel-id="${v.id}"
-                   ${canAfford ? '' : 'disabled'}
-                   aria-label="${I18n.t('vessel_btn_buy') || 'Comprar'} ${I18n.t('boat_' + v.id) || v.id}">
-             ${canAfford ? I18n.t('vessel_btn_buy') || 'Comprar' : I18n.t('vessel_no_coins') || 'Sem moedas'}
-           </button>
-         </div>`;
-      buyList.appendChild(li);
+    VesselView.render({
+      translate: t,
+      ownedEquip: () => Inventory.getOwnedEquip(),
+      activeBoat: () => Inventory.getActiveBoat(),
+      coins: () => Inventory.coins(),
+      vessels: VESSELS_CATALOG,
+      getVessel,
+      spendCoins: price => Inventory.spendCoins(price),
+      addEquip: id => Inventory.addEquip(id),
+      getActiveBoat: () => Inventory.getActiveBoat(),
+      setActiveBoat: id => Inventory.setActiveBoat(id),
+      refreshHubHUD: _refreshHubHUD,
+      rerender: renderVessel,
     });
-
-    if (toBuy.length === 0) {
-      const li = document.createElement('li');
-      li.textContent = I18n.t('vessel_owned_title') || '';
-      buyList.appendChild(li);
-    }
-
-    // ── Possuídas ────────────────────────────────────────────────────────
-    if (toShow.length > 0) {
-      ownedSec.hidden = false;
-      toShow.forEach(v => {
-        const isActive = v.id === activeBoat;
-        const li = document.createElement('li');
-        li.className = 'vessel-card';
-        li.setAttribute('role', 'listitem');
-        li.innerHTML =
-          `<div class="vessel-card-info">
-             <span class="vessel-card-visual" aria-hidden="true">${Visuals.boatMarkup(v.sprite)}</span>
-             <span class="vessel-card-name">${I18n.t('boat_' + v.id) || v.id}</span>
-             <span class="vessel-card-desc">${I18n.t(v.descKey) || ''}</span>
-             <span class="vessel-card-price">Porão: ${v.holdCap} peixes</span>
-           </div>
-           <div class="vessel-card-actions">
-             ${isActive
-               ? `<span class="vessel-equipped-badge">${I18n.t('vessel_equipped_label') || '✅ Em uso'}</span>`
-               : `<button class="btn-secondary btn-equip-vessel"
-                          data-vessel-id="${v.id}"
-                          aria-label="${I18n.t('vessel_equip') || 'Usar'} ${I18n.t('boat_' + v.id) || v.id}">
-                    ${I18n.t('vessel_equip') || 'Usar este barco'}
-                  </button>`}
-           </div>`;
-        ownedList.appendChild(li);
-      });
-    } else {
-      ownedSec.hidden = true;
-    }
-
-    // ── Delegação de eventos ─────────────────────────────────────────────
-    buyList.onclick = e => {
-      const btn = e.target.closest('.btn-buy-vessel');
-      if (!btn || btn.disabled) return;
-      const vid = btn.dataset.vesselId;
-      const v   = getVessel(vid);
-      if (!v) return;
-      if (!Inventory.spendCoins(v.price)) return;
-      Inventory.addEquip(v.id);
-      // Garante que o barco comprado seja registrado como o ativo se for o primeiro
-      if (!Inventory.getActiveBoat()) {
-          Inventory.setActiveBoat(v.id);
-      }
-      // Força o salvamento e re-renderização
-      renderVessel();
-      if (typeof _refreshHubHUD === 'function') _refreshHubHUD();
-    };
-
-    ownedList.onclick = e => {
-      const btn = e.target.closest('.btn-equip-vessel');
-      if (!btn) return;
-      Inventory.setActiveBoat(btn.dataset.vesselId);
-      renderVessel();
-    };
   }
+
 
   function _hasRequiredRod(map, equip = Inventory.getEquip()) {
     if (!map?.requiredRod) return true;
