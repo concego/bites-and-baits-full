@@ -236,18 +236,13 @@ const Game = (() => {
       else if (!Character.isComplete(visualCategories.map(category => category.key), profile)) openCharacterVisual();
       else showStoryHub();
     });
-    ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
-    $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
-    $('btn-character-visual-back')?.addEventListener('click', openCharacterCreate);
-    $('btn-character-visual-confirm')?.addEventListener('click', _confirmCharacterVisual);
+    // Navegação essencial vem antes dos controles opcionais de personagem, para
+    // que uma ausência isolada não impeça o registro do restante do menu.
     $('btn-free')?.addEventListener('click',  () => startGame('free'));
     $('btn-instructions')?.addEventListener('click', () => showScreen('instructions'));
     $('btn-back')?.addEventListener('click',  () => showScreen('start'));
     $('btn-options')?.addEventListener('click', () => { _syncToggles(); showScreen('options'); });
     $('btn-options-back')?.addEventListener('click', () => showScreen('start'));
-
-    // ── Hub da História ────────────────────────────────────────────────────
-    // Hub da cidade
     $('btn-hub-shop')?.addEventListener('click',   () => { renderShop(); showScreen('shop');  _startCityScreenMusic('shop'); });
     $('btn-hub-inv')?.addEventListener('click',    () => { renderInventory(); showScreen('inventory'); _startCityScreenMusic('city'); });
     $('btn-hub-travel')?.addEventListener('click', () => { renderTravel(); showScreen('travel'); _startCityScreenMusic('travel'); });
@@ -255,13 +250,14 @@ const Game = (() => {
     $('btn-hub-home')?.addEventListener('click',   () => { renderHouse();  showScreen('house');  _startCityScreenMusic('house');  });
     $('btn-house-back')?.addEventListener('click', () => showStoryHub());
     $('btn-hub-back')?.addEventListener('click',   () => showScreen('start'));
-    // Tela de viagem
     $('btn-travel-back')?.addEventListener('click',() => showStoryHub());
-    // Estaleiro
     $('btn-vessel-back')?.addEventListener('click',() => showStoryHub());
-
-    // ── Loja (acesso via hub) ──────────────────────────────────────────────
     $('btn-shop-back')?.addEventListener('click', () => showStoryHub());
+
+    ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
+    $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
+    $('btn-character-visual-back')?.addEventListener('click', openCharacterCreate);
+    $('btn-character-visual-confirm')?.addEventListener('click', _confirmCharacterVisual);
 
     // Mode-tabs Comprar / Vender
     document.querySelectorAll('.shop-mode-tab').forEach(btn => {
