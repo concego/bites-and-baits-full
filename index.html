@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css?v=free-back-button-3-20260814" />
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css" />
+  <link rel="stylesheet" href="style-narrative.css" />
   <link rel="stylesheet" href="shop.css" />
   <link rel="stylesheet" href="style_append.css" />
 </head>
@@ -282,6 +283,18 @@
           <button id="btn-character-visual-confirm" type="button" class="btn-primary" data-i18n="character_visual_confirm"></button>
         </div>
       </div>
+    </div>
+
+    <!-- ── Abertura narrativa: correspondência e chegada ─────────────── -->
+    <div id="screen-story-opening" class="screen narrative-screen" role="dialog" aria-modal="true" aria-labelledby="opening-title">
+      <article class="narrative-card" aria-live="polite">
+        <p id="opening-kicker" class="narrative-kicker"></p>
+        <h2 id="opening-title"></h2>
+        <p id="opening-recipient" class="narrative-recipient"></p>
+        <div id="opening-body" class="letter-body"></div>
+        <p id="opening-signature" class="narrative-signature"></p>
+        <button id="btn-opening-next" class="btn-primary" type="button"></button>
+      </article>
     </div>
 
     <!-- ── Hub da Cidade ─────────────────────────────────────────────── -->
@@ -947,7 +960,7 @@
   <script src="house-view.js?v=refactor-16"></script>
   <script src="shop-sell-view.js?v=refactor-15"></script>
   <script src="shop-buy-view.js?v=refactor-14"></script>
-  <script src="game.js?v=refactor-21-fix-13"></script>
+  <script src="game.js?v=refactor-22-opening-01"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"

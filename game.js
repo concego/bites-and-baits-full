@@ -129,6 +129,7 @@ const Game = (() => {
       start:        $('screen-start'),
       characterCreate: $('screen-character-create'),
       characterVisual: $('screen-character-visual'),
+      storyOpening:  $('screen-story-opening'),
       storyHub:     $('screen-story-hub'),
       game:         $('screen-game'),
       result:       $('screen-result'),
@@ -159,6 +160,12 @@ const Game = (() => {
       characterVisualSummary: $('character-visual-summary'),
       characterAvatarPreview: $('character-avatar-preview'),
       characterAvatar: $('character-avatar'),
+      openingKicker:  $('opening-kicker'),
+      openingTitle:   $('opening-title'),
+      openingRecipient: $('opening-recipient'),
+      openingBody:    $('opening-body'),
+      openingSignature: $('opening-signature'),
+      openingNext:    $('btn-opening-next'),
       stateLabel:     $('state-label'),
       tensionCont:    $('tension-container'),
       tensionBar:     $('tension-bar'),
@@ -234,6 +241,7 @@ const Game = (() => {
       const visualCategories = getCharacterVisualCategories(profile);
       if (!Character.isConfirmed()) openCharacterCreate();
       else if (!Character.isComplete(visualCategories.map(category => category.key), profile)) openCharacterVisual();
+      else if (!_isStoryOpeningComplete()) openStoryOpening();
       else showStoryHub();
     });
     // Navegação essencial vem antes dos controles opcionais de personagem, para
@@ -294,6 +302,7 @@ const Game = (() => {
     $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
     $('btn-character-visual-back')?.addEventListener('click', openCharacterCreate);
     $('btn-character-visual-confirm')?.addEventListener('click', _confirmCharacterVisual);
+    $('btn-opening-next')?.addEventListener('click', _advanceStoryOpening);
 
     // Os menus podem ser renderizados novamente ao entrar neles; os binds
     // idempotentes são chamados também por renderShop/renderInventory.
@@ -372,6 +381,100 @@ const Game = (() => {
       lang: I18n.getLang() || 'pt',
       translate: t,
     });
+  }
+
+  const STORY_OPENING_KEY = 'bb_story_opening_complete';
+  let storyOpeningStep = 'playerLetter';
+
+  function _isStoryOpeningComplete() {
+    return localStorage.getItem(STORY_OPENING_KEY) === '1';
+  }
+
+  function _setOpeningBody(paragraphs) {
+    if (!ui.openingBody) return;
+    ui.openingBody.textContent = '';
+    paragraphs.forEach(text => {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = text;
+      ui.openingBody.appendChild(paragraph);
+    });
+  }
+
+  function _renderStoryOpening() {
+    const name = Character.load().name || '';
+    let content;
+    if (storyOpeningStep === 'playerLetter') {
+      content = {
+        kicker: t('opening_letter_sent'),
+        title: t('opening_player_letter_title'),
+        recipient: t('opening_to_zeca'),
+        body: [t('opening_player_letter_body', name)],
+        signature: t('opening_player_signature', name),
+        next: t('opening_read_response'),
+      };
+    } else if (storyOpeningStep === 'zecaLetter') {
+      content = {
+        kicker: t('opening_letter_received'),
+        title: t('opening_zeca_letter_title'),
+        recipient: t('opening_to_player', name),
+        body: [t('opening_zeca_letter_body', name)],
+        signature: t('opening_zeca_signature'),
+        next: t('opening_show_transition'),
+      };
+    } else {
+      content = {
+        kicker: t('opening_time_passage'),
+        title: t('opening_arrival_title'),
+        recipient: '',
+        body: [t('opening_arrival_body', name)],
+        signature: '',
+        next: t('opening_arrive_city'),
+      };
+    }
+    if (ui.openingKicker) ui.openingKicker.textContent = content.kicker;
+    if (ui.openingTitle) ui.openingTitle.textContent = content.title;
+    if (ui.openingRecipient) ui.openingRecipient.textContent = content.recipient;
+    _setOpeningBody(content.body);
+    if (ui.openingSignature) ui.openingSignature.textContent = content.signature;
+    if (ui.openingNext) ui.openingNext.textContent = content.next;
+    speak([content.title, content.recipient, ...content.body, content.signature].filter(Boolean).join(' '));
+  }
+
+  function openStoryOpening() {
+    storyOpeningStep = 'playerLetter';
+    _renderStoryOpening();
+    showScreen('storyOpening');
+  }
+
+  function _advanceStoryOpening() {
+    if (storyOpeningStep === 'playerLetter') {
+      storyOpeningStep = 'zecaLetter';
+      _renderStoryOpening();
+      return;
+    }
+    if (storyOpeningStep === 'zecaLetter') {
+      storyOpeningStep = 'transition';
+      _renderStoryOpening();
+      return;
+    }
+    localStorage.setItem(STORY_OPENING_KEY, '1');
+    showStoryHub();
+  }
+
+  function _confirmCharacterVisual() {
+    const appearance = _readVisualAppearance();
+    const categories = _visualCategories();
+    const missing = categories.filter(category => !appearance[category.key]);
+    if (missing.length) {
+      missing.forEach(category => $(`character-visual-${category.key}`)?.setAttribute('aria-invalid', 'true'));
+      speak(t('character_visual_error'));
+      $(`character-visual-${missing[0].key}`)?.focus();
+      return;
+    }
+    const current = Character.load();
+    Character.saveAppearance(appearance, current.genderProfile);
+    speak(t('character_visual_confirmed'));
+    openStoryOpening();
   }
 
   function openCharacterVisual() {

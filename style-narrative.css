@@ -1,0 +1,32 @@
+/* style-narrative.css — abertura e correspondência */
+.narrative-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at top, rgba(95, 155, 177, .24), transparent 58%), var(--bg, #10252f);
+}
+
+.narrative-card {
+  width: min(100%, 720px);
+  padding: clamp(24px, 5vw, 48px);
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 18px;
+  background: rgba(17, 38, 48, .96);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .28);
+}
+
+.narrative-kicker {
+  margin: 0 0 10px;
+  color: #f2c84b;
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.narrative-card h2 { margin: 0 0 18px; }
+.narrative-recipient { margin: 0 0 22px; font-weight: 700; }
+.letter-body { line-height: 1.75; font-size: 1.05rem; }
+.letter-body p { margin: 0 0 16px; }
+.narrative-signature { margin: 24px 0 28px; font-style: italic; }
+.narrative-card .btn-primary { width: 100%; }

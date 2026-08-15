@@ -50,7 +50,7 @@ const CharacterVisualView = (() => {
         item.textContent = characterVisualLabel(option, lang);
         select.appendChild(item);
       });
-      select.value = character[category.key] || '';
+      select.value = appearance[category.key] || '';
       select.addEventListener('change', () => {
         select.removeAttribute('aria-invalid');
         const selected = readAppearance({ categories, getElement });
