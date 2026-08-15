@@ -370,98 +370,45 @@ const Game = (() => {
   }
 
   function _readVisualAppearance() {
-    const appearance = {};
-    _visualCategories().forEach(category => {
-      const select = $(`character-visual-${category.key}`);
-      appearance[category.key] = select ? select.value : '';
+    return CharacterVisualView.readAppearance({
+      categories: _visualCategories(),
+      getElement: id => $(id),
     });
-    return appearance;
   }
 
   function _renderCharacterAvatar(target, appearanceOverride) {
-    if (!target || typeof CharacterAvatar === 'undefined') return;
-    const current = Character.load();
-    const character = appearanceOverride
-      ? { ...current, appearance: appearanceOverride }
-      : current;
-    CharacterAvatar.render(target, character);
+    CharacterVisualView.renderAvatar({
+      target,
+      character: Character.load(),
+      appearanceOverride,
+    });
   }
 
   function _updateVisualSummary() {
-    if (!ui.characterVisualSummary) return;
-    const lang = I18n.getLang() || 'pt';
-    const appearance = _readVisualAppearance();
-    const parts = _visualCategories().map(category => {
-      const option = category.options.find(item => item.value === appearance[category.key]);
-      if (!option) return `${characterVisualLabel(category, lang)}: ${I18n.t('character_visual_placeholder')}`;
-      return `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`;
+    CharacterVisualView.updateSummary({
+      summary: ui.characterVisualSummary,
+      categories: _visualCategories(),
+      appearance: _readVisualAppearance(),
+      lang: I18n.getLang() || 'pt',
+      translate: t,
     });
-    ui.characterVisualSummary.textContent = parts.join('. ') + '.';
   }
 
   function openCharacterVisual() {
     if (!ui.characterVisualFields) return;
     const current = Character.load();
-    const appearance = current.appearance || {};
-    const categories = getCharacterVisualCategories(current.genderProfile);
-    const lang = I18n.getLang() || 'pt';
-    ui.characterVisualFields.innerHTML = '';
-
-    categories.forEach(category => {
-      const fieldset = document.createElement('fieldset');
-      fieldset.className = 'character-visual-field';
-      const legend = document.createElement('legend');
-      legend.textContent = characterVisualLabel(category, lang);
-      fieldset.appendChild(legend);
-
-      const select = document.createElement('select');
-      select.id = `character-visual-${category.key}`;
-      select.name = category.key;
-      select.required = true;
-      select.setAttribute('aria-label', characterVisualLabel(category, lang));
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = I18n.t('character_visual_placeholder');
-      select.appendChild(placeholder);
-      category.options.forEach(option => {
-        const item = document.createElement('option');
-        item.value = option.value;
-        item.textContent = characterVisualLabel(option, lang);
-        select.appendChild(item);
-      });
-      select.value = current[category.key] || '';
-      select.addEventListener('change', () => {
-        select.removeAttribute('aria-invalid');
-        _updateVisualSummary();
-        _renderCharacterAvatar(ui.characterAvatarPreview, _readVisualAppearance());
-      });
-      fieldset.appendChild(select);
-      ui.characterVisualFields.appendChild(fieldset);
+    CharacterVisualView.open({
+      fields: ui.characterVisualFields,
+      summary: ui.characterVisualSummary,
+      preview: ui.characterAvatarPreview,
+      character: current,
+      categories: getCharacterVisualCategories(current.genderProfile),
+      lang: I18n.getLang() || 'pt',
+      translate: t,
+      getElement: id => $(id),
     });
-
-    _updateVisualSummary();
-    _renderCharacterAvatar(ui.characterAvatarPreview, _readVisualAppearance());
     showScreen('characterVisual');
     ui.characterVisualFields.querySelector('select')?.focus();
-  }
-
-  function _confirmCharacterVisual() {
-    const profile = Character.load().genderProfile;
-    const categories = getCharacterVisualCategories(profile);
-    const appearance = _readVisualAppearance();
-    const firstMissing = categories.find(category => !appearance[category.key]);
-    if (firstMissing) {
-      const missing = $(`character-visual-${firstMissing.key}`);
-      missing?.setAttribute('aria-invalid', 'true');
-      if (ui.characterVisualSummary) ui.characterVisualSummary.textContent = I18n.t('character_visual_error');
-      missing?.focus();
-      speak(I18n.t('character_visual_error'));
-      return;
-    }
-    Character.saveAppearance(appearance, profile);
-    _renderCharacterAvatar(ui.characterAvatar, appearance);
-    speak(I18n.t('character_saved'));
-    showStoryHub();
   }
 
   // ── Criação inicial da personagem ───────────────────────────────────────
