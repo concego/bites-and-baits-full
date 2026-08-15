@@ -262,6 +262,18 @@ const Game = (() => {
       Sensors.on('onTilt', handleTilt);
       Sensors.on('onShake', handleShake);
     }
+    // A barra inferior é essencial no modo História: equipamento, carga,
+    // isca e retorno ao hub precisam continuar disponíveis durante a pesca.
+    $('btn-bar-equip')?.addEventListener('click', () => openEquipPanel());
+    $('btn-bar-hold')?.addEventListener('click', () => openHoldPanel());
+    $('btn-hold-close')?.addEventListener('click', () => closeHoldPanel());
+    $('btn-bar-zone')?.addEventListener('click', () => openZoneModal());
+    $('btn-zone-modal-back')?.addEventListener('click', () => closeZoneModal());
+    $('btn-bar-hub')?.addEventListener('click', () => {
+      if (typeof Sensors !== 'undefined' && typeof Sensors.stop === 'function') Sensors.stop();
+      goToMenu();
+    });
+    $('btn-equip-close')?.addEventListener('click', () => closeEquipPanel());
 
     ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
     $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
@@ -304,20 +316,6 @@ const Game = (() => {
     $('btn-continue')?.addEventListener('click', () => {
       startGame(gameMode);
     });
-
-    // ── Barra inferior (modo história) ────────────────────────────────────
-    $('btn-bar-equip')?.addEventListener('click', () => openEquipPanel());
-    $('btn-bar-hold')?.addEventListener('click', () => openHoldPanel());
-    $('btn-hold-close')?.addEventListener('click', () => closeHoldPanel());
-    $('btn-bar-zone')?.addEventListener('click', () => openZoneModal());
-    $('btn-zone-modal-back')?.addEventListener('click', () => closeZoneModal());
-    $('btn-bar-hub')?.addEventListener('click', () => {
-      Sensors.stop();
-      goToMenu();
-    });
-
-    // Painel de equipamento
-    $('btn-equip-close')?.addEventListener('click', () => closeEquipPanel());
 
     // Navegação interna do painel
     $('btn-cat-baits')?.addEventListener('click', () => {
@@ -702,6 +700,23 @@ const Game = (() => {
   async function startGame(mode = 'normal') {
     try {
       gameMode = mode;
+      // Pesca Livre é independente da posição salva na História: usa sempre
+      // a margem do Lago, sem barco e sem herdar a zona da última viagem.
+      if (gameMode === 'free') {
+        if (activeMap?.sceneClass) ui.scene.classList.remove(activeMap.sceneClass);
+        activeMap = MAP_CATALOG.lago_margem;
+        activeZone = 'margem';
+        ui.scene.classList.add(activeMap.sceneClass);
+      } else {
+        // Ao voltar para a História, restaura o mapa/zona persistidos.
+        if (activeMap?.sceneClass) ui.scene.classList.remove(activeMap.sceneClass);
+        activeMap = getActiveMap();
+        activeZone = Inventory.getActiveZone(activeMap.id)
+          || activeMap.initialZones?.[0]
+          || activeMap.zones?.find(z => !z.hidden)?.id
+          || null;
+        ui.scene.classList.add(activeMap.sceneClass);
+      }
       // Cada modo mantém seu próprio histórico de última captura.
       _lastCatchInfo = LastCatchStorage.load(gameMode);
 
