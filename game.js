@@ -1342,20 +1342,31 @@ const Game = (() => {
 
   /** Abre o painel de equipamento — só disponível no IDLE */
   function openEquipPanel() {
-    FishingPanels.openEquip(ui.equipPanel, _showEquipView);
+    const panel = ui.equipPanel || $('equip-panel');
+    if (!panel) return;
+    _showEquipView('categories');
+    panel.classList.remove('hidden');
+    $('btn-cat-baits')?.focus();
   }
 
   function closeEquipPanel() {
-    FishingPanels.closeEquip(ui.equipPanel);
+    const panel = ui.equipPanel || $('equip-panel');
+    panel?.classList.add('hidden');
+    ($('btn-bar-equip') || $('btn-menu'))?.focus();
   }
 
   /** Abre a carga durante a pescaria, sem sair da tela de jogo. */
   function openHoldPanel() {
-    FishingPanels.openHold(gameMode, state, renderHoldPanel);
+    if (gameMode !== 'normal' || !['IDLE', 'CAUGHT'].includes(state)) return;
+    renderHoldPanel();
+    const panel = $('hold-panel');
+    panel?.classList.remove('hidden');
+    (panel?.querySelector('.hold-release-btn:not([disabled])') || $('btn-hold-close'))?.focus();
   }
 
   function closeHoldPanel() {
-    FishingPanels.closeHold();
+    $('hold-panel')?.classList.add('hidden');
+    ($('btn-bar-hold') || $('btn-bar-equip') || $('btn-menu'))?.focus();
   }
 
   /** Renderiza a carga ativa e permite liberar peixes não protegidos. */
