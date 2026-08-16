@@ -1794,3 +1794,38 @@ html, body {
 
 /* btn-bar-zone — oculto por padrão, visível quando mapa tem zonas */
 #btn-bar-zone.hidden { display: none; }
+
+/* Presença visual do personagem em telas narrativas e da cidade. */
+.character-presence {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 760px);
+  margin: 12px auto 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 14px;
+  background: rgba(0,0,0,.22);
+}
+.character-presence-avatar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex: 0 0 58px;
+  width: 58px;
+  height: 78px;
+}
+.character-presence-avatar .character-avatar-svg {
+  display: block;
+  width: 58px;
+  height: 78px;
+}
+.character-presence-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1.35;
+}
+.character-presence-copy strong { font-size: 1.05rem; }
+.character-presence-copy span { opacity: .82; font-size: .9rem; }
+.house-character-presence { margin: 0 auto 14px; }

@@ -15,12 +15,18 @@ const CharacterVisualView = (() => {
     CharacterAvatar.render(target, rendered);
   }
 
+  function characterVisualOptionText(option, lang) {
+    const label = characterVisualLabel(option, lang);
+    const description = option.description ? characterVisualLabel(option.description, lang) : '';
+    return description ? `${label} — ${description}` : label;
+  }
+
   function updateSummary({ summary, categories, appearance, lang, translate }) {
     if (!summary) return;
     const parts = categories.map(category => {
       const option = category.options.find(item => item.value === appearance[category.key]);
       if (!option) return `${characterVisualLabel(category, lang)}: ${translate('character_visual_placeholder')}`;
-      return `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`;
+      return `${characterVisualLabel(category, lang)}: ${characterVisualOptionText(option, lang)}`;
     });
     summary.textContent = parts.join('. ') + '.';
   }
@@ -47,7 +53,7 @@ const CharacterVisualView = (() => {
       category.options.forEach(option => {
         const item = document.createElement('option');
         item.value = option.value;
-        item.textContent = characterVisualLabel(option, lang);
+        item.textContent = characterVisualOptionText(option, lang);
         select.appendChild(item);
       });
       select.value = appearance[category.key] || '';

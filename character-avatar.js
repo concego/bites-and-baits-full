@@ -6,7 +6,7 @@
 const CharacterAvatar = (() => {
   const SKIN = ['#f6d2b8', '#eab18b', '#c9855b', '#8f573b', '#593323'];
   const SKIN_SHADOW = ['#d99d7c', '#c9825e', '#9f5f40', '#673c2c', '#3b2118'];
-  const EYES = ['#3b2418', '#8a572f', '#3f7844', '#3b78b5', '#70757a'];
+  const EYES = ['#3b2418', '#8a572f', '#3f7844', '#3b78b5', '#70757a', '#0b0b0b'];
   const HAIR = ['#17120f', '#3a2117', '#8a5634', '#d8b26b', '#9b3f2e'];
   const PANTS = { feminine: '#665773', masculine: '#3e5263', neutral: '#4d5f63' };
   const BOOTS = { feminine: '#65433b', masculine: '#3d3029', neutral: '#51483f' };
@@ -21,10 +21,10 @@ const CharacterAvatar = (() => {
     neutral: ['#5e7d86', '#657b67', '#596e82', '#746c58', '#526d67'],
   };
 
-  function _index(value) {
+  function _index(value, max = 5) {
     const match = String(value || '').match(/-(\d+)$/);
     const n = match ? Number(match[1]) : 1;
-    return Math.max(1, Math.min(5, Number.isFinite(n) ? n : 1));
+    return Math.max(1, Math.min(max, Number.isFinite(n) ? n : 1));
   }
 
   function _profileData(profile, bodyIndex) {
@@ -78,12 +78,16 @@ const CharacterAvatar = (() => {
   }
 
   function _hair(style, profile, color, shadow) {
-    const i = _index(style);
-    const back = i === 4 && profile === 'feminine'
-      ? `<path d="M43 55 Q35 24 50 15 Q70 3 91 17 Q105 29 96 72 Q92 55 82 46 Q67 36 50 48Z" fill="${shadow}"/>`
-      : `<path d="M45 52 Q40 24 55 16 Q71 7 88 17 Q101 27 96 54 Q88 38 70 37 Q53 38 45 52Z" fill="${shadow}"/>`;
+    const i = _index(style, 6);
+    const back = i === 6
+      ? `<path d="M41 57 Q34 27 49 13 Q70 -1 92 13 Q107 27 99 78 Q94 66 88 57 Q81 48 70 48 Q58 48 50 58 Q45 67 41 78Z" fill="${shadow}"/>`
+      : i === 4 && profile === 'feminine'
+        ? `<path d="M43 55 Q35 24 50 15 Q70 3 91 17 Q105 29 96 72 Q92 55 82 46 Q67 36 50 48Z" fill="${shadow}"/>`
+        : `<path d="M45 52 Q40 24 55 16 Q71 7 88 17 Q101 27 96 54 Q88 38 70 37 Q53 38 45 52Z" fill="${shadow}"/>`;
     let front;
-    if (i === 5 && profile !== 'feminine') front = `<path d="M48 39 Q51 12 70 12 Q89 12 94 39 Q85 31 70 31 Q56 31 48 39Z" fill="${color}"/>`;
+    if (i === 6) front = `<path d="M42 47 Q39 14 70 9 Q101 14 98 47 Q91 35 82 32 Q76 29 70 32 Q62 29 53 34 Q46 38 42 47Z" fill="${color}"/>
+      <path d="M43 42 Q37 57 45 78 M97 42 Q103 57 95 78" stroke="${color}" stroke-width="7" fill="none" stroke-linecap="round"/>`;
+    else if (i === 5 && profile !== 'feminine') front = `<path d="M48 39 Q51 12 70 12 Q89 12 94 39 Q85 31 70 31 Q56 31 48 39Z" fill="${color}"/>`;
     else if (i === 4 && profile === 'feminine') front = `<path d="M43 42 Q42 10 70 10 Q99 10 97 43 Q88 31 70 29 Q53 31 43 42Z" fill="${color}"/>`;
     else if (i === 3) front = `<path d="M45 40 Q45 11 70 11 Q95 11 96 40 Q87 28 70 28 Q53 28 45 40Z" fill="${color}"/>`;
     else front = `<path d="M47 39 Q47 12 70 12 Q93 12 94 39 Q85 28 70 27 Q55 28 47 39Z" fill="${color}"/>`;
@@ -95,6 +99,8 @@ const CharacterAvatar = (() => {
     if (index === 3) return '<path d="M40 35 Q70 7 100 35 L94 41 Q70 32 46 41Z" fill="#8b6b4e" stroke="#624b38" stroke-width="1.5"/><path d="M42 36 Q70 29 98 36" stroke="#d8b17c" stroke-width="2"/>';
     if (index === 4) return '<path d="M46 28 Q70 9 94 28 L93 49 Q70 40 47 49Z" fill="#75658c"/><path d="M48 32 Q70 25 92 32" stroke="#a898c1" stroke-width="2"/>';
     if (index === 5) return '<path d="M46 30 Q70 11 94 30 L92 50 Q70 42 48 50Z" fill="#c27f58"/><path d="M50 29 Q70 23 90 29" stroke="#e4b083" stroke-width="2"/>';
+    if (index === 6) return '<path d="M48 31 Q70 12 92 31" stroke="#d8a04f" stroke-width="3" fill="none"/><path d="M50 32 Q70 23 90 32" stroke="#f0c87a" stroke-width="1.2" fill="none"/><circle cx="70" cy="22" r="2.5" fill="#f0c87a"/>';
+    if (index === 7) return '<path d="M45 38 Q70 14 95 38" stroke="#5c88a0" stroke-width="4" fill="none"/><path d="M47 39 Q70 29 93 39" stroke="#b7d7df" stroke-width="1.4" fill="none"/>';
     return '';
   }
 
@@ -152,7 +158,7 @@ const CharacterAvatar = (() => {
     const mode = options && options.outfit === 'fishing' ? 'fishing' : 'arrival';
     const skin = SKIN[_index(appearance.skinTone) - 1];
     const shadow = SKIN_SHADOW[_index(appearance.skinTone) - 1];
-    const eye = EYES[_index(appearance.eyeColor) - 1];
+    const eye = EYES[_index(appearance.eyeColor, 6) - 1];
     const hair = HAIR[_index(appearance.hairColor) - 1];
     const hairShadow = hair === '#17120f' ? '#090706' : '#24130f';
     const outfitIndex = _index(mode === 'fishing' ? appearance.fishingOutfit : appearance.arrivalOutfit);
@@ -171,7 +177,7 @@ const CharacterAvatar = (() => {
     const torso = _torso(profile, bodyIndex, shirt, shirtDark, mode === 'fishing');
     const shirtDetails = _shirtDetails(profile, bodyIndex, shirt, shirtDark, mode === 'fishing', outfitIndex);
     const hairMarkup = _hair(appearance.hairStyle, profile, hair, hairShadow);
-    const covering = _headCover(_index(appearance.headCovering));
+    const covering = _headCover(_index(appearance.headCovering, 7));
     const beard = _facialHair(profile, _index(appearance.facialHair), shadow);
     const accessory = _accessory(_index(appearance.accessories), skin);
     const fishingBadge = mode === 'fishing' ? '<path d="M57 111h26v13H57Z" fill="#e8c76a" stroke="#7f6625"/><path d="M61 117h18" stroke="#7f6625" stroke-width="1.4"/>' : '';

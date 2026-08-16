@@ -30,3 +30,17 @@
 .letter-body p { margin: 0 0 16px; }
 .narrative-signature { margin: 24px 0 28px; font-style: italic; }
 .narrative-card .btn-primary { width: 100%; }
+
+.opening-character-avatar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 88px;
+  height: 118px;
+  margin: 0 auto 14px;
+}
+.opening-character-avatar .character-avatar-svg {
+  display: block;
+  width: 88px;
+  height: 118px;
+}

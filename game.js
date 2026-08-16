@@ -160,6 +160,13 @@ const Game = (() => {
       characterVisualSummary: $('character-visual-summary'),
       characterAvatarPreview: $('character-avatar-preview'),
       characterAvatar: $('character-avatar'),
+      openingCharacterAvatar: $('opening-character-avatar'),
+      hubCharacterAvatar: $('hub-character-avatar'),
+      hubCharacterName: $('hub-character-name'),
+      hubCharacterOutfit: $('hub-character-outfit'),
+      houseCharacterAvatar: $('house-character-avatar'),
+      houseCharacterName: $('house-character-name'),
+      houseCharacterOutfit: $('house-character-outfit'),
       openingKicker:  $('opening-kicker'),
       openingTitle:   $('opening-title'),
       openingRecipient: $('opening-recipient'),
@@ -373,6 +380,24 @@ const Game = (() => {
     });
   }
 
+  function _renderCharacterPresence(avatar, nameEl, outfitEl, outfit = 'arrival') {
+    const character = Character.load();
+    if (avatar && typeof CharacterAvatar !== 'undefined') {
+      CharacterAvatar.render(avatar, character, { outfit });
+    }
+    if (nameEl) nameEl.textContent = character.name || t('character_unknown_name');
+    if (outfitEl) {
+      outfitEl.textContent = t(outfit === 'fishing'
+        ? 'character_fishing_outfit_label'
+        : 'character_arrival_outfit_label');
+    }
+  }
+
+  function _renderCharacterPresenceCards() {
+    _renderCharacterPresence(ui.hubCharacterAvatar, ui.hubCharacterName, ui.hubCharacterOutfit, 'arrival');
+    _renderCharacterPresence(ui.houseCharacterAvatar, ui.houseCharacterName, ui.houseCharacterOutfit, 'arrival');
+  }
+
   function _updateVisualSummary() {
     CharacterVisualView.updateSummary({
       summary: ui.characterVisualSummary,
@@ -402,6 +427,7 @@ const Game = (() => {
 
   function _renderStoryOpening() {
     const name = Character.load().name || '';
+    _renderCharacterPresence(ui.openingCharacterAvatar, null, null, 'arrival');
     let content;
     if (storyOpeningStep === 'playerLetter') {
       content = {
@@ -814,7 +840,7 @@ const Game = (() => {
 
       // 1. Troca de tela PRIMEIRO — imediato, sem await
       showScreen('game');
-      _renderCharacterAvatar(ui.characterAvatar, null);
+      CharacterAvatar.render(ui.characterAvatar, Character.load(), { outfit: 'fishing' });
 
       // 2. Sensores e áudio: fire-and-forget, nunca bloqueiam
       Sensors.requestPermission().then(ok => {
@@ -1581,6 +1607,7 @@ const Game = (() => {
   /** Exibe o hub da cidade */
   function showStoryHub() {
     _refreshHubHUD();
+    _renderCharacterPresenceCards();
     Audio.stopAmbient();
     showScreen('storyHub');
     _startCityScreenMusic('city');
@@ -1611,6 +1638,7 @@ const Game = (() => {
 
   /** Renderiza a tela da casa com nível atual e próximo upgrade. */
   function renderHouse() {
+    _renderCharacterPresenceCards();
     HouseView.render({
       translate: t,
       getHouseLevel: getHouseLevel,

@@ -147,6 +147,7 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Verde', 'Green', 'Zöld'),
       _visualTriple('Azul', 'Blue', 'Kék'),
       _visualTriple('Cinza', 'Gray', 'Szürke'),
+      _visualTriple('Preto', 'Black', 'Fekete'),
     ],
     masculine: [
       _visualTriple('Castanho escuro', 'Dark brown', 'Sötétbarna'),
@@ -154,6 +155,7 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Verde', 'Green', 'Zöld'),
       _visualTriple('Azul', 'Blue', 'Kék'),
       _visualTriple('Cinza', 'Gray', 'Szürke'),
+      _visualTriple('Preto', 'Black', 'Fekete'),
     ],
     neutral: [
       _visualTriple('Castanho escuro', 'Dark brown', 'Sötétbarna'),
@@ -161,6 +163,7 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Verde', 'Green', 'Zöld'),
       _visualTriple('Azul', 'Blue', 'Kék'),
       _visualTriple('Cinza', 'Gray', 'Szürke'),
+      _visualTriple('Preto', 'Black', 'Fekete'),
     ],
   }),
   _visualCategory('hairStyle', _visualTriple('Cabelo', 'Hair', 'Haj'), {
@@ -170,6 +173,7 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Médio ondulado', 'Medium wavy', 'Középhosszú, hullámos'),
       _visualTriple('Longo solto', 'Long and loose', 'Hosszú, kibontott'),
       _visualTriple('Longo preso', 'Long tied back', 'Hosszú, összefogott'),
+      _visualTriple('Longo ondulado', 'Long wavy', 'Hosszú, hullámos'),
     ],
     masculine: [
       _visualTriple('Curto liso', 'Short straight', 'Rövid, egyenes'),
@@ -177,6 +181,7 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Médio ondulado', 'Medium wavy', 'Középhosszú, hullámos'),
       _visualTriple('Longo preso', 'Long tied back', 'Hosszú, összefogott'),
       _visualTriple('Sem cabelo', 'No hair', 'Haj nélkül'),
+      _visualTriple('Longo ondulado', 'Long wavy', 'Hosszú, hullámos'),
     ],
     neutral: [
       _visualTriple('Curto liso', 'Short straight', 'Rövid, egyenes'),
@@ -184,6 +189,7 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Médio ondulado', 'Medium wavy', 'Középhosszú, hullámos'),
       _visualTriple('Longo preso', 'Long tied back', 'Hosszú, összefogott'),
       _visualTriple('Sem cabelo', 'No hair', 'Haj nélkül'),
+      _visualTriple('Longo ondulado', 'Long wavy', 'Hosszú, hullámos'),
     ],
   }),
   _visualCategory('hairColor', _visualTriple('Cor do cabelo', 'Hair color', 'Hajszín'), {
@@ -216,6 +222,8 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Chapéu', 'Hat', 'Kalap'),
       _visualTriple('Faixa de cabelo', 'Hair band', 'Hajpánt'),
       _visualTriple('Lenço', 'Scarf', 'Sál'),
+      _visualTriple('Tiara', 'Tiara', 'Tiara'),
+      _visualTriple('Arquinho', 'Headband', 'Hajpánt'),
     ],
     masculine: [
       _visualTriple('Nenhuma cobertura', 'No covering', 'Nincs fejfedő'),
@@ -223,6 +231,8 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Chapéu', 'Hat', 'Kalap'),
       _visualTriple('Gorro', 'Beanie', 'Kötött sapka'),
       _visualTriple('Lenço', 'Scarf', 'Sál'),
+      _visualTriple('Tiara', 'Tiara', 'Tiara'),
+      _visualTriple('Arquinho', 'Headband', 'Hajpánt'),
     ],
     neutral: [
       _visualTriple('Nenhuma cobertura', 'No covering', 'Nincs fejfedő'),
@@ -230,6 +240,8 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Chapéu', 'Hat', 'Kalap'),
       _visualTriple('Gorro', 'Beanie', 'Kötött sapka'),
       _visualTriple('Lenço ou cobertura culturalmente apropriada', 'Scarf or culturally appropriate covering', 'Sál vagy kulturálisan megfelelő fejfedő'),
+      _visualTriple('Tiara', 'Tiara', 'Tiara'),
+      _visualTriple('Arquinho', 'Headband', 'Hajpánt'),
     ],
   }),
   _visualCategory('facialHair', _visualTriple('Pelos faciais', 'Facial hair', 'Arcszőrzet'), {
@@ -349,12 +361,32 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
   }),
 ];
 
+const CHARACTER_VISUAL_OPTION_DESCRIPTIONS = {
+  arrivalOutfit: [
+    _visualTriple('Camiseta clara, calça simples e cores leves.', 'Light shirt, simple trousers and soft colors.', 'Világos felső, egyszerű nadrág és lágy színek.'),
+    _visualTriple('Camiseta escura, calça simples e contraste moderado.', 'Dark shirt, simple trousers and moderate contrast.', 'Sötét felső, egyszerű nadrág és mérsékelt kontraszt.'),
+    _visualTriple('Blusa solta, calça confortável e tons suaves.', 'Loose top, comfortable trousers and soft tones.', 'Laza felső, kényelmes nadrág és lágy árnyalatok.'),
+    _visualTriple('Camisa ou jaqueta leve e combinação contrastante.', 'Light shirt or jacket with a contrasting combination.', 'Könnyű ing vagy dzseki kontrasztos összeállításban.'),
+    _visualTriple('Roupa simples e resistente, adequada para carregar malas.', 'Simple, sturdy clothes suitable for carrying luggage.', 'Egyszerű, strapabíró öltözet, amely alkalmas csomagok cipelésére.'),
+  ],
+  fishingOutfit: [
+    _visualTriple('Camisa leve, calça resistente e colete simples.', 'Light shirt, sturdy trousers and a simple vest.', 'Könnyű felső, strapabíró nadrág és egyszerű mellény.'),
+    _visualTriple('Tons azuis e terrosos com proteção leve.', 'Blue and earth tones with light protection.', 'Kékes és földszínek könnyű védelemmel.'),
+    _visualTriple('Tons verdes e proteção visual contra o sol.', 'Green tones with visual protection from the sun.', 'Zöld árnyalatok nap elleni vizuális védelemmel.'),
+    _visualTriple('Capa leve e peças visualmente impermeáveis.', 'Light rain cape and visibly waterproof pieces.', 'Könnyű esőköpeny és láthatóan vízálló darabok.'),
+    _visualTriple('Colete reforçado, calça resistente e luvas visuais.', 'Reinforced vest, sturdy trousers and visual gloves.', 'Megerősített mellény, strapabíró nadrág és látható kesztyű.'),
+  ],
+};
+
 function getCharacterVisualCategories(profile) {
   const selectedProfile = CHARACTER_VISUAL_PROFILES.includes(profile) ? profile : 'neutral';
   return CHARACTER_VISUAL_CATEGORY_DEFINITIONS.map(category => ({
     key: category.key,
     labels: category.labels,
-    options: category.optionsByProfile[selectedProfile],
+    options: category.optionsByProfile[selectedProfile].map((option, index) => ({
+      ...option,
+      description: CHARACTER_VISUAL_OPTION_DESCRIPTIONS[category.key]?.[index] || null,
+    })),
   }));
 }
 

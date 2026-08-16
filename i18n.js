@@ -64,6 +64,9 @@ const I18n = (() => {
       story_hub_title:    'Modo História',
       // Hub da Cidade
       city_hub_title:     '🏙️ Vila Barra Serena',
+      character_unknown_name: 'Personagem',
+      character_arrival_outfit_label: 'Roupa atual: Roupa de chegada',
+      character_fishing_outfit_label: 'Roupa atual: Roupa de pesca',
       btn_hub_home:       '🏠 Casa / Terreno',
       btn_hub_vessel:     '⛵ Estaleiro',
       // Casa
@@ -578,6 +581,9 @@ const I18n = (() => {
       story_hub_title:    'Story Mode',
       // City Hub
       city_hub_title:     '🏙️ Barra Serena Village',
+      character_unknown_name: 'Character',
+      character_arrival_outfit_label: 'Current outfit: Arrival outfit',
+      character_fishing_outfit_label: 'Current outfit: Fishing outfit',
       btn_hub_home:       '🏠 Home / Land',
       btn_hub_vessel:     '⛵ Boatyard',
       // House
@@ -1181,6 +1187,9 @@ btn_story:        'Történet',
       btn_shop:         '🏪 Bolt',
       story_hub_title:    'Történet mód',
       city_hub_title:     '🏙️ Barra Serena faluja',
+      character_unknown_name: 'Karakter',
+      character_arrival_outfit_label: 'Jelenlegi öltözet: Érkezési öltözet',
+      character_fishing_outfit_label: 'Jelenlegi öltözet: Horgászöltözet',
       btn_hub_home:       '🏠 Otthon / Telek',
       btn_hub_vessel:     '⛵ Hajóépítő',
       // Ház

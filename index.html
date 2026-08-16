@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Bites &amp; Baits</title>
-  <link rel="stylesheet" href="style.css?v=free-back-button-3-20260814" />
+  <link rel="stylesheet" href="style.css?v=character-presence-20260815" />
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css" />
   <link rel="stylesheet" href="style-narrative.css" />
@@ -289,6 +289,7 @@
     <!-- ── Abertura narrativa: correspondência e chegada ─────────────── -->
     <div id="screen-story-opening" class="screen narrative-screen" role="dialog" aria-modal="true" aria-labelledby="opening-title">
       <article class="narrative-card" aria-live="polite">
+        <div id="opening-character-avatar" class="opening-character-avatar" aria-hidden="true"></div>
         <p id="opening-kicker" class="narrative-kicker"></p>
         <h2 id="opening-title"></h2>
         <p id="opening-recipient" class="narrative-recipient"></p>
@@ -302,6 +303,13 @@
     <div id="screen-story-hub" class="screen">
       <button id="btn-hub-back" class="btn-ghost screen-back-top" data-i18n="btn_back_main"></button>
       <header class="story-hub-header">
+        <div class="character-presence">
+          <div id="hub-character-avatar" class="character-presence-avatar" aria-hidden="true"></div>
+          <div class="character-presence-copy">
+            <strong id="hub-character-name"></strong>
+            <span id="hub-character-outfit"></span>
+          </div>
+        </div>
         <h2 data-i18n="city_hub_title"></h2>
         <div class="hub-status-row">
           <div class="coins-display story-hub-coins" aria-live="polite">
@@ -329,6 +337,13 @@
     <div id="screen-house" class="screen" role="dialog" aria-modal="true"
          aria-labelledby="house-title">
       <button id="btn-house-back" class="btn-ghost screen-back-top" data-i18n="btn_back"></button>
+      <div class="character-presence house-character-presence">
+        <div id="house-character-avatar" class="character-presence-avatar" aria-hidden="true"></div>
+        <div class="character-presence-copy">
+          <strong id="house-character-name"></strong>
+          <span id="house-character-outfit"></span>
+        </div>
+      </div>
       <header class="panel-header">
         <h2 id="house-title" data-i18n="house_title"></h2>
       </header>
@@ -953,7 +968,7 @@
   <script src="character-data.js"></script>
   <script src="character-visual-data.js"></script>
   <script src="character-avatar.js"></script>
-  <script src="character-visual-view.js?v=refactor-21"></script>
+  <script src="character-visual-view.js?v=appearance-presence-01"></script>
   <script src="result-view.js?v=refactor-20"></script>
   <script src="zone-view.js?v=refactor-19"></script>
   <script src="travel-view.js?v=refactor-18"></script>
@@ -961,7 +976,7 @@
   <script src="house-view.js?v=refactor-16"></script>
   <script src="shop-sell-view.js?v=refactor-15"></script>
   <script src="shop-buy-view.js?v=refactor-14"></script>
-  <script src="game.js?v=refactor-22-names-01"></script>
+  <script src="game.js?v=character-presence-01"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"
