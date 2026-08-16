@@ -33,6 +33,15 @@ A escolha final entre os seis será feita depois de ouvir os arquivos no teste.
 - Som 13: `assets/sounds/ambient_river_strong.mp3`, ambiente de rio já existente no jogo; testar como ambientação do Rio Doce.
 - Som 14: `motorboat.ogg`, extraído de [Sounds Effects 2](https://archive.org/details/Sound_Effects_2), coleção declarada como CC0 no Internet Archive; testar como motor da lancha.
 
+## Transições
+
+- Som 15: `../zone_transition.mp3`, efeito de transição já existente no jogo.
+- Som 16: `time-stop.mp3`, candidato CC0 de passagem/congelamento de tempo. Origem: [Time Slow](https://opengameart.org/content/time-slow).
+- Som 17: `reverse-time.ogg`, candidato CC0 temporal e atmosférico. Origem: [Reversing Time / Stuck in Time](https://opengameart.org/content/reversing-time-stuck-in-time).
+- Som 18: `teleport.wav`, candidato CC0 de transição, mas precisa ser avaliado para evitar uma sensação mágica. Origem: [Teleport Spell](https://opengameart.org/content/teleport-spell).
+
+Uso previsto: transição depois do envio da carta, passagem de tempo, preparação para a viagem e mudança entre barco e desembarque. A escolha final depende da audição.
+
 ## Candidatos adicionais ainda não copiados
 
 - [Water Waves](https://opengameart.org/content/water-waves): ondas CC0, com arquivos FLAC; avaliar conversão para formato mais compatível.
