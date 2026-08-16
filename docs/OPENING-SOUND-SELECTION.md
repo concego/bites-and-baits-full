@@ -40,7 +40,19 @@ A escolha final entre os seis será feita depois de ouvir os arquivos no teste.
 - Som 17: `reverse-time.ogg`, candidato CC0 temporal e atmosférico. Origem: [Reversing Time / Stuck in Time](https://opengameart.org/content/reversing-time-stuck-in-time).
 - Som 18: `teleport.wav`, candidato CC0 de transição, mas precisa ser avaliado para evitar uma sensação mágica. Origem: [Teleport Spell](https://opengameart.org/content/teleport-spell).
 
-Uso previsto: transição depois do envio da carta, passagem de tempo, preparação para a viagem e mudança entre barco e desembarque. A escolha final depende da audição.
+Decisão de audição:
+
+- Som 15 foi aprovado como transição geral para todas as situações da abertura.
+- Sons 16, 17 e 18 foram descartados por ficarem fora de contexto.
+
+Uso do som 15: transição depois do envio da carta, passagem de tempo, preparação para a viagem e mudança entre barco e desembarque. O volume e o corte devem ser controlados para não ficar cansativo quando usado mais de uma vez.
+
+## Chegada e desembarque
+
+- Sons 19 a 21: passos em madeira, candidatos para o cais ou deck da lancha.
+- Som 22: passo em terra úmida, candidato para sair do cais.
+- Som 23: passo sobre folhas, candidato para a margem ou caminho inicial.
+- Origem dos sons 19 a 23: [Different steps on wood, stone, leaves, gravel and mud](https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud), licença declarada CC0.
 
 ## Candidatos adicionais ainda não copiados
 
