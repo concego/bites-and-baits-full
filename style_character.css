@@ -61,3 +61,5 @@
   font-size: .9rem;
   line-height: 1.45;
 }
+
+.character-avatar-fallback { display: block; font-size: 7rem; line-height: 1; }
