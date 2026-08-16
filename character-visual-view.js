@@ -34,24 +34,30 @@ const CharacterVisualView = (() => {
 
   function _visualTriple(pt, en, hu) { return { pt, en, hu }; }
 
-  function characterVisualOptionDescription(option, categoryKey, lang) {
+  function characterVisualOptionDescription(option, categoryKey, lang, options, translate) {
     if (option?.description) return characterVisualLabel(option.description, lang);
-    const match = String(option?.value || '').match(/-(\d+)$/);
-    const index = match ? Number(match[1]) - 1 : -1;
+    const index = Array.isArray(options) ? options.indexOf(option) : -1;
+    const prefix = categoryKey === 'arrivalOutfit' ? 'outfit_arrival'
+      : categoryKey === 'fishingOutfit' ? 'outfit_fishing' : '';
+    if (prefix && index >= 0 && typeof translate === 'function') {
+      const key = `${prefix}_${String(index + 1).padStart(2, '0')}_desc`;
+      const translated = translate(key);
+      if (translated && translated !== key) return translated;
+    }
     const fallback = OUTFIT_DESCRIPTION_FALLBACKS[categoryKey]?.[index];
     return fallback ? characterVisualLabel(fallback, lang) : '';
   }
 
-  function characterVisualOptionText(option, lang, categoryKey) {
+  function characterVisualOptionText(option, lang, categoryKey, options, translate) {
     const label = characterVisualLabel(option, lang);
-    const description = characterVisualOptionDescription(option, categoryKey, lang);
+    const description = characterVisualOptionDescription(option, categoryKey, lang, options, translate);
     return description ? `${label} — ${description}` : label;
   }
 
   function updateOptionDescription({ select, description, category, lang }) {
     if (!description) return;
     const option = category.options.find(item => item.value === select.value);
-    const text = option ? characterVisualOptionDescription(option, category.key, lang) : '';
+    const text = option ? characterVisualOptionDescription(option, category.key, lang, category.options) : '';
     description.textContent = text;
     description.hidden = !text;
   }
@@ -71,7 +77,7 @@ const CharacterVisualView = (() => {
         : `${characterVisualLabel(category, lang)}: ${translate('character_visual_placeholder')}`;
       const description = document.createElement('p');
       description.textContent = option
-        ? (characterVisualOptionDescription(option, categoryKey, lang) || translate('character_outfit_not_selected'))
+        ? (characterVisualOptionDescription(option, categoryKey, lang, category.options, translate) || translate('character_outfit_not_selected'))
         : translate('character_outfit_not_selected');
       block.appendChild(title);
       block.appendChild(description);
@@ -84,7 +90,7 @@ const CharacterVisualView = (() => {
     const parts = categories.map(category => {
       const option = category.options.find(item => item.value === appearance[category.key]);
       if (!option) return `${characterVisualLabel(category, lang)}: ${translate('character_visual_placeholder')}`;
-      return `${characterVisualLabel(category, lang)}: ${characterVisualOptionText(option, lang, category.key)}`;
+      return `${characterVisualLabel(category, lang)}: ${characterVisualOptionText(option, lang, category.key, category.options, translate)}`;
     });
     summary.textContent = parts.join('. ') + '.';
   }
@@ -111,7 +117,7 @@ const CharacterVisualView = (() => {
       category.options.forEach(option => {
         const item = document.createElement('option');
         item.value = option.value;
-        item.textContent = characterVisualOptionText(option, lang, category.key);
+        item.textContent = characterVisualOptionText(option, lang, category.key, category.options, translate);
         select.appendChild(item);
       });
       select.value = appearance[category.key] || '';
@@ -119,7 +125,7 @@ const CharacterVisualView = (() => {
       description.className = 'character-visual-option-description';
       description.id = `character-visual-${category.key}-description`;
       description.hidden = true;
-      if (category.options.some(option => characterVisualOptionDescription(option, category.key, lang))) {
+      if (category.options.some(option => characterVisualOptionDescription(option, category.key, lang, category.options, translate))) {
         select.setAttribute('aria-describedby', description.id);
       }
       updateOptionDescription({ select, description, category, lang });
@@ -132,7 +138,7 @@ const CharacterVisualView = (() => {
         renderAvatar({ target: preview, character, appearanceOverride: selected });
       });
       fieldset.appendChild(select);
-      if (category.options.some(option => characterVisualOptionDescription(option, category.key, lang))) fieldset.appendChild(description);
+      if (category.options.some(option => characterVisualOptionDescription(option, category.key, lang, category.options, translate))) fieldset.appendChild(description);
       fields.appendChild(fieldset);
     });
     const selected = readAppearance({ categories, getElement });
