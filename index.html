@@ -6,7 +6,7 @@
   <title>Bites &amp; Baits</title>
   <link rel="stylesheet" href="style.css?v=creator-visibility-02" />
   <link rel="stylesheet" href="style_visuals.css" />
-  <link rel="stylesheet" href="style_character.css?v=character-creation-focus-01" />
+  <link rel="stylesheet" href="style_character.css?v=character-creator-02" />
   <link rel="stylesheet" href="style-narrative.css?v=character-options-02" />
   <link rel="stylesheet" href="style-back-navigation.css" />
   <link rel="stylesheet" href="shop.css" />
@@ -269,11 +269,33 @@
     <!-- ── Criação da aparência ──────────────────────────────────────── -->
     <div id="screen-character-visual" class="screen character-create-screen" role="dialog" aria-modal="true" aria-labelledby="character-visual-title">
       <div class="character-create-card character-visual-card">
-        <button id="btn-character-visual-back" type="button" class="btn-ghost screen-back-top" data-i18n="character_visual_back"></button>
+        <button id="btn-character-visual-back" type="button" class="btn-ghost screen-back-top" data-i18n="character_back"></button>
         <h2 id="character-visual-title" data-i18n="character_visual_title"></h2>
         <p data-i18n="character_visual_intro"></p>
+        <section class="character-inline-identity" aria-labelledby="character-inline-identity-title">
+          <h3 id="character-inline-identity-title" data-i18n="character_inline_identity_title"></h3>
+          <div class="character-field">
+            <label for="character-visual-name" data-i18n="character_name_label"></label>
+            <input id="character-visual-name" name="visualCharacterName" type="text" maxlength="40" autocomplete="nickname" required aria-describedby="character-visual-name-hint" />
+            <small id="character-visual-name-hint" data-i18n="character_name_hint"></small>
+          </div>
+          <div class="character-field">
+            <label for="character-visual-gender" data-i18n="character_gender_label"></label>
+            <select id="character-visual-gender" name="visualGenderProfile" required aria-describedby="character-visual-gender-hint">
+              <option value="" data-i18n="character_gender_placeholder"></option>
+              <option value="feminine" data-i18n="character_gender_feminine"></option>
+              <option value="masculine" data-i18n="character_gender_masculine"></option>
+              <option value="neutral" data-i18n="character_gender_neutral"></option>
+            </select>
+            <small id="character-visual-gender-hint" data-i18n="character_gender_hint"></small>
+          </div>
+          <p id="character-visual-form-error" class="form-feedback" role="alert" aria-live="assertive"></p>
+        </section>
         <div class="character-visual-preview" aria-hidden="true">
           <div id="character-avatar-preview"><span class="character-avatar-fallback" aria-hidden="true">🧍</span></div>
+        </div>
+        <div class="character-randomize-row">
+          <button id="btn-character-randomize" type="button" class="btn-secondary" data-i18n="character_randomize"></button>
         </div>
         <div id="character-visual-fields" class="character-visual-fields"></div>
         <section id="character-outfit-details" class="character-outfit-details" aria-labelledby="character-outfit-details-title">
@@ -980,7 +1002,7 @@
   <script src="house-view.js?v=refactor-16"></script>
   <script src="shop-sell-view.js?v=refactor-15"></script>
   <script src="shop-buy-view.js?v=refactor-14"></script>
-  <script src="game.js?v=test-reset-01"></script>
+  <script src="game.js?v=character-creator-02"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"

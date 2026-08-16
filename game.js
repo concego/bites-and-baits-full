@@ -172,6 +172,10 @@ const Game = (() => {
       characterFormError: $('character-form-error'),
       characterFormStatus: $('character-form-status'),
       characterVisualFields: $('character-visual-fields'),
+      characterVisualName: $('character-visual-name'),
+      characterVisualGender: $('character-visual-gender'),
+      characterVisualFormError: $('character-visual-form-error'),
+      characterRandomize: $('btn-character-randomize'),
       characterVisualSummary: $('character-visual-summary'),
       characterOutfitDetails: $('character-outfit-details-content'),
       characterAvatarPreview: $('character-avatar-preview'),
@@ -262,8 +266,7 @@ const Game = (() => {
       gameMode = 'normal';
       const profile = Character.load().genderProfile;
       const visualCategories = getCharacterVisualCategories(profile);
-      if (!Character.isConfirmed()) openCharacterCreate();
-      else if (!Character.isComplete(visualCategories.map(category => category.key), profile)) openCharacterVisual();
+      if (!Character.isConfirmed() || !Character.isComplete(visualCategories.map(category => category.key), profile)) openCharacterVisual();
       else if (!_isStoryOpeningComplete()) openStoryOpening();
       else showStoryHub();
     });
@@ -323,8 +326,10 @@ const Game = (() => {
 
     ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
     $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
-    $('btn-character-visual-back')?.addEventListener('click', openCharacterCreate);
+    $('btn-character-visual-back')?.addEventListener('click', () => showScreen('start'));
     $('btn-character-visual-confirm')?.addEventListener('click', _confirmCharacterVisual);
+    ui.characterVisualGender?.addEventListener('change', _handleCharacterVisualGenderChange);
+    ui.characterRandomize?.addEventListener('click', _randomizeCharacterAppearance);
     $('btn-opening-next')?.addEventListener('click', _advanceStoryOpening);
 
     // Os menus podem ser renderizados novamente ao entrar neles; os binds
@@ -378,7 +383,8 @@ const Game = (() => {
 
   // ── Criação visual da personagem ─────────────────────────────────────────
   function _visualCategories() {
-    return getCharacterVisualCategories(Character.load().genderProfile);
+    const profile = ui.characterVisualGender?.value || Character.load().genderProfile;
+    return getCharacterVisualCategories(profile);
   }
 
   function _readVisualAppearance() {
@@ -519,8 +525,21 @@ const Game = (() => {
   }
 
   function _confirmCharacterVisual() {
+    const name = ui.characterVisualName?.value || '';
+    const gender = ui.characterVisualGender?.value || '';
+    if (ui.characterVisualFormError) ui.characterVisualFormError.textContent = '';
+    if (!String(name).trim()) {
+      if (ui.characterVisualFormError) ui.characterVisualFormError.textContent = t('character_error_name');
+      ui.characterVisualName?.focus();
+      return;
+    }
+    if (!gender) {
+      if (ui.characterVisualFormError) ui.characterVisualFormError.textContent = t('character_error_gender');
+      ui.characterVisualGender?.focus();
+      return;
+    }
     const appearance = _readVisualAppearance();
-    const categories = _visualCategories();
+    const categories = getCharacterVisualCategories(gender);
     const missing = categories.filter(category => !appearance[category.key]);
     if (missing.length) {
       missing.forEach(category => $(`character-visual-${category.key}`)?.setAttribute('aria-invalid', 'true'));
@@ -528,14 +547,13 @@ const Game = (() => {
       $(`character-visual-${missing[0].key}`)?.focus();
       return;
     }
-    const current = Character.load();
-    Character.saveAppearance(appearance, current.genderProfile);
+    Character.confirmIdentity(name, gender);
+    Character.saveAppearance(appearance, gender);
     speak(t('character_visual_confirmed'));
     openStoryOpening();
   }
 
-  function openCharacterVisual() {
-    if (!ui.characterVisualFields) return;
+  function _renderCombinedCharacterVisualFields() {
     const current = Character.load();
     CharacterVisualView.open({
       fields: ui.characterVisualFields,
@@ -543,15 +561,44 @@ const Game = (() => {
       outfitDetails: ui.characterOutfitDetails,
       preview: ui.characterAvatarPreview,
       character: current,
-      categories: getCharacterVisualCategories(current.genderProfile),
+      categories: getCharacterVisualCategories(ui.characterVisualGender?.value || current.genderProfile || 'neutral'),
       lang: I18n.getLang() || 'pt',
       translate: t,
       getElement: id => $(id),
     });
+  }
+
+  function _handleCharacterVisualGenderChange() {
+    _renderCombinedCharacterVisualFields();
+    ui.characterVisualGender?.focus();
+  }
+
+  function _randomizeCharacterAppearance() {
+    if (!ui.characterVisualGender?.value) {
+      const profiles = ['feminine', 'masculine', 'neutral'];
+      ui.characterVisualGender.value = profiles[Math.floor(Math.random() * profiles.length)];
+      _renderCombinedCharacterVisualFields();
+    }
+    _visualCategories().forEach(category => {
+      const select = $(`character-visual-${category.key}`);
+      if (!select || !category.options.length) return;
+      const option = category.options[Math.floor(Math.random() * category.options.length)];
+      select.value = option.value;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    speak(t('character_randomized'));
+  }
+
+  function openCharacterVisual() {
+    if (!ui.characterVisualFields) return;
+    const current = Character.load();
+    if (ui.characterVisualName) ui.characterVisualName.value = current.name || '';
+    if (ui.characterVisualGender) ui.characterVisualGender.value = current.genderProfile || '';
+    if (ui.characterVisualFormError) ui.characterVisualFormError.textContent = '';
+    _renderCombinedCharacterVisualFields();
     showScreen('characterVisual');
-    // A criação visual usa a mesma atmosfera musical da Casa.
     CityMusic.start('house');
-    ui.characterVisualFields.querySelector('select')?.focus();
+    ui.characterVisualName?.focus();
   }
 
   // ── Criação inicial da personagem ───────────────────────────────────────

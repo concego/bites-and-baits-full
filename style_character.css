@@ -89,3 +89,19 @@
 .character-outfit-detail + .character-outfit-detail { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.24); }
 .character-outfit-detail h4 { margin: 0 0 4px; font-size: .98rem; }
 .character-outfit-detail p, .character-outfit-details > p { margin: 0; line-height: 1.45; color: rgba(255,255,255,.9); }
+
+.character-inline-identity {
+  margin: 18px 0 20px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 12px;
+  background: rgba(0,0,0,.2);
+}
+.character-inline-identity h3 { margin: 0 0 14px; font-size: 1.08rem; }
+.character-inline-identity .character-field:last-of-type { margin-bottom: 4px; }
+.character-randomize-row { display: flex; justify-content: flex-end; margin: 14px 0; }
+.character-randomize-row button { min-height: 46px; }
+@media (max-width: 520px) {
+  .character-randomize-row { justify-content: stretch; }
+  .character-randomize-row button { width: 100%; }
+}

@@ -64,7 +64,7 @@ Ações:
 
 - editar identidade;
 - editar aparência;
-- gerar combinação aleatória;
+- gerar combinação aleatória coerente com o perfil selecionado;
 - confirmar personagem.
 
 ### 5. Confirmação
@@ -136,7 +136,7 @@ Cada escolha aponta para um símbolo estável. A renderização visual não deve
 ## Ordem de implementação
 
 1. Persistência e estado da personagem;
-2. Tela de identidade;
+2. Tela única de criação com identidade e aparência;
 3. Navegação acessível entre categorias;
 4. Estado e seleção das 5 opções;
 5. Resumo textual;
@@ -145,3 +145,8 @@ Cada escolha aponta para um símbolo estável. A renderização visual não deve
 8. Correspondência com nome e forma textual;
 9. Transição para chegada à cidade;
 10. Testes com TalkBack e revisão visual.
+
+
+## Criação em uma única tela
+
+Nome, gênero/forma textual, avatar, categorias visuais, descrição dos conjuntos, resumo e confirmação ficam na mesma tela. O botão de combinação aleatória escolhe um perfil quando necessário e seleciona apenas opções válidas para esse perfil; o nome digitado não é alterado.
