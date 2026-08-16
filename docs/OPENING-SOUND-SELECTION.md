@@ -2,6 +2,13 @@
 
 Status: candidatos separados para teste; ainda não integrados às cenas.
 
+## Feedback recebido
+
+- Som 3: aprovado como candidato principal de papel/carta.
+- Som 4: aprovado para fechar o envelope.
+- Sons 1, 2, 5 e 6: descartados.
+- Todos os sons de água 7 a 12: descartados.
+
 ## Papel e carta
 
 Arquivos separados em `assets/sounds/opening/`:
@@ -20,6 +27,11 @@ A escolha final entre os seis será feita depois de ouvir os arquivos no teste.
 - Origem: [40 CC0 water / splash / slime SFX](https://opengameart.org/content/40-cc0-water-splash-slime-sfx)
 - Licença declarada na página: CC0
 - Uso previsto: viagem de barco, aproximação da margem e desembarque.
+
+## Novos candidatos para transporte
+
+- Som 13: `assets/sounds/ambient_river_strong.mp3`, ambiente de rio já existente no jogo; testar como ambientação do Rio Doce.
+- Som 14: `motorboat.ogg`, extraído de [Sounds Effects 2](https://archive.org/details/Sound_Effects_2), coleção declarada como CC0 no Internet Archive; testar como motor da lancha.
 
 ## Candidatos adicionais ainda não copiados
 
