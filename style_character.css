@@ -105,3 +105,15 @@
   .character-randomize-row { justify-content: stretch; }
   .character-randomize-row button { width: 100%; }
 }
+
+.character-outfit-catalog {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 12px;
+  background: rgba(0,0,0,.16);
+}
+.character-outfit-catalog h3 { margin: 0 0 12px; }
+.character-outfit-catalog h4 { margin: 14px 0 6px; }
+.character-outfit-catalog ul { margin: 0; padding-left: 1.35rem; line-height: 1.5; }
+.character-outfit-catalog li + li { margin-top: 5px; }
