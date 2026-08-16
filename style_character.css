@@ -40,9 +40,9 @@
 .character-form-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
 .character-form-actions button { min-width: 150px; }
 .character-visual-card { width: min(100%, 700px); }
-.character-visual-preview { display: flex; justify-content: center; align-items: end; min-height: 184px; margin: 4px 0 18px; border-radius: 12px; background: linear-gradient(180deg, #9ed8ef 0 62%, #c9aa7c 62%); }
-#character-avatar-preview { width: 130px; height: 176px; display: flex; align-items: end; justify-content: center; }
-#character-avatar-preview .character-avatar-svg { width: 130px; height: 176px; display: block; }
+.character-visual-preview { display: flex; justify-content: center; align-items: end; min-height: 258px; margin: 4px 0 18px; border-radius: 12px; background: linear-gradient(180deg, #9ed8ef 0 62%, #c9aa7c 62%); }
+#character-avatar-preview { width: 190px; height: 250px; display: flex; align-items: end; justify-content: center; }
+#character-avatar-preview .character-avatar-svg { width: 190px; height: 250px; display: block; }
 .character-visual-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
 .character-visual-field { margin: 0; padding: 12px; border: 1px solid rgba(255,255,255,.28); border-radius: 10px; }
 .character-visual-field label { display: block; margin-bottom: 7px; font-weight: 700; line-height: 1.35; }

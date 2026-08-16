@@ -58,6 +58,11 @@ html, body {
   padding: 24px;
 }
 .screen.active { display: flex; }
+/* Telas inativas devem permanecer invisíveis mesmo quando inert não é
+   interpretado pelo navegador. Isso evita que painéis da cidade cubram o
+   criador ou a narrativa. */
+.screen:not(.active) { display: none !important; visibility: hidden; pointer-events: none; }
+.screen.active { visibility: visible; pointer-events: auto; }
 
 /* ===== START SCREEN ===== */
 #screen-start {
