@@ -462,6 +462,7 @@ const Game = (() => {
     'shoreArrival',
   ]);
   let storyOpeningStep = STORY_OPENING_STEPS[0];
+  let storyOpeningMusic = null;
 
   function _isStoryOpeningComplete() {
     return localStorage.getItem(STORY_OPENING_KEY) === '1';
@@ -509,16 +510,22 @@ const Game = (() => {
     if (ui.openingSceneDescription) ui.openingSceneDescription.textContent = description;
   }
 
+  function _setOpeningMusic(track) {
+    if (storyOpeningMusic === track) return;
+    storyOpeningMusic = track;
+    CityMusic.start(track);
+  }
+
   function _playOpeningSceneAudio(step) {
     OpeningAudio.stopTravel();
     if (step !== STORY_OPENING_STEPS[0]) OpeningAudio.playTransition();
     if (step === 'roomWriting') OpeningAudio.playPaper();
     if (step === 'roomEnvelope') OpeningAudio.closeEnvelope();
     if (step === 'boatTravel') {
-      CityMusic.start('travel');
+      _setOpeningMusic('travel');
       OpeningAudio.startTravel();
     } else {
-      CityMusic.start('house');
+      _setOpeningMusic('house');
       if (step === 'shoreArrival') OpeningAudio.playArrivalSteps();
     }
   }
@@ -537,7 +544,7 @@ const Game = (() => {
           body: [t('opening_scene_room_body', name), t('opening_player_letter_body', name)],
           signature: t('opening_player_signature', name),
           next: t('opening_scene_continue'),
-          description: t('opening_scene_room_description'),
+          description: t('opening_scene_room_description', name),
         };
         break;
       case 'roomEnvelope':
@@ -545,10 +552,10 @@ const Game = (() => {
           kicker: t('opening_scene_envelope_kicker'),
           title: t('opening_scene_envelope_title'),
           recipient: t('opening_to_zeca'),
-          body: [t('opening_scene_envelope_body')],
+          body: [t('opening_scene_envelope_body', name)],
           signature: t('opening_player_signature', name),
           next: t('opening_scene_continue'),
-          description: t('opening_scene_envelope_description'),
+          description: t('opening_scene_envelope_description', name),
         };
         break;
       case 'letterSent':
@@ -560,7 +567,7 @@ const Game = (() => {
           body: [t('opening_scene_sent_body')],
           signature: '',
           next: t('opening_scene_continue'),
-          description: t('opening_scene_sent_description'),
+          description: t('opening_scene_sent_description', name),
         };
         break;
       case 'letterReceived':
@@ -572,7 +579,7 @@ const Game = (() => {
           body: [t('opening_scene_received_body')],
           signature: '',
           next: t('opening_scene_continue'),
-          description: t('opening_scene_received_description'),
+          description: t('opening_scene_received_description', name),
         };
         break;
       case 'roomReading':
@@ -583,7 +590,7 @@ const Game = (() => {
           body: [t('opening_zeca_letter_body', name)],
           signature: t('opening_zeca_signature'),
           next: t('opening_scene_continue'),
-          description: t('opening_scene_reading_description'),
+          description: t('opening_scene_reading_description', name),
         };
         break;
       case 'travelPreparation':
@@ -594,7 +601,7 @@ const Game = (() => {
           body: [t('opening_scene_prepare_body', name)],
           signature: '',
           next: t('opening_scene_continue'),
-          description: t('opening_scene_prepare_description'),
+          description: t('opening_scene_prepare_description', name),
         };
         break;
       case 'boatTravel':
@@ -605,7 +612,7 @@ const Game = (() => {
           body: [t('opening_scene_boat_body', name)],
           signature: '',
           next: t('opening_scene_continue'),
-          description: t('opening_scene_boat_description'),
+          description: t('opening_scene_boat_description', name),
         };
         break;
       default:
@@ -616,7 +623,7 @@ const Game = (() => {
           body: [t('opening_scene_shore_body', name)],
           signature: '',
           next: t('opening_scene_arrive'),
-          description: t('opening_scene_shore_description'),
+          description: t('opening_scene_shore_description', name),
         };
         break;
     }
@@ -634,6 +641,8 @@ const Game = (() => {
 
   function openStoryOpening() {
     storyOpeningStep = STORY_OPENING_STEPS[0];
+    storyOpeningMusic = null;
+    OpeningAudio.init();
     _renderStoryOpening();
     showScreen('storyOpening');
   }

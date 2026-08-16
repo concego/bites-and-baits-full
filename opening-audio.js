@@ -51,8 +51,8 @@ const OpeningAudio = (() => {
     const activeRequest = travelRequest;
     return init().then(() => {
       if (activeRequest !== travelRequest || !soundEnabled()) return;
-      const river = Audio.play('ambient_river_strong', { volume: 0.08, loop: true });
-      const motorboat = Audio.play(CUES.motorboat, { volume: 0.16, loop: true });
+      const river = Audio.play('ambient_river_strong', { volume: 0.04, loop: true });
+      const motorboat = Audio.play(CUES.motorboat, { volume: 0.14, loop: true });
       travelLoops = [river, motorboat].filter(Boolean);
     });
   }
