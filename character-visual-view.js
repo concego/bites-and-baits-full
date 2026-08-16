@@ -76,9 +76,17 @@ const CharacterVisualView = (() => {
         ? `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`
         : `${characterVisualLabel(category, lang)}: ${translate('character_visual_placeholder')}`;
       const description = document.createElement('p');
-      description.textContent = option
-        ? (characterVisualOptionDescription(option, categoryKey, lang, category.options, translate) || translate('character_outfit_not_selected'))
-        : translate('character_outfit_not_selected');
+      let selectedDescription = '';
+      if (option) {
+        const prefix = categoryKey === 'arrivalOutfit' ? 'outfit_arrival' : 'outfit_fishing';
+        const number = String(option.value || '').split('-').pop();
+        const descriptionKey = `${prefix}_${String(number).padStart(2, '0')}_desc`;
+        selectedDescription = translate(descriptionKey);
+        if (!selectedDescription || selectedDescription === descriptionKey) {
+          selectedDescription = characterVisualOptionDescription(option, categoryKey, lang, category.options, translate);
+        }
+      }
+      description.textContent = selectedDescription || translate('character_outfit_not_selected');
       block.appendChild(title);
       block.appendChild(description);
       target.appendChild(block);
