@@ -88,6 +88,21 @@ const Game = (() => {
   function init() {
     // ── Parâmetros de teste (só ativo em dev/preview) ─────────────────────
     const _qp = new URLSearchParams(location.search);
+    const _resetToken = _qp.get('testreset');
+    let _alreadyReset = false;
+    try { _alreadyReset = !!_resetToken && sessionStorage.getItem('bb_testreset_token') === _resetToken; } catch {}
+    if (_resetToken && !_alreadyReset) {
+      // Permite recomeçar a QA sem depender de cache/histórico do navegador.
+      // O idioma fica preservado; somente o progresso do jogo é apagado.
+      [
+        'bb_character', 'bb_story_opening_complete', 'bb_inventory', 'bb_coins',
+        'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_gear_mods', 'bb_protected',
+        'bb_owned_equip', 'bb_active_boat', 'bb_house_level', 'bb_zonemap',
+        'bb_activezone', 'bb_map', 'bb_best', 'bb_time',
+        'bb_last_catch_story', 'bb_last_catch_free', 'bb_last_catch',
+      ].forEach(key => localStorage.removeItem(key));
+      try { sessionStorage.setItem('bb_testreset_token', _resetToken); } catch {}
+    }
     if (_qp.has('testcoins')) {
       const amt = parseInt(_qp.get('testcoins')) || 500;
       if (Inventory.coins() < amt) Inventory.addCoins(amt - Inventory.coins());
