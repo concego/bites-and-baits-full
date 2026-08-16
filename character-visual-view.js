@@ -15,16 +15,43 @@ const CharacterVisualView = (() => {
     CharacterAvatar.render(target, rendered);
   }
 
-  function characterVisualOptionText(option, lang) {
+  const OUTFIT_DESCRIPTION_FALLBACKS = {
+    arrivalOutfit: [
+      _visualTriple('Camiseta clara, calça simples e cores leves.', 'Light shirt, simple trousers and soft colors.', 'Világos felső, egyszerű nadrág és lágy színek.'),
+      _visualTriple('Camiseta escura, calça simples e contraste moderado.', 'Dark shirt, simple trousers and moderate contrast.', 'Sötét felső, egyszerű nadrág és mérsékelt kontraszt.'),
+      _visualTriple('Blusa solta, calça confortável e tons suaves.', 'Loose top, comfortable trousers and soft tones.', 'Laza felső, kényelmes nadrág és lágy árnyalatok.'),
+      _visualTriple('Camisa ou jaqueta leve e combinação contrastante.', 'Light shirt or jacket with a contrasting combination.', 'Könnyű ing vagy dzseki kontrasztos összeállításban.'),
+      _visualTriple('Roupa simples e resistente, adequada para carregar malas.', 'Simple, sturdy clothes suitable for carrying luggage.', 'Egyszerű, strapabíró öltözet, amely alkalmas csomagok cipelésére.'),
+    ],
+    fishingOutfit: [
+      _visualTriple('Camisa leve, calça resistente e colete simples.', 'Light shirt, sturdy trousers and a simple vest.', 'Könnyű felső, strapabíró nadrág és egyszerű mellény.'),
+      _visualTriple('Tons azuis e terrosos com proteção leve.', 'Blue and earth tones with light protection.', 'Kékes és földszínek könnyű védelemmel.'),
+      _visualTriple('Tons verdes e proteção visual contra o sol.', 'Green tones with visual protection from the sun.', 'Zöld árnyalatok nap elleni vizuális védelemmel.'),
+      _visualTriple('Capa leve e peças visualmente impermeáveis.', 'Light rain cape and visibly waterproof pieces.', 'Könnyű esőköpeny és láthatóan vízálló darabok.'),
+      _visualTriple('Colete reforçado, calça resistente e luvas visuais.', 'Reinforced vest, sturdy trousers and visual gloves.', 'Megerősített mellény, strapabíró nadrág és látható kesztyű.'),
+    ],
+  };
+
+  function _visualTriple(pt, en, hu) { return { pt, en, hu }; }
+
+  function characterVisualOptionDescription(option, categoryKey, lang) {
+    if (option?.description) return characterVisualLabel(option.description, lang);
+    const match = String(option?.value || '').match(/-(\d+)$/);
+    const index = match ? Number(match[1]) - 1 : -1;
+    const fallback = OUTFIT_DESCRIPTION_FALLBACKS[categoryKey]?.[index];
+    return fallback ? characterVisualLabel(fallback, lang) : '';
+  }
+
+  function characterVisualOptionText(option, lang, categoryKey) {
     const label = characterVisualLabel(option, lang);
-    const description = option.description ? characterVisualLabel(option.description, lang) : '';
+    const description = characterVisualOptionDescription(option, categoryKey, lang);
     return description ? `${label} — ${description}` : label;
   }
 
   function updateOptionDescription({ select, description, category, lang }) {
     if (!description) return;
     const option = category.options.find(item => item.value === select.value);
-    const text = option && option.description ? characterVisualLabel(option.description, lang) : '';
+    const text = option ? characterVisualOptionDescription(option, category.key, lang) : '';
     description.textContent = text;
     description.hidden = !text;
   }
@@ -34,7 +61,7 @@ const CharacterVisualView = (() => {
     const parts = categories.map(category => {
       const option = category.options.find(item => item.value === appearance[category.key]);
       if (!option) return `${characterVisualLabel(category, lang)}: ${translate('character_visual_placeholder')}`;
-      return `${characterVisualLabel(category, lang)}: ${characterVisualOptionText(option, lang)}`;
+      return `${characterVisualLabel(category, lang)}: ${characterVisualOptionText(option, lang, category.key)}`;
     });
     summary.textContent = parts.join('. ') + '.';
   }
@@ -61,7 +88,7 @@ const CharacterVisualView = (() => {
       category.options.forEach(option => {
         const item = document.createElement('option');
         item.value = option.value;
-        item.textContent = characterVisualOptionText(option, lang);
+        item.textContent = characterVisualOptionText(option, lang, category.key);
         select.appendChild(item);
       });
       select.value = appearance[category.key] || '';
@@ -69,7 +96,7 @@ const CharacterVisualView = (() => {
       description.className = 'character-visual-option-description';
       description.id = `character-visual-${category.key}-description`;
       description.hidden = true;
-      if (category.options.some(option => option.description)) {
+      if (category.options.some(option => characterVisualOptionDescription(option, category.key, lang))) {
         select.setAttribute('aria-describedby', description.id);
       }
       updateOptionDescription({ select, description, category, lang });
@@ -81,7 +108,7 @@ const CharacterVisualView = (() => {
         renderAvatar({ target: preview, character, appearanceOverride: selected });
       });
       fieldset.appendChild(select);
-      if (category.options.some(option => option.description)) fieldset.appendChild(description);
+      if (category.options.some(option => characterVisualOptionDescription(option, category.key, lang))) fieldset.appendChild(description);
       fields.appendChild(fieldset);
     });
     const selected = readAppearance({ categories, getElement });
