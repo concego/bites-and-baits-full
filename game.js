@@ -186,6 +186,7 @@ const Game = (() => {
       openingSceneArt: $('opening-scene-art'),
       openingSceneProps: $('opening-scene-props'),
       openingSceneDescription: $('opening-scene-description'),
+      openingVitorAvatar: $('opening-vitor-avatar'),
       openingCharacterAvatar: $('opening-character-avatar'),
       hubCharacterAvatar: $('hub-character-avatar'),
       hubCharacterName: $('hub-character-name'),
@@ -506,6 +507,11 @@ const Game = (() => {
       _renderCharacterPresence(ui.openingCharacterAvatar, null, null, 'arrival');
     } else if (ui.openingCharacterAvatar) {
       ui.openingCharacterAvatar.textContent = '';
+    }
+    if (step === 'boatTravel' && ui.openingVitorAvatar && typeof CharacterAvatar !== 'undefined') {
+      CharacterAvatar.render(ui.openingVitorAvatar, VITOR_CHARACTER, { outfit: 'arrival' });
+    } else if (ui.openingVitorAvatar) {
+      ui.openingVitorAvatar.textContent = '';
     }
     if (ui.openingSceneDescription) ui.openingSceneDescription.textContent = description;
   }
