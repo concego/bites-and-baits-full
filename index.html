@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css?v=creator-visibility-02" />
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css?v=outfit-catalog-01" />
-  <link rel="stylesheet" href="style-narrative.css?v=character-options-02" />
+  <link rel="stylesheet" href="style-narrative.css?v=opening-visual-01" />
   <link rel="stylesheet" href="style-back-navigation.css" />
   <link rel="stylesheet" href="shop.css" />
   <link rel="stylesheet" href="style_append.css" />
@@ -243,6 +243,8 @@
             <label for="character-name" data-i18n="character_name_label"></label>
             <input id="character-name" name="characterName" type="text" maxlength="40" autocomplete="nickname" required aria-describedby="character-name-hint" />
             <small id="character-name-hint" data-i18n="character_name_hint"></small>
+            <button id="btn-character-random-name" type="button" class="btn-secondary character-random-name-button" data-i18n="character_random_name" disabled aria-describedby="character-random-name-hint"></button>
+            <small id="character-random-name-hint" data-i18n="character_random_name_hint"></small>
           </div>
 
           <div class="character-field">
@@ -278,6 +280,8 @@
             <label for="character-visual-name" data-i18n="character_name_label"></label>
             <input id="character-visual-name" name="visualCharacterName" type="text" maxlength="40" autocomplete="nickname" required aria-describedby="character-visual-name-hint" />
             <small id="character-visual-name-hint" data-i18n="character_name_hint"></small>
+            <button id="btn-character-visual-random-name" type="button" class="btn-secondary character-random-name-button" data-i18n="character_random_name" disabled aria-describedby="character-visual-random-name-hint"></button>
+            <small id="character-visual-random-name-hint" data-i18n="character_random_name_hint"></small>
           </div>
           <div class="character-field">
             <label for="character-visual-gender" data-i18n="character_gender_label"></label>
@@ -334,7 +338,13 @@
     <!-- ── Abertura narrativa: correspondência e chegada ─────────────── -->
     <div id="screen-story-opening" class="screen narrative-screen" role="dialog" aria-modal="true" aria-labelledby="opening-title">
       <article class="narrative-card" aria-live="polite">
-        <div id="opening-character-avatar" class="opening-character-avatar" aria-hidden="true"></div>
+        <div id="opening-scene-visual" class="opening-scene-visual" aria-hidden="true">
+          <div id="opening-scene-art" class="opening-scene-art">
+            <div id="opening-scene-props" class="opening-scene-props"></div>
+            <div id="opening-character-avatar" class="opening-character-avatar"></div>
+          </div>
+        </div>
+        <p id="opening-scene-description" class="sr-only" aria-live="polite"></p>
         <p id="opening-kicker" class="narrative-kicker"></p>
         <h2 id="opening-title"></h2>
         <p id="opening-recipient" class="narrative-recipient"></p>
@@ -986,7 +996,7 @@
     });
   </script>
   <script src="a11y.js"></script>
-  <script src="i18n.js?v=narrative-familiar-01"></script>
+  <script src="i18n.js?v=opening-visual-01"></script>
   <script src="accessibility-announcer.js?v=refactor-01"></script>
   <script src="last-catch-storage.js?v=refactor-02"></script>
   <script src="fish-data.js"></script>
@@ -1007,10 +1017,12 @@
   <script src="house-data.js"></script>
   <script src="audio.js?v=travel-folk-01"></script>
   <script src="city-music.js?v=refactor-05"></script>
+  <script src="opening-audio.js?v=arrival-sound-layer-01"></script>
   <script src="screen-navigation.js?v=refactor-03"></script>
   <script src="sensors.js"></script>
   <script src="visuals.js?v=3ed5296"></script>
   <script src="character-data.js"></script>
+  <script src="character-name-data.js?v=random-name-01"></script>
   <script src="character-visual-data.js?v=character-options-03"></script>
   <script src="character-avatar.js?v=character-options-03"></script>
   <script src="character-visual-view.js?v=appearance-presence-07"></script>
@@ -1021,7 +1033,7 @@
   <script src="house-view.js?v=refactor-16"></script>
   <script src="shop-sell-view.js?v=refactor-15"></script>
   <script src="shop-buy-view.js?v=refactor-14"></script>
-  <script src="game.js?v=character-creator-02"></script>
+  <script src="game.js?v=opening-visual-01"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"

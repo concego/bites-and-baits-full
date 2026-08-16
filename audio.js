@@ -39,6 +39,14 @@ const Audio = (() => {
     shop_menu:           'assets/sounds/shop_menu.mp3',
     travel_menu:         'assets/sounds/travel_menu.wav',
     vessel_menu:         'assets/sounds/vessel_menu.mp3',
+    opening_paper:       'assets/sounds/opening/paper-03.wav',
+    opening_envelope_close: 'assets/sounds/opening/paper-04.wav',
+    opening_motorboat:   'assets/sounds/opening/motorboat.ogg',
+    opening_wood_step_01:'assets/sounds/opening/arrival-wood-01.ogg',
+    opening_wood_step_02:'assets/sounds/opening/arrival-wood-02.ogg',
+    opening_wood_step_03:'assets/sounds/opening/arrival-wood-03.ogg',
+    opening_margin_step_01:'assets/sounds/opening/arrival-mud-01.ogg',
+    opening_margin_step_02:'assets/sounds/opening/arrival-leaves-01.ogg',
   };
 
   function init() {

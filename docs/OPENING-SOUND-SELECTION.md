@@ -49,9 +49,8 @@ Uso do som 15: transição depois do envio da carta, passagem de tempo, prepara�
 
 ## Chegada e desembarque
 
-- Sons 19 a 21: passos em madeira, candidatos para o cais ou deck da lancha.
-- Som 22: passo em terra úmida, candidato para sair do cais.
-- Som 23: passo sobre folhas, candidato para a margem ou caminho inicial.
+- Sons 19 a 21: aprovados e alternados para simular os passos saindo da lancha, no cais ou deck de madeira.
+- Sons 22 e 23: aprovados e alternados para simular a caminhada da margem até a Vila Barra Serena.
 - Origem dos sons 19 a 23: [Different steps on wood, stone, leaves, gravel and mud](https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud), licença declarada CC0.
 
 ## Candidatos adicionais ainda não copiados
@@ -60,6 +59,20 @@ Uso do som 15: transição depois do envio da carta, passagem de tempo, prepara�
 - [Different steps on wood, stone, leaves, gravel and mud](https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud): passos CC0; avaliar apenas os passos em madeira e terra.
 - [35 wooden cracks/hits/destructions](https://opengameart.org/content/35-wooden-crackshitsdestructions): madeira CC0, mas os sons podem ser agressivos demais para o barco; não usar sem audição prévia.
 
+## Implementação sonora
+
+A camada `opening-audio.js` centraliza os sons aprovados:
+
+- `playPaper()` usa o som 3;
+- `closeEnvelope()` usa o som 4;
+- `playTransition()` usa o som 15;
+- `startTravel()` combina o ambiente do Rio Doce com o motor da lancha;
+- `playWoodStep()` alterna os sons 19, 20 e 21;
+- `playMarginStep()` alterna os sons 22 e 23;
+- `stopTravel()` e `stopAll()` encerram os loops ao sair da abertura.
+
+As cenas visuais chamarão essas funções nos momentos correspondentes. O áudio permanece complementar ao texto e ao TalkBack.
+
 ## Regra de integração
 
-Nenhum candidato entra nas cenas automaticamente. Primeiro será criado um teste acessível para ouvir cada arquivo com nome e função textual; depois serão escolhidos somente os sons adequados, com créditos e licença registrados.
+Nenhum candidato rejeitado entra nas cenas. Os sons aprovados ficam registrados com origem e licença, e toda camada deve ter volume controlado e encerramento explícito.

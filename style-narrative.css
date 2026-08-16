@@ -31,16 +31,160 @@
 .narrative-signature { margin: 24px 0 28px; font-style: italic; }
 .narrative-card .btn-primary { width: 100%; }
 
-.opening-character-avatar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  width: 88px;
-  height: 118px;
-  margin: 0 auto 14px;
+.opening-scene-visual {
+  width: 100%;
+  height: clamp(190px, 32vw, 250px);
+  margin: 0 0 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 14px;
+  background: #1a3543;
 }
-.opening-character-avatar .character-avatar-svg {
+
+.opening-scene-art {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.opening-scene-art::before,
+.opening-scene-art::after,
+.opening-scene-props::before,
+.opening-scene-props::after {
+  content: '';
+  position: absolute;
   display: block;
-  width: 88px;
-  height: 118px;
+}
+
+/* Quarto: parede, janela, mesa e luminária. */
+.opening-art-room-writing,
+.opening-art-room-envelope,
+.opening-art-room-reading,
+.opening-art-travel-preparation {
+  background: linear-gradient(155deg, #334d59 0 62%, #172b35 62% 100%);
+}
+.opening-art-room-writing::before,
+.opening-art-room-envelope::before,
+.opening-art-room-reading::before,
+.opening-art-travel-preparation::before {
+  left: 8%; top: 12%; width: 25%; height: 34%;
+  border: 5px solid #6e9eaa;
+  background: linear-gradient(135deg, #d2edf0, #668f9c);
+  box-shadow: inset 0 0 0 5px rgba(13, 46, 57, .45);
+}
+.opening-art-room-writing::after,
+.opening-art-room-envelope::after,
+.opening-art-room-reading::after,
+.opening-art-travel-preparation::after {
+  left: 0; right: 0; bottom: 0; height: 30%;
+  border-top: 8px solid #8a5c3d;
+  background: linear-gradient(#69452f, #3d2a24);
+}
+.opening-art-room-writing .opening-scene-props::before,
+.opening-art-room-envelope .opening-scene-props::before,
+.opening-art-room-reading .opening-scene-props::before {
+  left: 42%; bottom: 27%; width: 24%; height: 7%;
+  border-radius: 2px;
+  background: #f5e8c8;
+  transform: rotate(-4deg);
+  box-shadow: 0 7px 0 -2px #b8925f;
+}
+.opening-art-room-writing .opening-scene-props::after,
+.opening-art-room-envelope .opening-scene-props::after,
+.opening-art-room-reading .opening-scene-props::after {
+  left: 70%; bottom: 33%; width: 4%; height: 23%;
+  border-radius: 8px 8px 2px 2px;
+  background: #e7c45b;
+  box-shadow: 0 -20px 0 -5px #f1d98b;
+}
+.opening-art-travel-preparation .opening-scene-props::before {
+  right: 16%; bottom: 27%; width: 19%; height: 22%;
+  border: 3px solid #c18d4f;
+  border-radius: 8px;
+  background: #7d4e32;
+}
+
+/* Cenas sem personagem: envelope em destaque. */
+.opening-art-letter-sent,
+.opening-art-letter-received {
+  background: linear-gradient(145deg, #172e47, #385e72 58%, #b58b55 58% 62%, #49352a 62%);
+}
+.opening-art-letter-sent .opening-scene-props::before,
+.opening-art-letter-received .opening-scene-props::before {
+  left: 36%; top: 33%; width: 28%; height: 26%;
+  border: 3px solid #e9d7ae;
+  border-radius: 5px;
+  background: linear-gradient(145deg, transparent 49%, #d1b47c 50% 53%, transparent 54%), #f4e5bd;
+  transform: rotate(-5deg);
+  box-shadow: 0 11px 0 rgba(0, 0, 0, .18);
+}
+.opening-art-letter-sent .opening-scene-props::after {
+  left: 68%; top: 26%; width: 7%; height: 7%;
+  border-radius: 50%;
+  background: #ba4c45;
+  box-shadow: 0 0 0 4px rgba(255, 226, 167, .7);
+}
+.opening-art-letter-received .opening-scene-props::after {
+  left: 24%; top: 65%; width: 18%; height: 5%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .45);
+}
+
+/* Rio Doce e lancha. */
+.opening-art-boat-travel {
+  background: linear-gradient(#6a9ba7 0 48%, #245d6b 48% 100%);
+}
+.opening-art-boat-travel::before {
+  left: -10%; right: -10%; top: 47%; height: 8%;
+  background: repeating-linear-gradient(170deg, rgba(208, 240, 229, .65) 0 3px, transparent 3px 18px);
+  transform: rotate(-3deg);
+}
+.opening-art-boat-travel::after {
+  left: 25%; bottom: 17%; width: 50%; height: 20%;
+  border-radius: 8px 8px 42% 42%;
+  background: #d5d9d1;
+  border-bottom: 9px solid #6e5140;
+  transform: skewX(-9deg);
+}
+.opening-art-shore-arrival {
+  background: linear-gradient(#7ca8ab 0 48%, #317080 48% 67%, #7b6248 67% 100%);
+}
+.opening-art-shore-arrival::before {
+  left: -10%; right: -10%; top: 52%; height: 7%;
+  background: repeating-linear-gradient(170deg, rgba(220, 243, 230, .7) 0 3px, transparent 3px 20px);
+  transform: rotate(2deg);
+}
+.opening-art-shore-arrival::after {
+  left: 10%; right: 10%; bottom: 14%; height: 14%;
+  border-top: 8px solid #805638;
+  background: repeating-linear-gradient(90deg, #765238 0 13%, #4b372d 13% 15%);
+}
+
+.opening-scene-art .opening-character-avatar {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 7%;
+  width: 120px;
+  height: 160px;
+  margin: 0;
+  transform: translateX(-50%);
+}
+.opening-scene-art .opening-character-avatar .character-avatar-svg {
+  display: block;
+  width: 120px;
+  height: 160px;
+}
+.opening-art-room-writing .opening-character-avatar,
+.opening-art-room-envelope .opening-character-avatar,
+.opening-art-room-reading .opening-character-avatar { left: 53%; bottom: 8%; }
+.opening-art-travel-preparation .opening-character-avatar { left: 46%; }
+.opening-art-boat-travel .opening-character-avatar { left: 50%; bottom: 22%; }
+.opening-art-shore-arrival .opening-character-avatar { left: 38%; bottom: 12%; }
+
+@media (max-width: 560px) {
+  .narrative-screen { padding: 12px; }
+  .narrative-card { padding: 20px; }
+  .opening-scene-visual { height: 190px; }
 }

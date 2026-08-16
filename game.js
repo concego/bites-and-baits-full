@@ -169,6 +169,8 @@ const Game = (() => {
       characterForm:  $('character-form'),
       characterName:  $('character-name'),
       characterGender: $('character-gender'),
+      characterRandomName: $('btn-character-random-name'),
+      characterVisualRandomName: $('btn-character-visual-random-name'),
       characterFormError: $('character-form-error'),
       characterFormStatus: $('character-form-status'),
       characterVisualFields: $('character-visual-fields'),
@@ -180,6 +182,10 @@ const Game = (() => {
       characterOutfitDetails: $('character-outfit-details-content'),
       characterAvatarPreview: $('character-avatar-preview'),
       characterAvatar: $('character-avatar'),
+      openingSceneVisual: $('opening-scene-visual'),
+      openingSceneArt: $('opening-scene-art'),
+      openingSceneProps: $('opening-scene-props'),
+      openingSceneDescription: $('opening-scene-description'),
       openingCharacterAvatar: $('opening-character-avatar'),
       hubCharacterAvatar: $('hub-character-avatar'),
       hubCharacterName: $('hub-character-name'),
@@ -325,6 +331,9 @@ const Game = (() => {
     document.addEventListener('click', _handleInternalMenuClick, true);
 
     ui.characterForm?.addEventListener('submit', _handleCharacterSubmit);
+    ui.characterGender?.addEventListener('change', _updateRandomNameButtons);
+    ui.characterRandomName?.addEventListener('click', () => _randomizeCharacterName(ui.characterName, ui.characterGender));
+    ui.characterVisualRandomName?.addEventListener('click', () => _randomizeCharacterName(ui.characterVisualName, ui.characterVisualGender));
     $('btn-character-back')?.addEventListener('click', () => showScreen('start'));
     $('btn-character-visual-back')?.addEventListener('click', () => showScreen('start'));
     $('btn-character-visual-confirm')?.addEventListener('click', _confirmCharacterVisual);
@@ -442,7 +451,17 @@ const Game = (() => {
   }
 
   const STORY_OPENING_KEY = 'bb_story_opening_complete';
-  let storyOpeningStep = 'playerLetter';
+  const STORY_OPENING_STEPS = Object.freeze([
+    'roomWriting',
+    'roomEnvelope',
+    'letterSent',
+    'letterReceived',
+    'roomReading',
+    'travelPreparation',
+    'boatTravel',
+    'shoreArrival',
+  ]);
+  let storyOpeningStep = STORY_OPENING_STEPS[0];
 
   function _isStoryOpeningComplete() {
     return localStorage.getItem(STORY_OPENING_KEY) === '1';
@@ -458,38 +477,151 @@ const Game = (() => {
     });
   }
 
+  function _openingSceneClass(step) {
+    return {
+      roomWriting: 'room-writing',
+      roomEnvelope: 'room-envelope',
+      letterSent: 'letter-sent',
+      letterReceived: 'letter-received',
+      roomReading: 'room-reading',
+      travelPreparation: 'travel-preparation',
+      boatTravel: 'boat-travel',
+      shoreArrival: 'shore-arrival',
+    }[step] || 'room-writing';
+  }
+
+  function _renderOpeningSceneVisual(step, showAvatar, description) {
+    const sceneClass = _openingSceneClass(step);
+    if (ui.openingSceneVisual) {
+      ui.openingSceneVisual.className = `opening-scene-visual opening-scene-${sceneClass}`;
+    }
+    if (ui.openingSceneArt) {
+      ui.openingSceneArt.className = `opening-scene-art opening-art-${sceneClass}`;
+    }
+    if (ui.openingSceneProps) {
+      ui.openingSceneProps.textContent = '';
+    }
+    if (showAvatar) {
+      _renderCharacterPresence(ui.openingCharacterAvatar, null, null, 'arrival');
+    } else if (ui.openingCharacterAvatar) {
+      ui.openingCharacterAvatar.textContent = '';
+    }
+    if (ui.openingSceneDescription) ui.openingSceneDescription.textContent = description;
+  }
+
+  function _playOpeningSceneAudio(step) {
+    OpeningAudio.stopTravel();
+    if (step !== STORY_OPENING_STEPS[0]) OpeningAudio.playTransition();
+    if (step === 'roomWriting') OpeningAudio.playPaper();
+    if (step === 'roomEnvelope') OpeningAudio.closeEnvelope();
+    if (step === 'boatTravel') {
+      CityMusic.start('travel');
+      OpeningAudio.startTravel();
+    } else {
+      CityMusic.start('house');
+    }
+  }
+
   function _renderStoryOpening() {
     const name = Character.load().name || '';
-    _renderCharacterPresence(ui.openingCharacterAvatar, null, null, 'arrival');
     let content;
-    if (storyOpeningStep === 'playerLetter') {
-      content = {
-        kicker: t('opening_letter_sent'),
-        title: t('opening_player_letter_title'),
-        recipient: t('opening_to_zeca'),
-        body: [t('opening_player_letter_body', name)],
-        signature: t('opening_player_signature', name),
-        next: t('opening_read_response'),
-      };
-    } else if (storyOpeningStep === 'zecaLetter') {
-      content = {
-        kicker: t('opening_letter_received'),
-        title: t('opening_zeca_letter_title'),
-        recipient: t('opening_to_player', name),
-        body: [t('opening_zeca_letter_body', name)],
-        signature: t('opening_zeca_signature'),
-        next: t('opening_show_transition'),
-      };
-    } else {
-      content = {
-        kicker: t('opening_time_passage'),
-        title: t('opening_arrival_title'),
-        recipient: '',
-        body: [t('opening_arrival_body', name)],
-        signature: '',
-        next: t('opening_arrive_city'),
-      };
+    let showAvatar = true;
+
+    switch (storyOpeningStep) {
+      case 'roomWriting':
+        content = {
+          kicker: t('opening_scene_room_kicker'),
+          title: t('opening_scene_room_title'),
+          recipient: t('opening_to_zeca'),
+          body: [t('opening_scene_room_body', name), t('opening_player_letter_body', name)],
+          signature: t('opening_player_signature', name),
+          next: t('opening_scene_continue'),
+          description: t('opening_scene_room_description'),
+        };
+        break;
+      case 'roomEnvelope':
+        content = {
+          kicker: t('opening_scene_envelope_kicker'),
+          title: t('opening_scene_envelope_title'),
+          recipient: t('opening_to_zeca'),
+          body: [t('opening_scene_envelope_body')],
+          signature: t('opening_player_signature', name),
+          next: t('opening_scene_continue'),
+          description: t('opening_scene_envelope_description'),
+        };
+        break;
+      case 'letterSent':
+        showAvatar = false;
+        content = {
+          kicker: t('opening_scene_sent_kicker'),
+          title: t('opening_scene_sent_title'),
+          recipient: '',
+          body: [t('opening_scene_sent_body')],
+          signature: '',
+          next: t('opening_scene_continue'),
+          description: t('opening_scene_sent_description'),
+        };
+        break;
+      case 'letterReceived':
+        showAvatar = false;
+        content = {
+          kicker: t('opening_scene_received_kicker'),
+          title: t('opening_scene_received_title'),
+          recipient: t('opening_to_player', name),
+          body: [t('opening_scene_received_body')],
+          signature: '',
+          next: t('opening_scene_continue'),
+          description: t('opening_scene_received_description'),
+        };
+        break;
+      case 'roomReading':
+        content = {
+          kicker: t('opening_scene_reading_kicker'),
+          title: t('opening_scene_reading_title'),
+          recipient: t('opening_to_player', name),
+          body: [t('opening_zeca_letter_body', name)],
+          signature: t('opening_zeca_signature'),
+          next: t('opening_scene_continue'),
+          description: t('opening_scene_reading_description'),
+        };
+        break;
+      case 'travelPreparation':
+        content = {
+          kicker: t('opening_scene_prepare_kicker'),
+          title: t('opening_scene_prepare_title'),
+          recipient: '',
+          body: [t('opening_scene_prepare_body', name)],
+          signature: '',
+          next: t('opening_scene_continue'),
+          description: t('opening_scene_prepare_description'),
+        };
+        break;
+      case 'boatTravel':
+        content = {
+          kicker: t('opening_scene_boat_kicker'),
+          title: t('opening_scene_boat_title'),
+          recipient: '',
+          body: [t('opening_scene_boat_body', name)],
+          signature: '',
+          next: t('opening_scene_continue'),
+          description: t('opening_scene_boat_description'),
+        };
+        break;
+      default:
+        content = {
+          kicker: t('opening_scene_shore_kicker'),
+          title: t('opening_scene_shore_title'),
+          recipient: '',
+          body: [t('opening_scene_shore_body', name)],
+          signature: '',
+          next: t('opening_scene_arrive'),
+          description: t('opening_scene_shore_description'),
+        };
+        break;
     }
+
+    _renderOpeningSceneVisual(storyOpeningStep, showAvatar, content.description);
+    _playOpeningSceneAudio(storyOpeningStep);
     if (ui.openingKicker) ui.openingKicker.textContent = content.kicker;
     if (ui.openingTitle) ui.openingTitle.textContent = content.title;
     if (ui.openingRecipient) ui.openingRecipient.textContent = content.recipient;
@@ -500,25 +632,20 @@ const Game = (() => {
   }
 
   function openStoryOpening() {
-    storyOpeningStep = 'playerLetter';
+    storyOpeningStep = STORY_OPENING_STEPS[0];
     _renderStoryOpening();
     showScreen('storyOpening');
-    // A correspondência mantém a mesma atmosfera sonora acolhedora da Casa.
-    CityMusic.start('house');
   }
 
   function _advanceStoryOpening() {
-    if (storyOpeningStep === 'playerLetter') {
-      storyOpeningStep = 'zecaLetter';
-      _renderStoryOpening();
-      return;
-    }
-    if (storyOpeningStep === 'zecaLetter') {
-      storyOpeningStep = 'transition';
+    const currentIndex = STORY_OPENING_STEPS.indexOf(storyOpeningStep);
+    if (currentIndex < STORY_OPENING_STEPS.length - 1) {
+      storyOpeningStep = STORY_OPENING_STEPS[currentIndex + 1];
       _renderStoryOpening();
       return;
     }
     localStorage.setItem(STORY_OPENING_KEY, '1');
+    OpeningAudio.stopAll();
     showStoryHub();
     // A frase da carta não deve permanecer na live region depois da chegada.
     setTimeout(() => speak(''), 250);
@@ -570,7 +697,37 @@ const Game = (() => {
 
   function _handleCharacterVisualGenderChange() {
     _renderCombinedCharacterVisualFields();
+    _updateRandomNameButtons();
     ui.characterVisualGender?.focus();
+  }
+
+  function _updateRandomNameButtons() {
+    const pairs = [
+      [ui.characterRandomName, ui.characterGender],
+      [ui.characterVisualRandomName, ui.characterVisualGender],
+    ];
+    pairs.forEach(([button, gender]) => {
+      if (button) button.disabled = !String(gender?.value || '').trim();
+    });
+  }
+
+  function _randomizeCharacterName(input, genderSelect) {
+    const gender = String(genderSelect?.value || '').trim();
+    const names = getCharacterRandomNames(gender);
+    if (!input || !gender || !names.length) {
+      _updateRandomNameButtons();
+      genderSelect?.focus();
+      return;
+    }
+
+    const current = String(input.value || '').trim();
+    const available = names.filter(name => name !== current);
+    const pool = available.length ? available : names;
+    const name = pool[Math.floor(Math.random() * pool.length)];
+    input.value = name;
+    _updateRandomNameButtons();
+    speak(t('character_random_name_generated', name));
+    input.focus();
   }
 
   function _randomizeCharacterAppearance() {
@@ -579,6 +736,7 @@ const Game = (() => {
       ui.characterVisualGender.value = profiles[Math.floor(Math.random() * profiles.length)];
       _renderCombinedCharacterVisualFields();
     }
+    _updateRandomNameButtons();
     _visualCategories().forEach(category => {
       const select = $(`character-visual-${category.key}`);
       if (!select || !category.options.length) return;
@@ -595,6 +753,7 @@ const Game = (() => {
     if (ui.characterVisualName) ui.characterVisualName.value = current.name || '';
     if (ui.characterVisualGender) ui.characterVisualGender.value = current.genderProfile || '';
     if (ui.characterVisualFormError) ui.characterVisualFormError.textContent = '';
+    _updateRandomNameButtons();
     _renderCombinedCharacterVisualFields();
     showScreen('characterVisual');
     CityMusic.start('house');
@@ -608,6 +767,7 @@ const Game = (() => {
     if (ui.characterGender) ui.characterGender.value = current.genderProfile || '';
     if (ui.characterFormError) ui.characterFormError.textContent = '';
     if (ui.characterFormStatus) ui.characterFormStatus.textContent = '';
+    _updateRandomNameButtons();
     showScreen('characterCreate');
     // A criação da identidade também usa a trilha da Casa.
     CityMusic.start('house');
