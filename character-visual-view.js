@@ -21,6 +21,14 @@ const CharacterVisualView = (() => {
     return description ? `${label} — ${description}` : label;
   }
 
+  function updateOptionDescription({ select, description, category, lang }) {
+    if (!description) return;
+    const option = category.options.find(item => item.value === select.value);
+    const text = option && option.description ? characterVisualLabel(option.description, lang) : '';
+    description.textContent = text;
+    description.hidden = !text;
+  }
+
   function updateSummary({ summary, categories, appearance, lang, translate }) {
     if (!summary) return;
     const parts = categories.map(category => {
@@ -57,13 +65,23 @@ const CharacterVisualView = (() => {
         select.appendChild(item);
       });
       select.value = appearance[category.key] || '';
+      const description = document.createElement('p');
+      description.className = 'character-visual-option-description';
+      description.id = `character-visual-${category.key}-description`;
+      description.hidden = true;
+      if (category.options.some(option => option.description)) {
+        select.setAttribute('aria-describedby', description.id);
+      }
+      updateOptionDescription({ select, description, category, lang });
       select.addEventListener('change', () => {
         select.removeAttribute('aria-invalid');
+        updateOptionDescription({ select, description, category, lang });
         const selected = readAppearance({ categories, getElement });
         updateSummary({ summary, categories, appearance: selected, lang, translate });
         renderAvatar({ target: preview, character, appearanceOverride: selected });
       });
       fieldset.appendChild(select);
+      if (category.options.some(option => option.description)) fieldset.appendChild(description);
       fields.appendChild(fieldset);
     });
     const selected = readAppearance({ categories, getElement });

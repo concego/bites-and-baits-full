@@ -87,9 +87,9 @@ A cobertura deve ser uma camada independente do cabelo, permitindo alterar uma s
 
 Essas opções não devem ser vinculadas automaticamente ao gênero escolhido.
 
-### 6. Roupa de chegada
+### 6. Conjunto para a chegada
 
-A roupa usada na chegada à cidade deve ser separada da roupa de pesca.
+O conjunto para a chegada é usado na abertura e na chegada à cidade. Depois da chegada, ele passa a ser apresentado como roupa do dia a dia.
 
 - Parte de cima;
 - Parte de baixo ou peça única;

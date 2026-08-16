@@ -387,9 +387,20 @@ const Game = (() => {
     }
     if (nameEl) nameEl.textContent = character.name || t('character_unknown_name');
     if (outfitEl) {
-      outfitEl.textContent = t(outfit === 'fishing'
+      const categoryKey = outfit === 'fishing' ? 'fishingOutfit' : 'arrivalOutfit';
+      const category = getCharacterVisualCategories(character.genderProfile)
+        .find(item => item.key === categoryKey);
+      const selected = category?.options.find(item => item.value === character.appearance?.[categoryKey]);
+      const lang = I18n.getLang() || 'pt';
+      const typeLabel = t(outfit === 'fishing'
         ? 'character_fishing_outfit_label'
         : 'character_arrival_outfit_label');
+      const setLabel = selected ? characterVisualLabel(selected, lang) : '';
+      const setDescription = selected?.description
+        ? characterVisualLabel(selected.description, lang)
+        : '';
+      const details = [setLabel, setDescription].filter(Boolean).join(' — ');
+      outfitEl.textContent = details ? `${typeLabel}: ${details}` : typeLabel;
     }
   }
 

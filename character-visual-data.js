@@ -267,7 +267,7 @@ const CHARACTER_VISUAL_CATEGORY_DEFINITIONS = [
       _visualTriple('Sardas', 'Freckles', 'Szeplők'),
     ],
   }),
-  _visualCategory('arrivalOutfit', _visualTriple('Roupa de chegada', 'Arrival outfit', 'Érkezési öltözet'), {
+  _visualCategory('arrivalOutfit', _visualTriple('Conjunto para a chegada', 'Arrival set', 'Érkezési összeállítás'), {
     feminine: [
       _visualTriple('Casual claro', 'Light casual', 'Világos hétköznapi'),
       _visualTriple('Casual escuro', 'Dark casual', 'Sötét hétköznapi'),

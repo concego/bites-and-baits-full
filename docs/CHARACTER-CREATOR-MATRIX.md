@@ -119,9 +119,9 @@ A diferença deve continuar reconhecível em tamanho pequeno e não pode depende
 
 As opções não são vinculadas ao gênero escolhido.
 
-## Roupa de chegada
+## Conjunto para a chegada
 
-Cada ID representa um conjunto completo na primeira versão.
+Cada ID representa um conjunto completo na primeira versão. Depois da chegada, o conjunto escolhido é apresentado como roupa do dia a dia.
 
 | ID | Rótulo inicial | Direção visual |
 |---|---|---|
