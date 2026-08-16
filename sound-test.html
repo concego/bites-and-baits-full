@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teste de sons — Bites &amp; Baits</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #102033;
+      --card: #1c334b;
+      --card-strong: #244866;
+      --text: #f5f8fb;
+      --muted: #c5d5e5;
+      --accent: #8ed0ff;
+      --focus: #ffe58a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font: 1rem/1.5 system-ui, sans-serif;
+    }
+    main { width: min(760px, 100%); margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { margin-top: 0; line-height: 1.2; }
+    h2 { margin: 0 0 6px; font-size: 1.1rem; }
+    p { color: var(--muted); }
+    .instructions, .sound-card {
+      border: 1px solid #6e8ba5;
+      border-radius: 12px;
+      background: var(--card);
+      padding: 16px;
+    }
+    .instructions { margin: 20px 0; }
+    .sound-list { display: grid; gap: 14px; }
+    .sound-card { background: var(--card-strong); }
+    .sound-card p { margin: 0 0 10px; }
+    .number { color: var(--accent); }
+    audio { width: 100%; min-height: 42px; }
+    button {
+      min-height: 44px;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      padding: 8px 14px;
+      background: #17324b;
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+    button:hover { background: #295878; }
+    button:focus-visible, audio:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+    #play-status { min-height: 1.5em; color: var(--accent); }
+    .file-name { display: block; margin-top: 8px; color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Teste numerado dos sons da abertura</h1>
+    <p>Escute os candidatos e me envie a relação usando os números. Exemplo: “1 para escrita, 4 para envelope, 7 para barco e 10 para desembarque”.</p>
+
+    <section class="instructions" aria-labelledby="instructions-title">
+      <h2 id="instructions-title">Como testar</h2>
+      <p>Use os controles de áudio de cada cartão. Apenas um som continua tocando por vez. Nenhum som começa automaticamente.</p>
+      <div class="toolbar">
+        <button id="stop-all" type="button">Parar todos os sons</button>
+      </div>
+      <p id="play-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="sound-list" class="sound-list" aria-label="Candidatos numerados"></section>
+  </main>
+
+  <script>
+    const SOUNDS = [
+      { file: 'paper-01.wav', group: 'Papel e carta', description: 'Candidato de papelaria 1.' },
+      { file: 'paper-02.wav', group: 'Papel e carta', description: 'Candidato de papelaria 2.' },
+      { file: 'paper-03.wav', group: 'Papel e carta', description: 'Candidato de papelaria 3.' },
+      { file: 'paper-04.wav', group: 'Papel e carta', description: 'Candidato de papelaria 4.' },
+      { file: 'paper-05.wav', group: 'Papel e carta', description: 'Candidato de papelaria 5.' },
+      { file: 'paper-06.wav', group: 'Papel e carta', description: 'Candidato de papelaria 6.' },
+      { file: 'water-loop-01.ogg', group: 'Água contínua', description: 'Candidato de água contínua 1.' },
+      { file: 'water-loop-02.ogg', group: 'Água contínua', description: 'Candidato de água contínua 2.' },
+      { file: 'water-loop-03.ogg', group: 'Água contínua', description: 'Candidato de água contínua 3.' },
+      { file: 'splash-01.ogg', group: 'Respingo', description: 'Candidato de respingo 1.' },
+      { file: 'splash-02.ogg', group: 'Respingo', description: 'Candidato de respingo 2.' },
+      { file: 'splash-03.ogg', group: 'Respingo', description: 'Candidato de respingo 3.' },
+    ];
+
+    const list = document.getElementById('sound-list');
+    const status = document.getElementById('play-status');
+    const players = [];
+
+    function stopOthers(current) {
+      players.forEach(player => {
+        if (player !== current) {
+          player.pause();
+          player.currentTime = 0;
+        }
+      });
+    }
+
+    SOUNDS.forEach((sound, index) => {
+      const number = index + 1;
+      const card = document.createElement('article');
+      card.className = 'sound-card';
+      card.setAttribute('aria-labelledby', `sound-title-${number}`);
+
+      const title = document.createElement('h2');
+      title.id = `sound-title-${number}`;
+      title.innerHTML = `<span class="number">Som ${number}</span> — ${sound.group}`;
+
+      const description = document.createElement('p');
+      description.textContent = sound.description;
+
+      const audio = document.createElement('audio');
+      audio.controls = true;
+      audio.preload = 'none';
+      audio.setAttribute('aria-label', `Controles do som ${number}, ${sound.group.toLowerCase()}`);
+      audio.src = `assets/sounds/opening/${sound.file}`;
+      audio.addEventListener('play', () => {
+        stopOthers(audio);
+        status.textContent = `Som ${number} reproduzindo.`;
+      });
+      audio.addEventListener('pause', () => {
+        if (players.every(player => player.paused)) status.textContent = `Som ${number} pausado.`;
+      });
+      audio.addEventListener('ended', () => {
+        status.textContent = `Som ${number} terminou.`;
+      });
+      players.push(audio);
+
+      const fileName = document.createElement('span');
+      fileName.className = 'file-name';
+      fileName.textContent = `Arquivo de teste: ${sound.file}`;
+
+      card.append(title, description, audio, fileName);
+      list.appendChild(card);
+    });
+
+    document.getElementById('stop-all').addEventListener('click', () => {
+      players.forEach(player => {
+        player.pause();
+        player.currentTime = 0;
+      });
+      status.textContent = 'Todos os sons foram parados.';
+    });
+  </script>
+</body>
+</html>
