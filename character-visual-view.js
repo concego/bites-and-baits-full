@@ -63,23 +63,20 @@ const CharacterVisualView = (() => {
       const category = categories.find(item => item.key === categoryKey);
       if (!category) return;
       const option = category.options.find(item => item.value === appearance[categoryKey]);
-      if (!option) return;
       const block = document.createElement('article');
       block.className = 'character-outfit-detail';
       const title = document.createElement('h4');
-      title.textContent = `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`;
+      title.textContent = option
+        ? `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`
+        : `${characterVisualLabel(category, lang)}: ${translate('character_visual_placeholder')}`;
       const description = document.createElement('p');
-      description.textContent = characterVisualOptionDescription(option, categoryKey, lang)
-        || translate('character_outfit_not_selected');
+      description.textContent = option
+        ? (characterVisualOptionDescription(option, categoryKey, lang) || translate('character_outfit_not_selected'))
+        : translate('character_outfit_not_selected');
       block.appendChild(title);
       block.appendChild(description);
       target.appendChild(block);
     });
-    if (!target.children.length) {
-      const empty = document.createElement('p');
-      empty.textContent = translate('character_outfit_not_selected');
-      target.appendChild(empty);
-    }
   }
 
   function updateSummary({ summary, categories, appearance, lang, translate }) {
