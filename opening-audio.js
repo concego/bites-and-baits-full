@@ -15,7 +15,10 @@ const OpeningAudio = (() => {
     marginStep02: 'opening_margin_step_02',
   });
 
+  let readyPromise = null;
   let travelLoops = [];
+  let travelRequest = 0;
+  let arrivalStepTimers = [];
   let woodIndex = 0;
   let marginIndex = 0;
 
@@ -24,26 +27,38 @@ const OpeningAudio = (() => {
   }
 
   function init() {
-    return Audio.init();
+    if (!readyPromise) {
+      readyPromise = Audio.init().catch(() => {});
+    }
+    return readyPromise;
   }
 
   function playCue(cue, volume = 0.22) {
     const key = CUES[cue];
     if (!key || !soundEnabled()) return Promise.resolve(null);
-    return init().then(() => Audio.play(key, { volume }));
+    return init().then(() => {
+      if (!soundEnabled()) return null;
+      return Audio.play(key, { volume });
+    });
   }
 
   function startTravel() {
+    const request = ++travelRequest;
     if (!soundEnabled()) return Promise.resolve();
     stopTravel();
+    // stopTravel increments travelRequest; preserve this request as current.
+    travelRequest = request + 1;
+    const activeRequest = travelRequest;
     return init().then(() => {
-      const river = Audio.play('ambient_river_strong', { volume: 0.12, loop: true });
-      const motorboat = Audio.play(CUES.motorboat, { volume: 0.08, loop: true });
+      if (activeRequest !== travelRequest || !soundEnabled()) return;
+      const river = Audio.play('ambient_river_strong', { volume: 0.08, loop: true });
+      const motorboat = Audio.play(CUES.motorboat, { volume: 0.16, loop: true });
       travelLoops = [river, motorboat].filter(Boolean);
     });
   }
 
   function stopTravel() {
+    travelRequest += 1;
     travelLoops.forEach(node => Audio.stop(node));
     travelLoops = [];
   }
@@ -63,17 +78,32 @@ const OpeningAudio = (() => {
   function playWoodStep() {
     const cue = ['woodStep01', 'woodStep02', 'woodStep03'][woodIndex % 3];
     woodIndex += 1;
-    return playCue(cue, 0.17);
+    return playCue(cue, 0.22);
   }
 
   function playMarginStep() {
     const cue = ['marginStep01', 'marginStep02'][marginIndex % 2];
     marginIndex += 1;
-    return playCue(cue, 0.15);
+    return playCue(cue, 0.2);
+  }
+
+  function clearArrivalStepTimers() {
+    arrivalStepTimers.forEach(timer => clearTimeout(timer));
+    arrivalStepTimers = [];
+  }
+
+  function playArrivalSteps() {
+    clearArrivalStepTimers();
+    playWoodStep();
+    arrivalStepTimers.push(setTimeout(() => playWoodStep(), 420));
+    arrivalStepTimers.push(setTimeout(() => playWoodStep(), 840));
+    arrivalStepTimers.push(setTimeout(() => playMarginStep(), 1450));
+    arrivalStepTimers.push(setTimeout(() => playMarginStep(), 2050));
   }
 
   function stopAll() {
     stopTravel();
+    clearArrivalStepTimers();
   }
 
   return {
@@ -85,6 +115,7 @@ const OpeningAudio = (() => {
     stopTravel,
     playWoodStep,
     playMarginStep,
+    playArrivalSteps,
     stopAll,
   };
 })();

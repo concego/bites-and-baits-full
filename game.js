@@ -519,6 +519,7 @@ const Game = (() => {
       OpeningAudio.startTravel();
     } else {
       CityMusic.start('house');
+      if (step === 'shoreArrival') OpeningAudio.playArrivalSteps();
     }
   }
 
