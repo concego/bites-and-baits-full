@@ -199,6 +199,7 @@
 .opening-art-boat-travel .opening-character-avatar { left: 63%; bottom: 22%; }
 .opening-art-boat-travel .opening-npc-avatar { left: 37%; bottom: 22%; }
 .opening-art-shore-arrival .opening-character-avatar { left: 38%; bottom: 12%; }
+.opening-art-shore-arrival .opening-npc-avatar { left: 68%; bottom: 12%; }
 
 @media (max-width: 560px) {
   .narrative-screen { padding: 12px; }
