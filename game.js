@@ -196,6 +196,7 @@ const Game = (() => {
       houseCharacterOutfit: $('house-character-outfit'),
       openingKicker:  $('opening-kicker'),
       openingTitle:   $('opening-title'),
+      openingSpeaker: $('opening-speaker'),
       openingRecipient: $('opening-recipient'),
       openingBody:    $('opening-body'),
       openingSignature: $('opening-signature'),
@@ -461,9 +462,13 @@ const Game = (() => {
     'travelPreparation',
     'boatTravel',
     'shoreArrival',
+    'shoreFarewell',
   ]);
   let storyOpeningStep = STORY_OPENING_STEPS[0];
   let storyOpeningMusic = null;
+  let boatDialogueIndex = 0;
+  let shoreDialogueIndex = 0;
+  let openingRenderedStep = null;
 
   function _isStoryOpeningComplete() {
     return localStorage.getItem(STORY_OPENING_KEY) === '1';
@@ -489,6 +494,7 @@ const Game = (() => {
       travelPreparation: 'travel-preparation',
       boatTravel: 'boat-travel',
       shoreArrival: 'shore-arrival',
+      shoreFarewell: 'shore-arrival',
     }[step] || 'room-writing';
   }
 
@@ -508,7 +514,7 @@ const Game = (() => {
     } else if (ui.openingCharacterAvatar) {
       ui.openingCharacterAvatar.textContent = '';
     }
-    if (step === 'boatTravel' && ui.openingVitorAvatar && typeof CharacterAvatar !== 'undefined') {
+    if (['boatTravel', 'shoreArrival', 'shoreFarewell'].includes(step) && ui.openingVitorAvatar && typeof CharacterAvatar !== 'undefined') {
       CharacterAvatar.render(ui.openingVitorAvatar, VITOR_CHARACTER, { outfit: 'arrival' });
     } else if (ui.openingVitorAvatar) {
       ui.openingVitorAvatar.textContent = '';
@@ -536,8 +542,27 @@ const Game = (() => {
     }
   }
 
+  function _getOpeningDialogue(step, name) {
+    const boatLines = [
+      { speaker: t('opening_vitor_name'), text: t('opening_vitor_boat_01', name) },
+      { speaker: t('opening_dialogue_player_name', name), text: t('opening_player_boat_01') },
+      { speaker: t('opening_vitor_name'), text: t('opening_vitor_boat_02') },
+    ];
+    const shoreLines = [
+      { speaker: t('opening_vitor_name'), text: t('opening_vitor_shore_01') },
+      { speaker: t('opening_dialogue_player_name', name), text: t('opening_player_shore_01') },
+      { speaker: t('opening_vitor_name'), text: t('opening_vitor_shore_02') },
+    ];
+    const lines = step === 'boatTravel' ? boatLines
+      : step === 'shoreFarewell' ? shoreLines
+      : [];
+    const index = step === 'boatTravel' ? boatDialogueIndex : shoreDialogueIndex;
+    return lines[index] || null;
+  }
+
   function _renderStoryOpening() {
     const name = Character.load().name || '';
+    const sceneChanged = openingRenderedStep !== storyOpeningStep;
     let content;
     let showAvatar = true;
 
@@ -634,10 +659,19 @@ const Game = (() => {
         break;
     }
 
+    const dialogue = _getOpeningDialogue(storyOpeningStep, name);
+    if (dialogue) {
+      content.speaker = dialogue.speaker;
+      content.body = [...content.body, dialogue.text];
+    } else {
+      content.speaker = '';
+    }
     _renderOpeningSceneVisual(storyOpeningStep, showAvatar, content.description);
-    _playOpeningSceneAudio(storyOpeningStep);
+    if (sceneChanged) _playOpeningSceneAudio(storyOpeningStep);
+    openingRenderedStep = storyOpeningStep;
     if (ui.openingKicker) ui.openingKicker.textContent = content.kicker;
     if (ui.openingTitle) ui.openingTitle.textContent = content.title;
+    if (ui.openingSpeaker) ui.openingSpeaker.textContent = content.speaker;
     if (ui.openingRecipient) ui.openingRecipient.textContent = content.recipient;
     _setOpeningBody(content.body);
     if (ui.openingSignature) ui.openingSignature.textContent = content.signature;
@@ -648,12 +682,31 @@ const Game = (() => {
   function openStoryOpening() {
     storyOpeningStep = STORY_OPENING_STEPS[0];
     storyOpeningMusic = null;
+    boatDialogueIndex = 0;
+    shoreDialogueIndex = 0;
+    openingRenderedStep = null;
     OpeningAudio.init();
     _renderStoryOpening();
     showScreen('storyOpening');
   }
 
   function _advanceStoryOpening() {
+    if (storyOpeningStep === 'boatTravel' && boatDialogueIndex < 2) {
+      boatDialogueIndex += 1;
+      _renderStoryOpening();
+      return;
+    }
+    if (storyOpeningStep === 'shoreArrival') {
+      storyOpeningStep = 'shoreFarewell';
+      shoreDialogueIndex = 0;
+      _renderStoryOpening();
+      return;
+    }
+    if (storyOpeningStep === 'shoreFarewell' && shoreDialogueIndex < 2) {
+      shoreDialogueIndex += 1;
+      _renderStoryOpening();
+      return;
+    }
     const currentIndex = STORY_OPENING_STEPS.indexOf(storyOpeningStep);
     if (currentIndex < STORY_OPENING_STEPS.length - 1) {
       storyOpeningStep = STORY_OPENING_STEPS[currentIndex + 1];
