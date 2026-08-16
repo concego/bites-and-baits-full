@@ -56,6 +56,32 @@ const CharacterVisualView = (() => {
     description.hidden = !text;
   }
 
+  function updateOutfitDetails({ target, categories, appearance, lang, translate }) {
+    if (!target) return;
+    target.innerHTML = '';
+    ['arrivalOutfit', 'fishingOutfit'].forEach(categoryKey => {
+      const category = categories.find(item => item.key === categoryKey);
+      if (!category) return;
+      const option = category.options.find(item => item.value === appearance[categoryKey]);
+      if (!option) return;
+      const block = document.createElement('article');
+      block.className = 'character-outfit-detail';
+      const title = document.createElement('h4');
+      title.textContent = `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`;
+      const description = document.createElement('p');
+      description.textContent = characterVisualOptionDescription(option, categoryKey, lang)
+        || translate('character_outfit_not_selected');
+      block.appendChild(title);
+      block.appendChild(description);
+      target.appendChild(block);
+    });
+    if (!target.children.length) {
+      const empty = document.createElement('p');
+      empty.textContent = translate('character_outfit_not_selected');
+      target.appendChild(empty);
+    }
+  }
+
   function updateSummary({ summary, categories, appearance, lang, translate }) {
     if (!summary) return;
     const parts = categories.map(category => {
@@ -66,7 +92,7 @@ const CharacterVisualView = (() => {
     summary.textContent = parts.join('. ') + '.';
   }
 
-  function open({ fields, summary, preview, character, categories, lang, translate, getElement }) {
+  function open({ fields, summary, outfitDetails, preview, character, categories, lang, translate, getElement }) {
     if (!fields) return;
     const appearance = character.appearance || {};
     fields.innerHTML = '';
@@ -104,6 +130,7 @@ const CharacterVisualView = (() => {
         select.removeAttribute('aria-invalid');
         updateOptionDescription({ select, description, category, lang });
         const selected = readAppearance({ categories, getElement });
+        updateOutfitDetails({ target: outfitDetails, categories, appearance: selected, lang, translate });
         updateSummary({ summary, categories, appearance: selected, lang, translate });
         renderAvatar({ target: preview, character, appearanceOverride: selected });
       });
@@ -112,9 +139,10 @@ const CharacterVisualView = (() => {
       fields.appendChild(fieldset);
     });
     const selected = readAppearance({ categories, getElement });
+    updateOutfitDetails({ target: outfitDetails, categories, appearance: selected, lang, translate });
     updateSummary({ summary, categories, appearance: selected, lang, translate });
     renderAvatar({ target: preview, character, appearanceOverride: selected });
   }
 
-  return { readAppearance, renderAvatar, updateSummary, open };
+  return { readAppearance, renderAvatar, updateSummary, updateOutfitDetails, open };
 })();

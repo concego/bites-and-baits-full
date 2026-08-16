@@ -77,3 +77,15 @@
   position: relative;
   z-index: 1;
 }
+
+.character-outfit-details {
+  margin-top: 22px;
+  padding: 16px;
+  border: 2px solid rgba(242,200,75,.55);
+  border-radius: 12px;
+  background: rgba(0,0,0,.24);
+}
+.character-outfit-details h3 { margin: 0 0 10px; font-size: 1.05rem; }
+.character-outfit-detail + .character-outfit-detail { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.24); }
+.character-outfit-detail h4 { margin: 0 0 4px; font-size: .98rem; }
+.character-outfit-detail p, .character-outfit-details > p { margin: 0; line-height: 1.45; color: rgba(255,255,255,.9); }

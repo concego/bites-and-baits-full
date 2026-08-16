@@ -173,6 +173,7 @@ const Game = (() => {
       characterFormStatus: $('character-form-status'),
       characterVisualFields: $('character-visual-fields'),
       characterVisualSummary: $('character-visual-summary'),
+      characterOutfitDetails: $('character-outfit-details-content'),
       characterAvatarPreview: $('character-avatar-preview'),
       characterAvatar: $('character-avatar'),
       openingCharacterAvatar: $('opening-character-avatar'),
@@ -539,6 +540,7 @@ const Game = (() => {
     CharacterVisualView.open({
       fields: ui.characterVisualFields,
       summary: ui.characterVisualSummary,
+      outfitDetails: ui.characterOutfitDetails,
       preview: ui.characterAvatarPreview,
       character: current,
       categories: getCharacterVisualCategories(current.genderProfile),
