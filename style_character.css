@@ -63,3 +63,17 @@
 }
 
 .character-avatar-fallback { display: block; font-size: 7rem; line-height: 1; }
+
+/* A criação é um espaço próprio, anterior à Vila: nenhum HUD ou painel da
+   cidade deve disputar a atenção visual com a personagem. */
+#screen-character-create,
+#screen-character-visual {
+  z-index: 40;
+  isolation: isolate;
+  background: linear-gradient(180deg, #223d54 0%, #122733 100%);
+}
+#screen-character-create .character-create-card,
+#screen-character-visual .character-create-card {
+  position: relative;
+  z-index: 1;
+}
