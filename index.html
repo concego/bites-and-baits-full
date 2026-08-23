@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Bites &amp; Baits</title>
-  <link rel="stylesheet" href="style.css?v=creator-visibility-02" />
+  <link rel="stylesheet" href="style.css?v=people-menu-01" />
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css?v=outfit-catalog-01" />
   <link rel="stylesheet" href="style-narrative.css?v=vitor-shore-02" />
@@ -386,6 +386,7 @@
         <button id="btn-hub-vessel" class="btn-city"          data-i18n="btn_hub_vessel"></button>
         <button id="btn-hub-travel" class="btn-city"          data-i18n="btn_hub_travel"></button>
         <button id="btn-hub-inv"    class="btn-city"          data-i18n="btn_hub_inv"></button>
+        <button id="btn-hub-people" class="btn-city"          data-i18n="btn_people_present"></button>
       </nav>
 
     </div>
@@ -404,6 +405,7 @@
       <header class="panel-header">
         <h2 id="house-title" data-i18n="house_title"></h2>
       </header>
+      <button id="btn-house-people" class="btn-secondary people-menu-button" data-i18n="btn_people_present"></button>
 
       <!-- Nível atual -->
       <section id="house-current-section" aria-labelledby="house-current-heading">
@@ -429,6 +431,7 @@
       <header class="panel-header">
         <h2 id="travel-title" data-i18n="travel_title"></h2>
       </header>
+      <button id="btn-travel-people" class="btn-secondary people-menu-button" data-i18n="btn_people_present"></button>
 
       <!-- Mapa atualmente ativo -->
       <div id="travel-current-card" class="hub-map-card" aria-live="polite">
@@ -452,6 +455,7 @@
       <header class="panel-header">
         <h2 id="vessel-title" data-i18n="vessel_title"></h2>
       </header>
+      <button id="btn-vessel-people" class="btn-secondary people-menu-button" data-i18n="btn_people_present"></button>
 
       <!-- Embarcações disponíveis para compra -->
       <section id="vessel-buy-section" aria-labelledby="vessel-buy-heading">
@@ -791,6 +795,7 @@
         <span class="bar-icon" aria-hidden="true">🎣</span>
         <span class="bar-label" data-i18n="bar_zone"></span>
       </button>
+      <button id="btn-bar-people" class="bar-btn hidden" data-i18n="btn_people_present"></button>
       <button id="btn-bar-hub"   class="bar-btn bar-btn-back" aria-label="Voltar ao Hub">
         <span class="bar-icon" aria-hidden="true">🗺️</span>
         <span class="bar-label" data-i18n="bar_hub"></span>
@@ -924,6 +929,7 @@
           <span id="shop-coins"></span>
         </div>
       </header>
+      <button id="btn-shop-people" class="btn-secondary people-menu-button" data-i18n="btn_people_present"></button>
 
       <!-- Guias modo: Comprar / Vender -->
       <div class="shop-mode-tabs" role="tablist" aria-label="Modo da loja">
@@ -995,6 +1001,23 @@
     </div>
   </div>
 
+  <div id="people-panel" class="people-panel hidden" role="dialog" aria-modal="true" aria-labelledby="people-title">
+    <div class="people-dialog">
+      <button id="btn-people-close" class="btn-secondary panel-close-top" data-i18n="people_close"></button>
+      <h2 id="people-title" data-i18n="people_title"></h2>
+      <p id="people-location" class="people-location"></p>
+      <div id="people-list-view">
+        <p id="people-empty" class="people-empty hidden" data-i18n="people_empty"></p>
+        <ul id="people-list" class="people-list" role="list"></ul>
+      </div>
+      <div id="people-conversation" class="people-conversation hidden">
+        <p id="people-speaker" class="people-speaker"></p>
+        <p id="people-dialogue-body" class="people-dialogue-body"></p>
+        <button id="btn-people-dialogue-next" class="btn-primary" type="button" data-i18n="people_continue"></button>
+      </div>
+    </div>
+  </div>
+
   </div><!-- /#app -->
 
   <!-- Fallback mínimo: a escolha de idioma continua funcionando mesmo se um
@@ -1008,7 +1031,7 @@
     });
   </script>
   <script src="a11y.js"></script>
-  <script src="i18n.js?v=opening-visual-01"></script>
+  <script src="i18n.js?v=people-menu-01"></script>
   <script src="accessibility-announcer.js?v=refactor-01"></script>
   <script src="last-catch-storage.js?v=refactor-02"></script>
   <script src="fish-data.js"></script>
@@ -1023,7 +1046,7 @@
   <script src="inventory-fish-view.js?v=refactor-11"></script>
   <script src="inventory-bait-view.js?v=refactor-12"></script>
   <script src="score-system.js"></script>
-  <script src="inventory.js"></script>
+  <script src="inventory.js?v=people-menu-01"></script>
   <script src="hub-hud.js?v=refactor-04"></script>
   <script src="shop-data.js"></script>
   <script src="house-data.js"></script>
@@ -1041,12 +1064,12 @@
   <script src="character-visual-view.js?v=appearance-presence-07"></script>
   <script src="result-view.js?v=refactor-20"></script>
   <script src="zone-view.js?v=refactor-19"></script>
-  <script src="travel-view.js?v=refactor-18"></script>
+  <script src="travel-view.js?v=people-menu-01"></script>
   <script src="vessel-view.js?v=refactor-17"></script>
   <script src="house-view.js?v=refactor-16"></script>
   <script src="shop-sell-view.js?v=refactor-15"></script>
   <script src="shop-buy-view.js?v=refactor-14"></script>
-  <script src="game.js?v=zeca-shop-coins02"></script>
+  <script src="game.js?v=people-menu-01"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"

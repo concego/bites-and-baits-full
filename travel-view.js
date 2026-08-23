@@ -32,7 +32,8 @@ const TravelView = (() => {
         const lockMsg = `🚣 ${t('travel_need_boat') || 'Precisa de barco'}: ${mapBoatLabel(m)}`;
         actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
       } else if (isActive && !hasRod) {
-        const lockMsg = `🎋 ${t('travel_need_rod')}`;
+        const isRiver = ['margem_rio_doce', 'rio_doce'].includes(m.id);
+        const lockMsg = `🎋 ${isRiver ? t('river_need_zeca') : t('travel_need_rod')}`;
         actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
       } else if (isActive) {
         actionsHtml = `<button class="btn-primary btn-sm travel-btn-fish" data-map-id="${m.id}" aria-label="${t('travel_fish_here')} — ${t(m.nameKey) || m.id}">${t('travel_fish_here')}</button>`;

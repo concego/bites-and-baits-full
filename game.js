@@ -96,7 +96,7 @@ const Game = (() => {
       // O idioma fica preservado; somente o progresso do jogo é apagado.
       [
         'bb_character', 'bb_story_opening_complete', 'bb_inventory', 'bb_coins',
-        'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_initial_gear_received', 'bb_gear_mods', 'bb_protected',
+        'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_initial_gear_received', 'bb_lake_shore_fished', 'bb_zeca_river_advice', 'bb_gear_mods', 'bb_protected',
         'bb_owned_equip', 'bb_active_boat', 'bb_house_level', 'bb_zonemap',
         'bb_activezone', 'bb_map', 'bb_best', 'bb_time',
         'bb_last_catch_story', 'bb_last_catch_free', 'bb_last_catch',
@@ -204,6 +204,22 @@ const Game = (() => {
       openingBody:    $('opening-body'),
       openingSignature: $('opening-signature'),
       openingNext:    $('btn-opening-next'),
+      hubPeople:      $('btn-hub-people'),
+      housePeople:    $('btn-house-people'),
+      travelPeople:   $('btn-travel-people'),
+      vesselPeople:   $('btn-vessel-people'),
+      shopPeople:     $('btn-shop-people'),
+      gamePeople:     $('btn-bar-people'),
+      peoplePanel:    $('people-panel'),
+      peopleLocation: $('people-location'),
+      peopleListView: $('people-list-view'),
+      peopleEmpty:    $('people-empty'),
+      peopleList:     $('people-list'),
+      peopleConversation: $('people-conversation'),
+      peopleSpeaker:  $('people-speaker'),
+      peopleDialogueBody: $('people-dialogue-body'),
+      peopleClose:    $('btn-people-close'),
+      peopleDialogueNext: $('btn-people-dialogue-next'),
       stateLabel:     $('state-label'),
       tensionCont:    $('tension-container'),
       tensionBar:     $('tension-bar'),
@@ -300,6 +316,20 @@ const Game = (() => {
       _openShopZecaDialogue();
     });
     $('btn-hub-inv')?.addEventListener('click',    () => { renderInventory(); showScreen('inventory'); _startCityScreenMusic('city'); });
+    ui.hubPeople?.addEventListener('click', event => _openPeoplePanel('hub', event.currentTarget));
+    ui.housePeople?.addEventListener('click', event => _openPeoplePanel('house', event.currentTarget));
+    ui.shopPeople?.addEventListener('click', event => _openPeoplePanel('shop', event.currentTarget));
+    ui.vesselPeople?.addEventListener('click', event => _openPeoplePanel('vessel', event.currentTarget));
+    ui.travelPeople?.addEventListener('click', event => {
+      const location = activeMap?.id === 'margem_rio_doce' ? 'river_shore' : 'lake';
+      _openPeoplePanel(location, event.currentTarget);
+    });
+    ui.gamePeople?.addEventListener('click', event => {
+      const location = activeMap?.id === 'margem_rio_doce' ? 'river_shore' : 'lake';
+      _openPeoplePanel(location, event.currentTarget);
+    });
+    $('btn-people-close')?.addEventListener('click', _closePeoplePanel);
+    ui.peopleDialogueNext?.addEventListener('click', _advancePeopleConversation);
     $('btn-hub-travel')?.addEventListener('click', () => { renderTravel(); showScreen('travel'); _startCityScreenMusic('travel'); });
     $('btn-hub-vessel')?.addEventListener('click', () => { renderVessel(); showScreen('vessel'); _startCityScreenMusic('vessel'); });
     $('btn-hub-home')?.addEventListener('click',   () => { renderHouse();  showScreen('house');  _startCityScreenMusic('house');  });
@@ -484,6 +514,10 @@ const Game = (() => {
   let shoreDialogueIndex = 0;
   let openingRenderedStep = null;
   let shopZecaDialogueIndex = 0;
+  let peopleLocation = 'hub';
+  let peopleConversation = null;
+  let peopleDialogueIndex = 0;
+  let peopleReturnFocus = null;
 
   function _isStoryOpeningComplete() {
     return localStorage.getItem(STORY_OPENING_KEY) === '1';
@@ -1156,6 +1190,8 @@ const Game = (() => {
           || null;
         ui.scene.classList.add(activeMap.sceneClass);
       }
+      // Pessoas presentes só aparece em mapas que não dependem de barco.
+      ui.gamePeople?.classList.toggle('hidden', !!activeMap?.allowedBoats?.length);
       // Cada modo mantém seu próprio histórico de última captura.
       _lastCatchInfo = LastCatchStorage.load(gameMode);
 
@@ -1273,7 +1309,8 @@ const Game = (() => {
             break;
           }
           if (!_hasRequiredRod(activeMap, _equip)) {
-            speak(I18n.t('travel_need_rod'));
+            const riverMap = ['margem_rio_doce', 'rio_doce'].includes(activeMap?.id);
+            speak(riverMap ? I18n.t('river_need_zeca') : I18n.t('travel_need_rod'));
             enterState('IDLE');
             break;
           }
@@ -1387,6 +1424,9 @@ const Game = (() => {
         // Modo normal: registra no inventário e calcula moedas
         // Modo livre: não registra moedas nem inventário
         const caughtItem = (gameMode !== 'free') ? Inventory.addFish(currentFish) : null;
+        if (gameMode !== 'free' && activeMap?.id === 'lago_margem') {
+          localStorage.setItem('bb_lake_shore_fished', '1');
+        }
         _lastCaughtItem = caughtItem;
         if (gameMode !== 'free') refreshHoldHud();
         _lastCatchInfo = {
@@ -2040,6 +2080,8 @@ const Game = (() => {
 
   /** Renderiza a tela de seleção de destino */
   function renderTravel() {
+    const currentMap = getActiveMap();
+    ui.travelPeople?.classList.toggle('hidden', !!currentMap?.allowedBoats?.length);
     TravelView.render({
       translate: t,
       getActiveMap,
@@ -2408,6 +2450,117 @@ const Game = (() => {
       return;
     }
     _finishShopZecaDialogue();
+  }
+
+  function _peopleLocationLabel(location) {
+    const mapLabels = {
+      hub: 'people_location_hub',
+      house: 'people_location_house',
+      shop: 'people_location_shop',
+      vessel: 'people_location_vessel',
+      lake: 'people_location_lake',
+      river_shore: 'people_location_river_shore',
+    };
+    return t(mapLabels[location] || 'people_location_hub');
+  }
+
+  function _peopleAt(location) {
+    const people = {
+      hub: [{ id: 'vitor', name: 'people_vitor_name', desc: 'people_vitor_desc' }],
+      house: [],
+      shop: [{ id: 'zeca', name: 'people_zeca_name', desc: 'people_zeca_desc' }],
+      vessel: [{ id: 'vitor', name: 'people_vitor_name', desc: 'people_vitor_desc' }],
+      lake: [],
+      river_shore: [],
+    };
+    return people[location] || [];
+  }
+
+  function _peopleConversationLines(personId) {
+    if (personId === 'zeca') {
+      const hasFishedLake = localStorage.getItem('bb_lake_shore_fished') === '1';
+      const hasAdvice = localStorage.getItem('bb_zeca_river_advice') === '1';
+      if (hasFishedLake && !hasAdvice) {
+        const name = Character.load().name || '';
+        return [
+          { speaker: t('people_zeca_name'), text: t('people_zeca_river_01') },
+          { speaker: name, text: t('people_player_river_01') },
+          { speaker: t('people_zeca_name'), text: t('people_zeca_river_02') },
+          { speaker: t('people_zeca_name'), text: t('people_zeca_river_03') },
+          { speaker: name, text: t('people_player_river_02') },
+        ];
+      }
+      return [{ speaker: t('people_zeca_name'), text: t('people_zeca_after_advice') }];
+    }
+    return [{ speaker: t('people_vitor_name'), text: t('people_vitor_chat') }];
+  }
+
+  function _renderPeopleList() {
+    const people = _peopleAt(peopleLocation);
+    ui.peopleLocation.textContent = _peopleLocationLabel(peopleLocation);
+    ui.peopleList.innerHTML = '';
+    ui.peopleEmpty.classList.toggle('hidden', people.length > 0);
+    people.forEach(person => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'people-person-button';
+      button.innerHTML = `<strong>${t(person.name)}</strong><span>${t(person.desc)}</span>`;
+      button.addEventListener('click', () => _openPeopleConversation(person.id));
+      li.appendChild(button);
+      ui.peopleList.appendChild(li);
+    });
+  }
+
+  function _renderPeopleConversation() {
+    const line = peopleConversation?.[peopleDialogueIndex];
+    if (!line) return;
+    ui.peopleSpeaker.textContent = line.speaker;
+    ui.peopleDialogueBody.textContent = line.text;
+    ui.peopleDialogueNext.textContent = t('people_continue');
+  }
+
+  function _openPeopleConversation(personId) {
+    peopleConversation = _peopleConversationLines(personId);
+    peopleDialogueIndex = 0;
+    ui.peopleListView.classList.add('hidden');
+    ui.peopleConversation.classList.remove('hidden');
+    _renderPeopleConversation();
+    requestAnimationFrame(() => ui.peopleDialogueNext?.focus());
+    speak(`${ui.peopleSpeaker.textContent} ${ui.peopleDialogueBody.textContent}`);
+  }
+
+  function _closePeoplePanel() {
+    ui.peoplePanel.classList.add('hidden');
+    ui.peopleListView.classList.remove('hidden');
+    ui.peopleConversation.classList.add('hidden');
+    peopleConversation = null;
+    const target = peopleReturnFocus;
+    peopleReturnFocus = null;
+    target?.focus?.();
+  }
+
+  function _advancePeopleConversation() {
+    if (!peopleConversation) return;
+    if (peopleDialogueIndex < peopleConversation.length - 1) {
+      peopleDialogueIndex += 1;
+      _renderPeopleConversation();
+      speak(`${ui.peopleSpeaker.textContent} ${ui.peopleDialogueBody.textContent}`);
+      return;
+    }
+    const isRiverAdvice = peopleConversation.some(line => line.text === t('people_zeca_river_03'));
+    if (isRiverAdvice) localStorage.setItem('bb_zeca_river_advice', '1');
+    _closePeoplePanel();
+  }
+
+  function _openPeoplePanel(location, trigger) {
+    const currentMap = activeMap || getActiveMap();
+    if (['lake', 'river_shore'].includes(location) && currentMap?.allowedBoats?.length) return;
+    peopleLocation = location;
+    peopleReturnFocus = trigger || document.activeElement;
+    _renderPeopleList();
+    ui.peoplePanel.classList.remove('hidden');
+    requestAnimationFrame(() => ui.peopleClose?.focus());
   }
 
   function renderShop() {

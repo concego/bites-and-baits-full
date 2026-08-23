@@ -993,6 +993,51 @@ html, body {
 
 /* ===== LOJA & INVENTÁRIO ===== */
 
+.people-panel {
+  position: absolute;
+  z-index: 30;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 24, 34, .78);
+}
+.people-panel.hidden { display: none; }
+.people-dialog {
+  width: min(100%, 430px);
+  max-height: 90%;
+  overflow: auto;
+  padding: 24px;
+  border: 2px solid #77b9c5;
+  border-radius: 16px;
+  background: linear-gradient(155deg, #173746, #102631);
+  box-shadow: 0 16px 50px rgba(0,0,0,.4);
+}
+.people-dialog h2 { margin: 0 0 6px; color: var(--white); }
+.people-location { margin: 0 0 20px; color: #f2c84b; font-weight: 800; }
+.people-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.people-person-button {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 10px;
+  color: var(--white);
+  background: rgba(255,255,255,.08);
+  text-align: left;
+  cursor: pointer;
+}
+.people-person-button:hover { background: rgba(255,255,255,.16); }
+.people-person-button strong { color: #f2c84b; font-size: 1.05rem; }
+.people-person-button span { line-height: 1.4; }
+.people-empty { margin: 0; line-height: 1.5; }
+.people-conversation { margin-top: 18px; }
+.people-speaker { margin: 0 0 8px; color: #f2c84b; font-weight: 800; }
+.people-dialogue-body { min-height: 5em; margin: 0 0 24px; line-height: 1.55; }
+
 .shop-npc-dialog {
   position: absolute;
   z-index: 20;
