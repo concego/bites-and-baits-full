@@ -576,7 +576,9 @@ const Game = (() => {
   }
 
   function _renderStoryOpening() {
-    const name = Character.load().name || '';
+    const character = Character.load();
+    const name = character.name || '';
+    const gender = character.genderProfile || 'neutral';
     const sceneChanged = openingRenderedStep !== storyOpeningStep;
     let content;
     let showAvatar = true;
@@ -590,7 +592,7 @@ const Game = (() => {
           body: [t('opening_scene_room_body', name), t('opening_player_letter_body', name)],
           signature: t('opening_player_signature', name),
           next: t('opening_scene_continue'),
-          description: t('opening_scene_room_description', name),
+          description: t('opening_scene_room_description', name, gender),
         };
         break;
       case 'roomEnvelope':
@@ -636,7 +638,7 @@ const Game = (() => {
           body: [t('opening_zeca_letter_body', name)],
           signature: t('opening_zeca_signature'),
           next: t('opening_scene_continue'),
-          description: t('opening_scene_reading_description', name),
+          description: t('opening_scene_reading_description', name, gender),
         };
         break;
       case 'travelPreparation':
@@ -647,7 +649,7 @@ const Game = (() => {
           body: [t('opening_scene_prepare_body', name)],
           signature: '',
           next: t('opening_scene_continue'),
-          description: t('opening_scene_prepare_description', name),
+          description: t('opening_scene_prepare_description', name, gender),
         };
         break;
       case 'boatTravel':

@@ -84,7 +84,11 @@ const I18n = (() => {
       opening_scene_room_kicker: 'Quarto',
       opening_scene_room_title: 'Uma carta para começar de novo',
       opening_scene_room_body: (name) => `${name} se senta à mesa, respira fundo e começa a escrever para tio Zeca.`,
-      opening_scene_room_description: (name) => `Quarto simples, com uma mesa, papel e uma luminária. ${name} está sentada escrevendo.`,
+      opening_scene_room_description: (name, gender) => gender === 'masculine'
+        ? `Quarto simples, com uma mesa, papel e uma luminária. ${name} está sentado escrevendo.`
+        : gender === 'feminine'
+          ? `Quarto simples, com uma mesa, papel e uma luminária. ${name} está sentada escrevendo.`
+          : `Quarto simples, com uma mesa, papel e uma luminária. ${name} está à mesa, escrevendo.`,
       opening_scene_envelope_kicker: 'Quarto',
       opening_scene_envelope_title: 'A carta está pronta',
       opening_scene_envelope_body: (name) => `Depois de terminar a carta, ${name} dobra o papel e o coloca no envelope.`,
@@ -99,11 +103,19 @@ const I18n = (() => {
       opening_scene_received_description: (name) => `Um envelope sobre uma mesa, com a resposta de tio Zeca. ${name} ainda não aparece.`,
       opening_scene_reading_kicker: 'Quarto',
       opening_scene_reading_title: 'Uma resposta animadora',
-      opening_scene_reading_description: (name) => `${name} está sentada no quarto, segurando e lendo a carta recebida.`,
+      opening_scene_reading_description: (name, gender) => gender === 'masculine'
+        ? `${name} está sentado no quarto, segurando e lendo a carta recebida.`
+        : gender === 'feminine'
+          ? `${name} está sentada no quarto, segurando e lendo a carta recebida.`
+          : `${name} está no quarto, segurando e lendo a carta recebida.`, 
       opening_scene_prepare_kicker: 'Preparação',
       opening_scene_prepare_title: 'Hora de partir',
       opening_scene_prepare_body: (name) => `${name} guarda a carta, pega suas coisas e se prepara para deixar o quarto.`,
-      opening_scene_prepare_description: (name) => `${name} está de pé ao lado de uma pequena bagagem, pronta para sair.`,
+      opening_scene_prepare_description: (name, gender) => gender === 'masculine'
+        ? `${name} está de pé ao lado de uma pequena bagagem, pronto para sair.`
+        : gender === 'feminine'
+          ? `${name} está de pé ao lado de uma pequena bagagem, pronta para sair.`
+          : `${name} está de pé ao lado de uma pequena bagagem, a postos para sair.`, 
       opening_scene_boat_kicker: 'Rio Doce',
       opening_scene_boat_title: 'A viagem começa',
       opening_scene_boat_body: (name) => `${name} segue de lancha pelo Rio Doce em direção à Ilha Barra Serena. Vitor, filho do dono do estaleiro, conduz a lancha.`,
