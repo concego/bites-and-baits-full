@@ -60,6 +60,14 @@ const TravelView = (() => {
           speak(`${t('travel_need_boat') || 'Precisa de barco'}: ${mapBoatLabel(destMap)}`);
           return;
         }
+        // A viagem também é bloqueada quando a embarcação é suficiente,
+        // mas a vara ainda não alcança o requisito do destino. A verificação
+        // no CASTING continua como proteção contra caminhos alternativos.
+        if (destMap.requiredRod && !hasRod) {
+          const isRiver = ['margem_rio_doce', 'rio_doce'].includes(destMap.id);
+          speak(`🎋 ${isRiver ? t('river_need_zeca') : t('travel_need_rod')}`);
+          return;
+        }
         if (boatId && boatId !== getActiveBoat()) setActiveBoat(boatId);
         const fee = calcBoatFee(boatId);
         if (fee > 0) {
