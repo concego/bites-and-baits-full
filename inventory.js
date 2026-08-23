@@ -383,7 +383,7 @@ const Inventory = (() => {
     });
     if (!equip.bait) equip.bait = 'worm';
     _saveEquip(equip);
-    addBaits('worm', 10);
+    addBaits('worm', 30);
     try { localStorage.setItem(STORAGE_KEY_INITIAL_GEAR, '1'); } catch {}
     return true;
   }
