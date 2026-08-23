@@ -9,7 +9,7 @@
 const MAP_CATALOG = {
   margem_rio_doce: {
     id: 'margem_rio_doce', nameKey: 'map_margem_rio_doce', emoji: '🏞️',
-    sceneClass: 'map-margem-rio-doce', allowedBoats: [], maxZones: 1,
+    sceneClass: 'map-margem-rio-doce', allowedBoats: [], requiredRod: 'rod_medium', maxZones: 1,
     zones: [{ id: 'margem', nameKey: 'zone_margem_rio_doce', emoji: '🏞️' }],
     initialZones: ['margem'],
     fish: [
