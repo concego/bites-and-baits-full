@@ -106,7 +106,9 @@ const Game = (() => {
     if (_qp.has('testcoins')) {
       const parsedCoins = parseInt(_qp.get('testcoins'), 10);
       const amt = Number.isFinite(parsedCoins) ? Math.max(0, parsedCoins) : 500;
-      if (Inventory.coins() < amt) Inventory.addCoins(amt - Inventory.coins());
+      const currentCoins = Inventory.coins();
+      if (currentCoins < amt) Inventory.addCoins(amt - currentCoins);
+      else if (currentCoins > amt) Inventory.spendCoins(currentCoins - amt);
     }
     if (_qp.has('testboat')) {
       const boatId = _qp.get('testboat') || 'canoe';
