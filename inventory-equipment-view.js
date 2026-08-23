@@ -15,7 +15,8 @@ const InventoryEquipmentView = (() => {
     const empty = $('inv-equip-empty');
     list.innerHTML = '';
 
-    const defaults = ['rod_basic', 'line_mono', 'hook_basic', 'float_basic', 'basket_basic'];
+    const defaults = typeof Inventory.hasInitialGear === 'function' && Inventory.hasInitialGear()
+      ? ['rod_basic', 'line_mono', 'hook_basic', 'float_basic', 'basket_basic'] : [];
     const allOwned = [...new Set([...defaults, ...owned])];
     const slotMap = { rod: 'rod', line: 'line', hook: 'hook', float: 'float', basket: 'basket' };
 

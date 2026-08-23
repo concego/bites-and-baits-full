@@ -993,6 +993,50 @@ html, body {
 
 /* ===== LOJA & INVENTÁRIO ===== */
 
+.shop-npc-dialog {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 24, 34, .78);
+}
+.shop-npc-dialog.hidden { display: none; }
+.shop-npc-dialog-card {
+  width: min(100%, 430px);
+  padding: 26px;
+  border: 2px solid #d6aa4a;
+  border-radius: 16px;
+  background: linear-gradient(155deg, #173746, #102631);
+  box-shadow: 0 16px 50px rgba(0,0,0,.4);
+}
+.shop-npc-dialog-kicker {
+  margin: 0 0 8px;
+  color: #f2c84b;
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.shop-npc-dialog-card h3 {
+  margin: 0 0 14px;
+  color: var(--white);
+  font-size: 1.35rem;
+}
+.shop-npc-dialog-speaker {
+  margin: 0 0 8px;
+  color: #f2c84b;
+  font-weight: 800;
+}
+.shop-npc-dialog-body {
+  min-height: 4.5em;
+  margin: 0 0 24px;
+  color: var(--white);
+  line-height: 1.55;
+}
+
 /* Wrapper que centraliza e limita largura */
 .shop-dialog {
   display: flex;

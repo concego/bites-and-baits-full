@@ -44,6 +44,7 @@ const Inventory = (() => {
   const STORAGE_KEY_BAITS_V = 'bb_baits_v';
   const BAITS_VERSION = '1';   // incrementar aqui força reset do estoque
   const STORAGE_KEY_EQUIP    = 'bb_equip';     // { bait:'worm', rod:'rod_basic', ... }
+  const STORAGE_KEY_INITIAL_GEAR = 'bb_initial_gear_received';
   const STORAGE_KEY_PROTECTED = 'bb_protected'; // Set de ids de peixes protegidos
   const STORAGE_KEY_ZONEMAP   = 'bb_zonemap';   // { mapId: [zoneId, ...] }
 
@@ -286,14 +287,22 @@ const Inventory = (() => {
     catch { /* noop */ }
   }
 
+  const INITIAL_GEAR = Object.freeze({
+    rod:     'rod_basic',
+    line:    'line_mono',
+    hook:    'hook_basic',
+    float:   'float_basic',
+    basket:  'basket_basic',
+  });
+
   function _loadEquip() {
     const starter = {
-      bait:    'worm',
-      rod:     'rod_basic',
-      line:    'line_mono',
-      hook:    'hook_basic',
-      float:   'float_basic',
-      basket:  'basket_basic',
+      bait:    null,
+      rod:     null,
+      line:    null,
+      hook:    null,
+      float:   null,
+      basket:  null,
     };
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_EQUIP));
@@ -356,6 +365,26 @@ const Inventory = (() => {
     const baits = _loadBaits();
     baits[baitId] = (baits[baitId] ?? 0) + qty;
     _saveBaits(baits);
+    return true;
+  }
+
+  function hasInitialGear() {
+    try { return localStorage.getItem(STORAGE_KEY_INITIAL_GEAR) === '1'; }
+    catch { return false; }
+  }
+
+  /** Entrega única do equipamento inicial feita pelo tio Zeca. */
+  function grantInitialGear() {
+    if (hasInitialGear()) return false;
+    const equip = _loadEquip();
+    Object.entries(INITIAL_GEAR).forEach(([slot, itemId]) => {
+      if (!equip[slot]) equip[slot] = itemId;
+      addEquip(itemId);
+    });
+    if (!equip.bait) equip.bait = 'worm';
+    _saveEquip(equip);
+    addBaits('worm', 10);
+    try { localStorage.setItem(STORAGE_KEY_INITIAL_GEAR, '1'); } catch {}
     return true;
   }
 
@@ -637,6 +666,8 @@ const Inventory = (() => {
     equipBait,
     consumeBait,
     addBaits,
+    hasInitialGear,
+    grantInitialGear,
     unequipSlot,
     // Proteção
     isProtected,

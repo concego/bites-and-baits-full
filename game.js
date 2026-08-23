@@ -96,7 +96,7 @@ const Game = (() => {
       // O idioma fica preservado; somente o progresso do jogo é apagado.
       [
         'bb_character', 'bb_story_opening_complete', 'bb_inventory', 'bb_coins',
-        'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_gear_mods', 'bb_protected',
+        'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_initial_gear_received', 'bb_gear_mods', 'bb_protected',
         'bb_owned_equip', 'bb_active_boat', 'bb_house_level', 'bb_zonemap',
         'bb_activezone', 'bb_map', 'bb_best', 'bb_time',
         'bb_last_catch_story', 'bb_last_catch_free', 'bb_last_catch',
@@ -228,6 +228,11 @@ const Game = (() => {
       holdCount:      $('hold-active-count'),
       equipPanel:     $('equip-panel'),
       baitList:       $('bait-list'),
+      shopDialog:     document.querySelector('.shop-dialog'),
+      shopZecaDialog: $('shop-zeca-dialog'),
+      shopZecaSpeaker: $('shop-zeca-dialog-speaker'),
+      shopZecaBody:   $('shop-zeca-dialog-body'),
+      shopZecaNext:   $('btn-shop-zeca-dialog-next'),
       lastCatchSummary: $('last-catch-summary'),
       lastCatchReadout: $('last-catch-readout'),
       lastCatchFish:  $('last-catch-fish'),
@@ -285,7 +290,12 @@ const Game = (() => {
     $('btn-back')?.addEventListener('click',  () => showScreen('start'));
     $('btn-options')?.addEventListener('click', () => { _syncToggles(); showScreen('options'); });
     $('btn-options-back')?.addEventListener('click', () => showScreen('start'));
-    $('btn-hub-shop')?.addEventListener('click',   () => { renderShop(); showScreen('shop');  _startCityScreenMusic('shop'); });
+    $('btn-hub-shop')?.addEventListener('click',   () => {
+      renderShop();
+      showScreen('shop');
+      _startCityScreenMusic('shop');
+      _openShopZecaDialogue();
+    });
     $('btn-hub-inv')?.addEventListener('click',    () => { renderInventory(); showScreen('inventory'); _startCityScreenMusic('city'); });
     $('btn-hub-travel')?.addEventListener('click', () => { renderTravel(); showScreen('travel'); _startCityScreenMusic('travel'); });
     $('btn-hub-vessel')?.addEventListener('click', () => { renderVessel(); showScreen('vessel'); _startCityScreenMusic('vessel'); });
@@ -342,6 +352,7 @@ const Game = (() => {
     ui.characterVisualGender?.addEventListener('change', _handleCharacterVisualGenderChange);
     ui.characterRandomize?.addEventListener('click', _randomizeCharacterAppearance);
     $('btn-opening-next')?.addEventListener('click', _advanceStoryOpening);
+    ui.shopZecaNext?.addEventListener('click', _advanceShopZecaDialogue);
 
     // Os menus podem ser renderizados novamente ao entrar neles; os binds
     // idempotentes são chamados também por renderShop/renderInventory.
@@ -469,6 +480,7 @@ const Game = (() => {
   let boatDialogueIndex = 0;
   let shoreDialogueIndex = 0;
   let openingRenderedStep = null;
+  let shopZecaDialogueIndex = 0;
 
   function _isStoryOpeningComplete() {
     return localStorage.getItem(STORY_OPENING_KEY) === '1';
@@ -2336,6 +2348,63 @@ const Game = (() => {
 
 
   /* ── LOJA ────────────────────────────────────────────────────────────── */
+  function _shopZecaDialogueLines() {
+    const name = Character.load().name || '';
+    return [
+      { speaker: t('shop_zeca_name'), text: t('shop_zeca_01', name) },
+      { speaker: t('shop_player_name', name), text: t('shop_player_01') },
+      { speaker: t('shop_zeca_name'), text: t('shop_zeca_02') },
+      { speaker: t('shop_zeca_name'), text: t('shop_zeca_03') },
+      { speaker: t('shop_zeca_name'), text: t('shop_zeca_04') },
+      { speaker: t('shop_zeca_name'), text: t('shop_zeca_05') },
+      { speaker: t('shop_player_name', name), text: t('shop_player_02') },
+      { speaker: t('shop_zeca_name'), text: t('shop_zeca_06') },
+    ];
+  }
+
+  function _renderShopZecaDialogue() {
+    const line = _shopZecaDialogueLines()[shopZecaDialogueIndex];
+    if (!line || !ui.shopZecaDialog) return;
+    ui.shopZecaSpeaker.textContent = line.speaker;
+    ui.shopZecaBody.textContent = line.text;
+    ui.shopZecaNext.textContent = t('shop_zeca_dialog_continue');
+  }
+
+  function _openShopZecaDialogue() {
+    if (Inventory.hasInitialGear() || !ui.shopZecaDialog) return;
+    shopZecaDialogueIndex = 0;
+    _renderShopZecaDialogue();
+    ui.shopDialog?.setAttribute('inert', '');
+    ui.shopZecaDialog.classList.remove('hidden');
+    requestAnimationFrame(() => ui.shopZecaNext?.focus());
+    speak(`${ui.shopZecaSpeaker.textContent} ${ui.shopZecaBody.textContent}`);
+  }
+
+  function _finishShopZecaDialogue() {
+    Inventory.grantInitialGear();
+    ui.shopZecaDialog?.classList.add('hidden');
+    ui.shopDialog?.removeAttribute('inert');
+    renderShop();
+    _shopFeedback($('shop-feedback'), t('shop_zeca_gift_complete'), true);
+    speak(t('shop_zeca_gift_complete'));
+    const title = ui.shopDialog?.querySelector('h2');
+    if (title) {
+      title.setAttribute('tabindex', '-1');
+      title.focus();
+    }
+  }
+
+  function _advanceShopZecaDialogue() {
+    const lastIndex = _shopZecaDialogueLines().length - 1;
+    if (shopZecaDialogueIndex < lastIndex) {
+      shopZecaDialogueIndex += 1;
+      _renderShopZecaDialogue();
+      speak(`${ui.shopZecaSpeaker.textContent} ${ui.shopZecaBody.textContent}`);
+      return;
+    }
+    _finishShopZecaDialogue();
+  }
+
   function renderShop() {
     _bindShopNavigation();
     $('shop-coins').textContent = Inventory.coins();
@@ -2352,7 +2421,7 @@ const Game = (() => {
       getOwnedEquip: () => Inventory.getOwnedEquip(),
       coins: () => Inventory.coins(),
       catalog: SHOP_CATALOG,
-      defaults: ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'],
+      defaults: Inventory.hasInitialGear() ? ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'] : [],
       handleBuy: _handleShopBuy,
       equipItem: _equipItem,
       rerender: renderShop,
@@ -2369,7 +2438,7 @@ const Game = (() => {
       getOwnedEquip: () => Inventory.getOwnedEquip(),
       catalog: SHOP_CATALOG,
       baitCatalog: BAIT_CATALOG,
-      defaults: ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'],
+      defaults: Inventory.hasInitialGear() ? ['rod_basic','line_mono','hook_basic','float_basic','basket_basic'] : [],
       sellAll: () => Inventory.sellAll(),
       sellFishQty: (fishId, qty) => Inventory.sellFishQty(fishId, qty),
       sellBaits: (baitId, qty) => Inventory.sellBaits(baitId, qty),
