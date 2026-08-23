@@ -34,7 +34,9 @@ const TravelView = (() => {
       } else if (isActive && !hasRod) {
         const isRiver = ['margem_rio_doce', 'rio_doce'].includes(m.id);
         const lockMsg = `🎋 ${isRiver ? t('river_need_zeca') : t('travel_need_rod')}`;
-        actionsHtml = `<span class="travel-locked" aria-label="${lockMsg}">${lockMsg}</span>`;
+        // Mantém a ação acessível: tentar pescar é o gatilho da explicação
+        // narrativa, mas a entrada na pesca continua bloqueada.
+        actionsHtml = `<button class="btn-secondary btn-sm travel-btn-rod-locked" data-map-id="${m.id}" aria-label="${lockMsg}">${t('travel_fish_here')}</button>`;
       } else if (isActive) {
         actionsHtml = `<button class="btn-primary btn-sm travel-btn-fish" data-map-id="${m.id}" aria-label="${t('travel_fish_here')} — ${t(m.nameKey) || m.id}">${t('travel_fish_here')}</button>`;
       } else if (hasBoat) {
@@ -45,6 +47,11 @@ const TravelView = (() => {
       }
       li.innerHTML = `<span class="travel-item-emoji" aria-hidden="true">${m.emoji || '🏞️'}</span><div class="travel-item-info"><span class="travel-item-name">${t(m.nameKey) || m.id}</span>${travelBoat?.sprite ? Visuals.boatMarkup(travelBoat.sprite, 'travel-item-vessel-svg') : ''}</div><div class="travel-item-actions">${actionsHtml}</div>`;
       li.querySelector('.travel-btn-fish')?.addEventListener('click', () => startGame('normal'));
+      li.querySelector('.travel-btn-rod-locked')?.addEventListener('click', e => {
+        const mapId = e.currentTarget.dataset.mapId;
+        const isRiver = ['margem_rio_doce', 'rio_doce'].includes(mapId);
+        speak(`🎋 ${isRiver ? t('river_need_zeca') : t('travel_need_rod')}`);
+      });
       li.querySelector('.travel-btn-go')?.addEventListener('click', e => {
         const destId = e.currentTarget.dataset.mapId;
         const destMap = MAP_CATALOG[destId];
