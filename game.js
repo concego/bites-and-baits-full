@@ -104,7 +104,8 @@ const Game = (() => {
       try { sessionStorage.setItem('bb_testreset_token', _resetToken); } catch {}
     }
     if (_qp.has('testcoins')) {
-      const amt = parseInt(_qp.get('testcoins')) || 500;
+      const parsedCoins = parseInt(_qp.get('testcoins'), 10);
+      const amt = Number.isFinite(parsedCoins) ? Math.max(0, parsedCoins) : 500;
       if (Inventory.coins() < amt) Inventory.addCoins(amt - Inventory.coins());
     }
     if (_qp.has('testboat')) {
