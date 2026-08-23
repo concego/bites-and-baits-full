@@ -591,6 +591,13 @@ const Game = (() => {
     }
   }
 
+  function _playerDialogueText(key) {
+    const gender = Character.load().genderProfile || 'neutral';
+    const variantKey = `${key}_${gender}`;
+    const variant = I18n.t(variantKey);
+    return variant === variantKey ? t(key) : variant;
+  }
+
   function _getOpeningDialogue(step, name) {
     const boatLines = [
       { speaker: t('opening_vitor_name'), text: t('opening_vitor_boat_01', name) },
@@ -599,7 +606,7 @@ const Game = (() => {
     ];
     const shoreLines = [
       { speaker: t('opening_vitor_name'), text: t('opening_vitor_shore_01') },
-      { speaker: t('opening_dialogue_player_name', name), text: t('opening_player_shore_01') },
+      { speaker: t('opening_dialogue_player_name', name), text: _playerDialogueText('opening_player_shore_01') },
       { speaker: t('opening_vitor_name'), text: t('opening_vitor_shore_02') },
     ];
     const lines = step === 'boatTravel' ? boatLines
@@ -2399,12 +2406,12 @@ const Game = (() => {
     const name = Character.load().name || '';
     return [
       { speaker: t('shop_zeca_name'), text: t('shop_zeca_01', name) },
-      { speaker: t('shop_player_name', name), text: t('shop_player_01') },
+      { speaker: t('shop_player_name', name), text: _playerDialogueText('shop_player_01') },
       { speaker: t('shop_zeca_name'), text: t('shop_zeca_02') },
       { speaker: t('shop_zeca_name'), text: t('shop_zeca_03') },
       { speaker: t('shop_zeca_name'), text: t('shop_zeca_04') },
       { speaker: t('shop_zeca_name'), text: t('shop_zeca_05') },
-      { speaker: t('shop_player_name', name), text: t('shop_player_02') },
+      { speaker: t('shop_player_name', name), text: _playerDialogueText('shop_player_02') },
       { speaker: t('shop_zeca_name'), text: t('shop_zeca_06') },
     ];
   }
