@@ -2490,9 +2490,21 @@ const Game = (() => {
           { speaker: name, text: t('people_player_river_02') },
         ];
       }
-      return [{ speaker: t('people_zeca_name'), text: t('people_zeca_after_advice') }];
+      return [
+        { speaker: t('people_zeca_name'), text: t('people_zeca_generic_01') },
+        { speaker: Character.load().name || '', text: t('people_player_generic_01') },
+        { speaker: t('people_zeca_name'), text: t('people_zeca_generic_02') },
+      ];
     }
-    return [{ speaker: t('people_vitor_name'), text: t('people_vitor_chat') }];
+    if (personId === 'vitor') {
+      const name = Character.load().name || '';
+      return [
+        { speaker: t('people_vitor_name'), text: t('people_vitor_generic_01') },
+        { speaker: name, text: t('people_player_generic_01') },
+        { speaker: t('people_vitor_name'), text: t('people_vitor_generic_02') },
+      ];
+    }
+    return [];
   }
 
   function _renderPeopleList() {
