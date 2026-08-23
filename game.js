@@ -96,7 +96,7 @@ const Game = (() => {
       // O idioma fica preservado; somente o progresso do jogo é apagado.
       [
         'bb_character', 'bb_story_opening_complete', 'bb_inventory', 'bb_coins',
-        'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_initial_gear_received', 'bb_lake_shore_fished', 'bb_zeca_river_advice', 'bb_gear_mods', 'bb_protected',
+        'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_initial_gear_received', 'bb_lake_shore_fished', 'bb_river_attempted', 'bb_zeca_river_advice', 'bb_gear_mods', 'bb_protected',
         'bb_owned_equip', 'bb_active_boat', 'bb_house_level', 'bb_zonemap',
         'bb_activezone', 'bb_map', 'bb_best', 'bb_time',
         'bb_last_catch_story', 'bb_last_catch_free', 'bb_last_catch',
@@ -1317,8 +1317,12 @@ const Game = (() => {
           }
           if (!_hasRequiredRod(activeMap, _equip)) {
             const riverMap = ['margem_rio_doce', 'rio_doce'].includes(activeMap?.id);
-            speak(riverMap ? I18n.t('river_need_zeca') : I18n.t('travel_need_rod'));
+            const message = riverMap ? I18n.t('river_need_zeca') : I18n.t('travel_need_rod');
+            if (riverMap) localStorage.setItem('bb_river_attempted', '1');
+            // IDLE anuncia “pronto”; a fala contextual precisa vir depois,
+            // senão o anúncio padrão substitui a mensagem da correnteza.
             enterState('IDLE');
+            speak(message);
             break;
           }
           const result = Inventory.consumeBait();
@@ -2041,8 +2045,11 @@ const Game = (() => {
   }
 
   function _hasRequiredRod(map, equip = Inventory.getEquip()) {
-    if (!map?.requiredRod) return true;
-    const required = SHOP_CATALOG.find(item => item.id === map.requiredRod);
+    const requiredRodId = map?.requiredRod || (
+      ['margem_rio_doce', 'rio_doce'].includes(map?.id) ? 'rod_medium' : null
+    );
+    if (!requiredRodId) return true;
+    const required = SHOP_CATALOG.find(item => item.id === requiredRodId);
     const equipped = SHOP_CATALOG.find(item => item.id === equip?.rod);
     return !!required && !!equipped && (equipped.tier || 0) >= (required.tier || 0);
   }
@@ -2486,12 +2493,20 @@ const Game = (() => {
   function _peopleConversationLines(personId) {
     if (personId === 'zeca') {
       const hasFishedLake = localStorage.getItem('bb_lake_shore_fished') === '1';
+      const hasRiverAttempted = localStorage.getItem('bb_river_attempted') === '1';
       const hasAdvice = localStorage.getItem('bb_zeca_river_advice') === '1';
-      if (hasFishedLake && !hasAdvice) {
+      if ((hasFishedLake || hasRiverAttempted) && !hasAdvice) {
         const name = Character.load().name || '';
+        const attemptedRiver = hasRiverAttempted;
         return [
-          { speaker: t('people_zeca_name'), text: t('people_zeca_river_01') },
-          { speaker: name, text: t('people_player_river_01') },
+          {
+            speaker: t('people_zeca_name'),
+            text: t(attemptedRiver ? 'people_zeca_river_attempt_01' : 'people_zeca_river_01'),
+          },
+          {
+            speaker: name,
+            text: t(attemptedRiver ? 'people_player_river_attempt_01' : 'people_player_river_01'),
+          },
           { speaker: t('people_zeca_name'), text: t('people_zeca_river_02') },
           { speaker: t('people_zeca_name'), text: t('people_zeca_river_03') },
           { speaker: name, text: t('people_player_river_02') },
