@@ -181,6 +181,8 @@ html, body {
   z-index: 10;
 }
 .score-box { text-align: center; }
+#score-hud { gap: 8px; flex-wrap: wrap; }
+#score-hud .score-box { flex: 1 1 20%; min-width: 4.4rem; }
 .score-label { display: block; font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
 .score-value { font-size: 1.6rem; font-weight: 800; }
 

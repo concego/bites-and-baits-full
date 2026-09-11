@@ -25,6 +25,14 @@ const InventoryFishView = (() => {
     fishes.forEach(fish => {
       const prot = Inventory.isProtected(fish.id);
       const fishName = t(fish.nameKey) || fish.nameKey;
+      const specimenRarity = fish.specimenRarity
+        ? (t('inv_rarity_' + fish.specimenRarity) || fish.specimenRarity) : '';
+      const detail = [
+        `${fish.weight.toFixed(2)} kg`,
+        fish.length != null ? `${fish.length.toFixed(1)} cm` : null,
+        specimenRarity,
+        `${fish.value} 🪙`,
+      ].filter(Boolean).join(' · ');
       const li = document.createElement('li');
       li.className = 'inv-item';
       li.setAttribute('role', 'listitem');
@@ -33,7 +41,7 @@ const InventoryFishView = (() => {
           <span class="inv-item-name">${fishName}
             ${prot ? `<span class="inv-badge-protect" aria-label="${t('inv_protected_badge')}">${t('inv_protected_badge')}</span>` : ''}
           </span>
-          <span class="inv-item-detail">${fish.weight.toFixed(2)} kg · ${fish.value} 🪙</span>
+          <span class="inv-item-detail">${detail}</span>
         </div>
         <div class="inv-item-actions">
           <button class="btn-inv-examine-fish btn-secondary"

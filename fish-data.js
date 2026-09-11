@@ -56,7 +56,8 @@ const FISH_CATALOG = {
     recovery: 4000,      // recupera em 4s — mas pouca força de qualquer jeito
     escapePatience: 35,  // ~4s de inércia tolerada
     habitat: 'freshwater',
-    weightRange: [0.02, 0.15],  // lambari real: 20–150g
+    weightRange: [0.005, 0.12],  // faixa biológica de referência: 5–120g
+    lengthRangeCm: [3, 13],  // comprimento biológico de referência (cm)
     baits: ['worm', 'cricket'],
     physics: { swimSpeed: 1.2, approachSpeed: 2.0, wobble: 4,  wobbleFreq: 0.18 },
   },
@@ -75,7 +76,8 @@ const FISH_CATALOG = {
     recovery: 5500,      // janela de 5.5s para aproveitar
     escapePatience: 45,  // ~5.4s
     habitat: 'freshwater',
-    weightRange: [0.3, 2.5],
+    weightRange: [0.1, 4.3],
+    lengthRangeCm: [12, 60],  // comprimento biológico de referência (cm)
     baits: ['worm', 'live_bait', 'cricket'],
     physics: { swimSpeed: 0.9, approachSpeed: 1.5, wobble: 5,  wobbleFreq: 0.14 },
   },
@@ -94,7 +96,8 @@ const FISH_CATALOG = {
     recovery: 5500,      // janela de 5.5s
     escapePatience: 55,  // ~6.6s
     habitat: 'freshwater',
-    weightRange: [0.5, 4.0],
+    weightRange: [0.05, 25.9],
+    lengthRangeCm: [15, 123],  // comprimento biológico de referência (cm)
     baits: ['fly', 'spoon', 'worm'],
     physics: { swimSpeed: 1.5, approachSpeed: 2.5, wobble: 6,  wobbleFreq: 0.16 },
   },
@@ -113,7 +116,8 @@ const FISH_CATALOG = {
     recovery: 7000,      // janela de 7s — aproveite o cansaço
     escapePatience: 65,  // ~7.8s
     habitat: 'freshwater',
-    weightRange: [2.0, 20.0],
+    weightRange: [0.2, 31.4],
+    lengthRangeCm: [20, 100],  // comprimento biológico de referência (cm)
     baits: ['live_bait', 'spoon', 'jig'],
     physics: { swimSpeed: 1.8, approachSpeed: 3.0, wobble: 8,  wobbleFreq: 0.12 },
   },
@@ -134,7 +138,8 @@ const FISH_CATALOG = {
     recovery: 4500,
     escapePatience: 38,
     habitat: 'freshwater',
-    weightRange: [0.08, 0.6],   // cara: 80g–600g
+    weightRange: [0.02, 0.7],   // cara: 80g–600g
+    lengthRangeCm: [5, 28],  // comprimento biológico de referência (cm)
     baits: ['worm', 'cricket'],
     maps: ['lago_margem'],
     physics: { swimSpeed: 0.8, approachSpeed: 1.4, wobble: 4, wobbleFreq: 0.15 },
@@ -154,7 +159,8 @@ const FISH_CATALOG = {
     recovery: 6000,
     escapePatience: 50,
     habitat: 'freshwater',
-    weightRange: [0.3, 3.5],
+    weightRange: [0.05, 3.8],
+    lengthRangeCm: [10, 65],  // comprimento biológico de referência (cm)
     baits: ['live_bait', 'spoon'],
     maps: ['lago_margem'],
     physics: { swimSpeed: 1.6, approachSpeed: 2.8, wobble: 7, wobbleFreq: 0.13 },
@@ -174,7 +180,8 @@ const FISH_CATALOG = {
     recovery: 5000,
     escapePatience: 42,
     habitat: 'freshwater',
-    weightRange: [0.2, 1.8],
+    weightRange: [0.05, 1.5],
+    lengthRangeCm: [10, 40],  // comprimento biológico de referência (cm)
     baits: ['worm', 'fly'],   // seletivo — isca vegetal representada por fly
     maps: ['lago_margem'],
     physics: { swimSpeed: 1.0, approachSpeed: 1.6, wobble: 5, wobbleFreq: 0.14 },
@@ -194,7 +201,8 @@ const FISH_CATALOG = {
     recovery: 5500,
     escapePatience: 48,
     habitat: 'freshwater',
-    weightRange: [0.4, 3.0],
+    weightRange: [0.1, 7.2],
+    lengthRangeCm: [15, 80],  // comprimento biológico de referência (cm)
     baits: ['worm', 'cricket'],
     maps: ['lago_margem'],
     physics: { swimSpeed: 0.7, approachSpeed: 1.2, wobble: 5, wobbleFreq: 0.12 },
@@ -214,7 +222,8 @@ const FISH_CATALOG = {
     recovery: 7000,
     escapePatience: 60,
     habitat: 'freshwater',
-    weightRange: [0.5, 5.0],
+    weightRange: [0.05, 1.8],
+    lengthRangeCm: [10, 48],  // comprimento biológico de referência (cm)
     baits: ['live_bait', 'spoon', 'jig'],
     maps: ['lago_margem'],
     physics: { swimSpeed: 1.7, approachSpeed: 3.0, wobble: 9, wobbleFreq: 0.11 },
@@ -234,7 +243,8 @@ const FISH_CATALOG = {
     recovery: 4000,
     escapePatience: 30,   // frágil — linha estica rápido
     habitat: 'freshwater',
-    weightRange: [0.05, 0.3],
+    weightRange: [0.02, 1.6],
+    lengthRangeCm: [5, 48],  // comprimento biológico de referência (cm)
     baits: ['fly', 'cricket'],
     maps: ['lago_margem'],
     physics: { swimSpeed: 1.4, approachSpeed: 2.0, wobble: 6, wobbleFreq: 0.20 },
@@ -254,7 +264,8 @@ const FISH_CATALOG = {
     recovery: 9000,      // janela de 9s
     escapePatience: 80,  // ~9.6s — muito paciente mas implacável
     habitat: 'freshwater',
-    weightRange: [20.0, 200.0],
+    weightRange: [5, 200],
+    lengthRangeCm: [100, 450],  // comprimento biológico de referência (cm)
     baits: ['live_bait', 'jig'],
     physics: { swimSpeed: 0.7, approachSpeed: 1.0, wobble: 10, wobbleFreq: 0.09 },
   },
@@ -273,7 +284,8 @@ const FISH_CATALOG = {
     recovery: 6500,
     escapePatience: 58,
     habitat: 'freshwater',
-    weightRange: [2.5, 6.0],
+    weightRange: [1.5, 10],
+    lengthRangeCm: [45, 100],  // comprimento biológico de referência (cm)
     baits: ['live_bait', 'spoon', 'jig'],
     physics: { swimSpeed: 1.35, approachSpeed: 2.4, wobble: 8, wobbleFreq: 0.12 },
   },
@@ -292,7 +304,8 @@ const FISH_CATALOG = {
     recovery: 8000,
     escapePatience: 72,
     habitat: 'freshwater',
-    weightRange: [4.0, 18.0],
+    weightRange: [1, 100],
+    lengthRangeCm: [30, 182],  // comprimento biológico de referência (cm)
     baits: ['live_bait', 'jig'],
     physics: { swimSpeed: 1.0, approachSpeed: 1.7, wobble: 9, wobbleFreq: 0.10 },
   },
@@ -311,7 +324,8 @@ const FISH_CATALOG = {
     recovery: 9500,
     escapePatience: 86,
     habitat: 'freshwater',
-    weightRange: [10.0, 45.0],
+    weightRange: [1, 50],
+    lengthRangeCm: [30, 140],  // comprimento biológico de referência (cm)
     baits: ['live_bait', 'jig'],
     physics: { swimSpeed: 0.65, approachSpeed: 0.9, wobble: 11, wobbleFreq: 0.08 },
   },

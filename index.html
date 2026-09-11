@@ -678,6 +678,14 @@
           <span class="score-label" data-i18n="hud_best"></span>
           <span id="best" class="score-value">0</span>
         </div>
+        <div class="score-box">
+          <span class="score-label" data-i18n="hud_level"></span>
+          <span id="free-level" class="score-value">1</span>
+        </div>
+        <div class="score-box">
+          <span class="score-label" data-i18n="hud_level_progress"></span>
+          <span id="free-level-progress" class="score-value">0/100</span>
+        </div>
       </header>
 
       <!-- HUD Modo Normal (isca equipada) -->
@@ -760,6 +768,14 @@
           <div id="last-catch-weight-row">
             <dt data-i18n="last_catch_weight_label"></dt>
             <dd id="last-catch-weight"></dd>
+          </div>
+          <div id="last-catch-length-row">
+            <dt data-i18n="last_catch_length_label"></dt>
+            <dd id="last-catch-length"></dd>
+          </div>
+          <div id="last-catch-specimen-rarity-row">
+            <dt data-i18n="last_catch_specimen_rarity_label"></dt>
+            <dd id="last-catch-specimen-rarity"></dd>
           </div>
           <div id="last-catch-value-row">
             <dt data-i18n="last_catch_value_label"></dt>
@@ -1035,6 +1051,7 @@
   <script src="accessibility-announcer.js?v=refactor-01"></script>
   <script src="last-catch-storage.js?v=refactor-02"></script>
   <script src="fish-data.js"></script>
+  <script src="fish-metrics.js"></script>
   <script src="creature-profile.js"></script>
   <script src="game-time.js"></script>
     <script src="map-data.js?v=river-rod-gate-01"></script>

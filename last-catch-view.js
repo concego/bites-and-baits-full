@@ -22,7 +22,12 @@ const LastCatchView = (() => {
       : info.size <= 3 ? 'size_medium' : 'size_large'
     );
     $('last-catch-weight').textContent = info.weight != null ? `${info.weight} kg` : '';
+    $('last-catch-length').textContent = info.length != null ? `${info.length} cm` : '';
+    $('last-catch-specimen-rarity').textContent = info.specimenRarity
+      ? I18n.t(`inv_rarity_${info.specimenRarity}`) : '';
     $('last-catch-value').textContent = info.value != null ? `${info.value} 🪙` : '';
+    $('last-catch-length-row').hidden = info.length == null;
+    $('last-catch-specimen-rarity-row').hidden = !info.specimenRarity;
     $('last-catch-location').textContent = [
       map ? I18n.t(map.nameKey) : null,
       zone ? I18n.t(zone.nameKey) : null,
@@ -46,6 +51,8 @@ const LastCatchView = (() => {
     add('last_catch_fish_label', 'last-catch-fish', 'last-catch-fish-row');
     add('last_catch_size_label', 'last-catch-size', 'last-catch-size-row');
     add('last_catch_weight_label', 'last-catch-weight', 'last-catch-weight-row');
+    add('last_catch_length_label', 'last-catch-length', 'last-catch-length-row');
+    add('last_catch_specimen_rarity_label', 'last-catch-specimen-rarity', 'last-catch-specimen-rarity-row');
     add('last_catch_value_label', 'last-catch-value', 'last-catch-value-row');
     add('last_catch_location_label', 'last-catch-location', 'last-catch-location-row');
     add('last_catch_score_label', 'last-catch-score', 'last-catch-score-row');

@@ -8,9 +8,11 @@
  *     id:        string   — id único do item (ex: "lambari_1720000000000")
  *     fishId:    string   — id da espécie (ex: "lambari")
  *     nameKey:   string   — chave i18n do nome
- *     weight:    number   — peso em kg (sorteado dentro do weightRange)
- *     value:     number   — valor base em moedas calculado ao pescar
- *     special:   boolean  — se era espécie especial
+ *     weight:    number   — peso individual em kg (faixa biológica)
+ *     length:    number   — comprimento individual em cm (faixa biológica)
+ *     specimenRarity: string — raridade física do exemplar
+ *     value:     number   — valor em moedas calculado ao pescar
+ *     special:   boolean  — se era espécie especial/contextual
  *     caughtAt:  number   — timestamp
  *   }
  *
@@ -103,41 +105,34 @@ const Inventory = (() => {
     catch { /* noop */ }
   }
 
-  // ── Peso aleatório dentro do range ────────────────────────────────────────
-  function rollWeight(fish) {
-    const [min, max] = fish.weightRange ?? [0.1, 1.0];
-    const raw = min + Math.random() * (max - min);
-    // Precisão adaptativa: peixes leves (<0.5 kg max) exibem 2 casas;
-    // peixes médios (<5 kg max) exibem 1 casa; peixes grandes arredondam.
-    // Garante mínimo de 0.01 kg — nenhum peixe tem peso zero.
-    if (max <= 0.5)      return Math.max(0.01, Math.round(raw * 100) / 100); // 2 dec — peixes <500g
-    if (max <= 5.0)      return Math.max(0.1,  Math.round(raw * 10)  / 10);  // 1 dec — até 5 kg
-    if (max <= 25.0)     return Math.max(0.5,  Math.round(raw * 2)   / 2);   // 0.5 kg — até 25 kg
-    return Math.max(1,   Math.round(raw));                                    // inteiro — grandes
+  // ── Medidas biológicas e valor ────────────────────────────────────────────
+  function rollSpecimen(fish) {
+    return FishMetrics.rollSpecimen(fish);
   }
 
-  // ── Calcula valor em moedas ───────────────────────────────────────────────
-  function calcValue(fish, weight) {
-    const pricePerKg = BASE_PRICE_PER_KG[fish.id] ?? 3;
-    const base       = pricePerKg * weight;
-    const bonus      = fish.special ? base * 0.5 : 0;
-    return Math.max(1, Math.round(base + bonus));
+  function calcValue(fish, weight, specimenRarity = 'common', specimen = null) {
+    const data = specimen || { weight, specimenRarity };
+    return FishMetrics.valueFor(fish, data);
   }
 
   // ── API pública ───────────────────────────────────────────────────────────
 
   /**
    * Adiciona um peixe pescado ao inventário.
-   * Retorna o item criado { weight, value, ... }.
+   * Retorna o item criado com peso, comprimento e raridade individual.
    */
   function addFish(fish) {
-    const weight = rollWeight(fish);
-    const value  = calcValue(fish, weight);
+    const specimen = rollSpecimen(fish);
+    const value = calcValue(fish, specimen.weight, specimen.specimenRarity, specimen);
     const item   = {
       id:       `${fish.id}_${Date.now()}`,
       fishId:   fish.id,
       nameKey:  fish.nameKey,
-      weight,
+      weight:   specimen.weight,
+      length:   specimen.length,
+      lengthPercentile: specimen.lengthPercentile,
+      weightPercentile: specimen.weightPercentile,
+      specimenRarity: specimen.specimenRarity,
       value,
       special:  fish.special ?? false,
       rarity:   fish.rarity || (fish.special ? 'rare' : 'common'),
@@ -656,7 +651,8 @@ const Inventory = (() => {
     coins,
     addCoins,
     spendCoins,
-    rollWeight,
+    rollSpecimen,
+    basePricePerKg: id => BASE_PRICE_PER_KG[id] ?? 3,
     calcValue,
     reset,
     // Iscas

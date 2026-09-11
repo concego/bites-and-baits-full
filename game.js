@@ -227,6 +227,8 @@ const Game = (() => {
       tiltText:       $('tilt-text'),
       score:          $('score'),
       best:           $('best'),
+      freeLevel:      $('free-level'),
+      freeLevelProgress: $('free-level-progress'),
       rod:            $('rod'),
       line:           $('line'),
       lure:           $('lure'),
@@ -1244,6 +1246,7 @@ const Game = (() => {
         btnMenuEl.classList.toggle('hidden', gameMode === 'normal');
       }
 
+      if (gameMode === 'free') FreeFishingSystem.start();
       score = 0;
       updateScore();
       fishEls = [];
@@ -1264,6 +1267,14 @@ const Game = (() => {
     if (!gs) return;
     silent ? gs.setAttribute('aria-hidden', 'true')
            : gs.removeAttribute('aria-hidden');
+  }
+
+  function _handleFreeBossFailure() {
+    if (gameMode !== 'free' || !currentFish?.freeBoss) return;
+    const result = FreeFishingSystem.bossFailed();
+    score = result.sessionScore;
+    updateScore();
+    speak(t('free_boss_failed', result.level, result.lost));
   }
 
   // ── Máquina de estados ────────────────────────────────────────────────────
@@ -1363,8 +1374,11 @@ const Game = (() => {
         setTiltHint('→', I18n.t('tilt_waiting'));
         ui.rod.style.transform = 'translateX(-50%) rotate(-10deg)';
 
-        // Sorteia o peixe agora para que ele já apareça nadando
-        currentFish      = pickFishFromMap(activeMap, activeZone);
+        // Sorteia o peixe agora para que ele já apareça nadando.
+        // Pesca Livre usa níveis próprios, sem ficar presa ao bioma do mapa visual.
+        currentFish      = gameMode === 'free'
+          ? FreeFishingSystem.pickFish()
+          : pickFishFromMap(activeMap, activeZone);
         fishPull         = currentFish.pull;
         fishTired        = false;
         _fishPullImpulse = 0;
@@ -1377,6 +1391,10 @@ const Game = (() => {
         _fishFatigue    = 0;
 
         _spawnActiveFish(currentFish);
+        if (gameMode === 'free' && currentFish.freeBoss) {
+          const bossState = FreeFishingSystem.getState();
+          speak(t('free_boss_appears', fishName(currentFish), bossState.level));
+        }
         scheduleNextBite();
         break;
       }
@@ -1401,6 +1419,7 @@ const Game = (() => {
           ui.tiltArrow.classList.remove('shake-hint');
           sayKey('escaped');
           setLabel(I18n.t('state_escaped'));
+          if (gameMode === 'free' && currentFish?.freeBoss) _handleFreeBossFailure();
           setTimeout(() => {
             _destroyActiveFish();
             enterState('WAITING');
@@ -1425,29 +1444,39 @@ const Game = (() => {
         Audio.stopReel();
         Audio.play(currentFish.special ? 'point_special' : 'point_normal');
         _vibrate([100, 50, 100, 50, 200]);
-        score++;
-        if (score > best) { best = score; localStorage.setItem('bb_best', best); }
-        updateScore();
         ui.tensionCont.classList.add('hidden');
         _hideLinePath();
         _destroyActiveFish();
 
-        // Modo normal: registra no inventário e calcula moedas
-        // Modo livre: não registra moedas nem inventário
+        // História: registra no inventário e calcula moedas.
+        // Pesca Livre: mede o exemplar e converte a captura em pontos.
         const caughtItem = (gameMode !== 'free') ? Inventory.addFish(currentFish) : null;
+        const freeSpecimen = (gameMode === 'free') ? FishMetrics.rollSpecimen(currentFish) : null;
+        const freeResult = (gameMode === 'free')
+          ? FreeFishingSystem.catchFish(currentFish, freeSpecimen)
+          : null;
         if (gameMode !== 'free' && activeMap?.id === 'lago_margem') {
           localStorage.setItem('bb_lake_shore_fished', '1');
         }
         _lastCaughtItem = caughtItem;
         if (gameMode !== 'free') refreshHoldHud();
+        if (freeResult) {
+          score = freeResult.sessionScore;
+          best = freeResult.best;
+          updateScore();
+        }
+        const specimen = caughtItem || freeSpecimen;
         _lastCatchInfo = {
           fishId: currentFish.id,
           fishName: fishName(currentFish),
-          size: currentFish.size,
-          weight: caughtItem ? caughtItem.weight.toFixed(2) : null,
+          size: specimen ? FishMetrics.sizeClass(specimen) : currentFish.size,
+          length: specimen ? specimen.length : null,
+          weight: specimen ? specimen.weight.toFixed(2) : null,
           value: caughtItem ? caughtItem.value : null,
-          mapId: activeMap?.id || null,
-          zoneId: activeZone || null,
+          specimenRarity: specimen ? specimen.specimenRarity : null,
+          points: freeResult ? freeResult.points : null,
+          mapId: gameMode === 'free' ? null : (activeMap?.id || null),
+          zoneId: gameMode === 'free' ? null : (activeZone || null),
           mode: gameMode,
           score,
         };
@@ -1456,18 +1485,27 @@ const Game = (() => {
 
         setLabel(I18n.t('state_caught', fishName(currentFish)));
         {
-          const sizeDesc = currentFish.size <= 1 ? I18n.t('size_tiny')
-                         : currentFish.size <= 2 ? I18n.t('size_small')
-                         : currentFish.size <= 3 ? I18n.t('size_medium')
-                         :                         I18n.t('size_large');
+          const sizeDesc = specimen
+            ? I18n.t(FishMetrics.sizeLabelKey(specimen))
+            : (currentFish.size <= 1 ? I18n.t('size_tiny')
+              : currentFish.size <= 2 ? I18n.t('size_small')
+              : currentFish.size <= 3 ? I18n.t('size_medium')
+              : I18n.t('size_large'));
           const kg    = caughtItem ? caughtItem.weight.toFixed(2) : null;
           const coins = caughtItem ? caughtItem.value : null;
-          if (currentFish.special) {
-            sayCatchKey(gameMode === 'free' ? 'caught_special' : 'caught_special_noscore',
-                        fishName(currentFish), gameMode === 'free' ? score : kg, gameMode === 'free' ? undefined : coins);
+          if (gameMode === 'free' && freeResult) {
+            if (freeResult.bossCaught) {
+              speak(t('free_boss_caught', fishName(currentFish), freeResult.points, freeResult.level));
+            } else {
+              speak(t('free_catch_points', fishName(currentFish), freeResult.points, freeResult.sessionScore));
+            }
+            if (freeResult.advanced) {
+              setTimeout(() => speak(t('free_level_up', freeResult.level)), 900);
+            }
+          } else if (currentFish.special) {
+            sayCatchKey('caught_special_noscore', fishName(currentFish), kg, coins);
           } else {
-            sayCatchKey(gameMode === 'free' ? 'caught' : 'caught_noscore',
-                        fishName(currentFish), sizeDesc, gameMode === 'free' ? score : kg, gameMode === 'free' ? undefined : coins);
+            sayCatchKey('caught_noscore', fishName(currentFish), sizeDesc, kg, coins);
           }
         }
 
@@ -1488,6 +1526,7 @@ const Game = (() => {
         ui.lure.style.display = 'none';
         _hideLinePath();
         _destroyActiveFish();
+        if (gameMode === 'free' && currentFish?.freeBoss) _handleFreeBossFailure();
         setLabel(I18n.t('state_snapped'));
         sayKey('snapped');
         // Ambos os modos: volta ao IDLE sem interromper o fluxo
@@ -1504,6 +1543,7 @@ const Game = (() => {
         ui.lure.style.display = 'none';
         _hideLinePath();
         _destroyActiveFish();
+        if (gameMode === 'free' && currentFish?.freeBoss) _handleFreeBossFailure();
         setLabel(I18n.t('state_escaped_reel', fishName(currentFish)));
         sayKey('escaped_reel');
         // Pequeno delay para garantir que o stopReel finalizou antes de tocar
@@ -2007,6 +2047,14 @@ const Game = (() => {
   }
 
   // ── Casa ───────────────────────────────────────────────────────────────────
+
+  function getHouseLevel(level) {
+    return HOUSE_LEVELS[Math.max(0, Math.min(HOUSE_LEVELS.length - 1, Number(level) || 0))];
+  }
+
+  function getNextHouseLevel(level) {
+    return HOUSE_LEVELS[(Number(level) || 0) + 1] || null;
+  }
 
   /** Renderiza a tela da casa com nível atual e próximo upgrade. */
   function renderHouse() {
@@ -2719,6 +2767,15 @@ const Game = (() => {
   function updateScore() {
     ui.score.textContent = score;
     ui.best.textContent  = best;
+    if (gameMode === 'free' && typeof FreeFishingSystem !== 'undefined') {
+      const free = FreeFishingSystem.getState();
+      if (ui.freeLevel) ui.freeLevel.textContent = free.level;
+      if (ui.freeLevelProgress) {
+        ui.freeLevelProgress.textContent = free.bossPending
+          ? I18n.t('hud_boss_ready')
+          : `${free.levelScore}/${free.target}`;
+      }
+    }
   }
 
   function updateTensionBar() { ui.tensionBar.style.width = `${tension}%`; }
