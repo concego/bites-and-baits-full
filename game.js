@@ -1212,7 +1212,10 @@ const Game = (() => {
       Sensors.requestPermission().then(ok => {
         if (!ok) Sensors.enableDesktopFallback();
       }).catch(() => Sensors.enableDesktopFallback());
-      Audio.stopCityMusic();
+      // Cancela qualquer pedido pendente de trilha da cidade antes de iniciar
+      // o ambiente da pescaria; isso evita música de menu sobreposta.
+      CityMusic.stop();
+      Audio.stopAmbient();
       const soundEnabled = A11y.get('sound');
       Audio.init().then(() => {
         if (soundEnabled) Audio.startAmbient(_ambientProfileKey());

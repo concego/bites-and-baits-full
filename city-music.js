@@ -8,6 +8,11 @@
 const CityMusic = (() => {
   let requestId = 0;
 
+  function stop() {
+    requestId++;
+    Audio.stopCityMusic();
+  }
+
   function start(screen) {
     const request = ++requestId;
     if (!A11y.get('sound')) {
@@ -28,5 +33,5 @@ const CityMusic = (() => {
     }).catch(() => {});
   }
 
-  return { start };
+  return { start, stop };
 })();

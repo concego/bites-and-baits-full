@@ -16,6 +16,7 @@ const Audio = (() => {
   let nightActive = false;
   let cityMusicNode = null;
   let cityMusicGain = null;
+  let initPromise = null;
 
   // ── Carretel contínuo ──────────────────────────────────────────────────────
   let reelNode  = null;   // BufferSource em loop
@@ -55,11 +56,15 @@ const Audio = (() => {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
     }
     if (ctx.state === 'suspended') ctx.resume();
-    // Se os buffers já foram carregados, não busca de novo
+    // Se os buffers já foram carregados, não busca de novo.
     if (Object.keys(buffers).length === Object.keys(FILES).length) {
       return Promise.resolve();
     }
-    return Promise.all(
+    // Várias telas podem solicitar a inicialização ao mesmo tempo. Reutilizar
+    // a mesma Promise impede que callbacks concorrentes iniciem trilhas
+    // duplicadas quando a carga termina.
+    if (initPromise) return initPromise;
+    initPromise = Promise.all(
       Object.entries(FILES).map(([key, url]) =>
         fetch(url)
           .then(r => r.arrayBuffer())
@@ -68,6 +73,11 @@ const Audio = (() => {
           .catch(() => { console.warn(`Som não encontrado: ${url}`); })
       )
     );
+    initPromise = initPromise.then(
+      result => { initPromise = null; return result; },
+      error => { initPromise = null; throw error; }
+    );
+    return initPromise;
   }
 
   function play(name, { volume = 1, loop = false } = {}) {
@@ -199,12 +209,13 @@ const Audio = (() => {
       nightTexture: 'river',
     },
     lago_margem: {
-      layers: [{ key: 'ambient_lake_birds', volume: 0.16, filter: 1600 }],
+      // Ambiente deliberadamente discreto para não competir com a narração.
+      layers: [{ key: 'ambient_lake_birds', volume: 0.07, filter: 1600 }],
       nightLayers: [{ key: 'ambient_lake_birds', volume: 0.035, filter: 1050 }],
       nightTexture: 'lake',
     },
     lago_central: {
-      layers: [{ key: 'ambient_lake_loop', volume: 0.16, filter: 1400 }],
+      layers: [{ key: 'ambient_lake_loop', volume: 0.07, filter: 1400 }],
       nightLayers: [{ key: 'ambient_lake_loop', volume: 0.075, filter: 1050 }],
       nightTexture: 'lake',
     },
