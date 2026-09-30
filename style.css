@@ -512,23 +512,19 @@ html, body {
   right: 16px;
   z-index: 20;
 }
-/* Na Pesca Livre, o retorno fica em uma faixa própria e continua visível
-   mesmo em telas estreitas ou com a área de status mais alta. */
-#screen-game.free-mode #status-panel {
-  padding-bottom: 78px;
-}
+/* Na Pesca Livre, o retorno fica no fluxo logo abaixo do HUD, para não
+   encobrir os valores de recorde e nível em telas largas ou estreitas. */
 #screen-game.free-mode #btn-menu {
-  left: 16px;
-  right: 16px;
-  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  position: static;
+  align-self: flex-end;
+  flex: 0 0 auto;
   width: calc(100% - 32px);
   max-width: 420px;
-  margin: 0 auto;
+  margin: 8px 16px 0;
   text-align: center;
   background: rgba(0,0,0,0.62);
   border-color: rgba(255,255,255,0.55);
   box-shadow: 0 3px 12px rgba(0,0,0,0.35);
-  z-index: 40;
 }
 
 /* Utilitários */

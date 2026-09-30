@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Bites &amp; Baits</title>
-  <link rel="stylesheet" href="style.css?v=people-menu-01" />
+  <link rel="stylesheet" href="style.css?v=free-fishing-menu-flow-01" />
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css?v=avatar-layout-feedback-01" />
   <link rel="stylesheet" href="style-narrative.css?v=vitor-shore-02" />
-  <link rel="stylesheet" href="style-back-navigation.css" />
+  <link rel="stylesheet" href="style-back-navigation.css?v=free-fishing-menu-flow-01" />
   <link rel="stylesheet" href="shop.css" />
   <link rel="stylesheet" href="style_append.css" />
 </head>
@@ -694,6 +694,9 @@
         </div>
       </header>
 
+      <!-- Retorno da Pesca Livre em fluxo próprio, abaixo do HUD -->
+      <button id="btn-menu" class="btn-secondary btn-menu-free hidden" data-i18n="btn_back_hub"></button>
+
       <!-- HUD Modo Normal (isca equipada) -->
       <header id="normal-hud" class="game-header normal-hud hidden">
         <div class="score-box bait-indicator" id="bait-indicator">
@@ -758,9 +761,6 @@
           <div id="tilt-text"></div>
         </div>
       </div>
-
-      <!-- Botão voltar simples (pesca livre) -->
-      <button id="btn-menu" class="btn-secondary btn-menu-free hidden" data-i18n="btn_back_hub"></button>
 
       <!-- Última captura: permanece visível para consulta; F move o foco para cá -->
       <section id="last-catch-summary" class="last-catch-summary hidden"
