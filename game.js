@@ -44,6 +44,10 @@ const Game = (() => {
 
   // ── Estado global ─────────────────────────────────────────────────────────
   let gameMode         = 'normal'; // 'normal' | 'free'
+  let controlMode      = 'keyboard'; // 'keyboard' | 'sensor'; actual inputs override startup guess
+  let _controlModeUsed = false;
+  let _lastSensorBeta = null;
+  let _sensorBetaAtKeyboard = null;
   let state            = 'IDLE';
   let score            = 0;
   let best             = parseInt(localStorage.getItem('bb_best') || '0');
@@ -73,6 +77,8 @@ const Game = (() => {
   let _activeFishY     = 0;      // posição Y em % da cena
   let _activeFishPhase = 0;      // fase da ondulação
   let _fishState       = 'idle'; // 'idle'|'approaching'|'retreating'|'biting'|'fighting'
+  let _fishIndicatorPhase = null;
+  let _fishIndicatorSide = null;
   let _fishPullImpulse = 0;      // reação visual acumulada aos puxões do jogador
   let _lureX           = 50;     // posição X da isca em % (referência para o peixe)
   let _lureY           = 20;     // posição Y da isca em % (referência)
@@ -233,6 +239,10 @@ const Game = (() => {
       line:           $('line'),
       lure:           $('lure'),
       fishContainer:  $('fish-container'),
+      fishDirectionIndicator: $('fish-direction-indicator'),
+      fishDirectionAnnouncer: $('fish-direction-announcer'),
+      fishDirectionArrow: $('fish-direction-arrow'),
+      fishDirectionLabel: $('fish-direction-label'),
       scene:          $('scene'),
       resultIcon:     $('result-icon'),
       resultTitle:    $('result-title'),
@@ -1029,6 +1039,7 @@ const Game = (() => {
     _activeFishY = 30 + Math.random() * 40;
     _activeFishPhase = 0;
     _fishState = 'approaching';
+    _setFishDirectionIndicator('approaching', _activeFishX < _lureX ? 'left' : 'right');
 
     _runFishPhysics(fishData);
   }
@@ -1037,6 +1048,7 @@ const Game = (() => {
     if (_activeFishAnim) { cancelAnimationFrame(_activeFishAnim); _activeFishAnim = null; }
     if (_activeFishEl)   { _activeFishEl.remove(); _activeFishEl = null; }
     _fishState = 'idle';
+    _setFishDirectionIndicator(null);
   }
 
   function _runFishPhysics(fishData) {
@@ -1063,6 +1075,7 @@ const Game = (() => {
           if (dist < 8) {
             // Chegou perto — fica "interessado" perto da isca
             _fishState = 'curious';
+            _setFishDirectionIndicator(null);
           } else {
             const speed = p.approachSpeed * 0.15;
             _activeFishX += (dx / dist) * speed;
@@ -1204,14 +1217,36 @@ const Game = (() => {
       // Cada modo mantém seu próprio histórico de última captura.
       _lastCatchInfo = LastCatchStorage.load(gameMode);
 
+      // A heurística escolhe apenas a orientação inicial. Eventos reais do
+      // teclado/sensor passam a controlar a dica em aparelhos híbridos.
+      controlMode = typeof Sensors.preferredControl === 'function'
+        ? Sensors.preferredControl() : 'keyboard';
+      _controlModeUsed = false;
+      _lastSensorBeta = null;
+      _sensorBetaAtKeyboard = null;
+
       // 1. Troca de tela PRIMEIRO — imediato, sem await
       showScreen('game');
       CharacterAvatar.render(ui.characterAvatar, Character.load(), { outfit: 'fishing' });
 
       // 2. Sensores e áudio: fire-and-forget, nunca bloqueiam
       Sensors.requestPermission().then(ok => {
-        if (!ok) Sensors.enableDesktopFallback();
-      }).catch(() => Sensors.enableDesktopFallback());
+        if (!ok) {
+          Sensors.enableDesktopFallback();
+          if (!_controlModeUsed) {
+            controlMode = 'keyboard';
+            _refreshFishingHint();
+            if (state === 'IDLE') _sayControlKey('ready');
+          }
+        }
+      }).catch(() => {
+        Sensors.enableDesktopFallback();
+        if (!_controlModeUsed) {
+          controlMode = 'keyboard';
+          _refreshFishingHint();
+          if (state === 'IDLE') _sayControlKey('ready');
+        }
+      });
       // Cancela qualquer pedido pendente de trilha da cidade antes de iniciar
       // o ambiente da pescaria; isso evita música de menu sobreposta.
       CityMusic.stop();
@@ -1301,10 +1336,10 @@ const Game = (() => {
         _destroyActiveFish();
         setTalkbackSilent(false);
         setLabel(I18n.t('state_idle'));
-        setTiltHint('↕', I18n.t('tilt_idle'));
+        _refreshFishingHint();
         // Só narra "pronto" se a tela de jogo estiver ativa
         if (screens.game && screens.game.classList.contains('active')) {
-          sayKey('ready');
+          _sayControlKey('ready');
         }
         // Barra inferior: visível só no modo história
         { const bar = $('game-bottom-bar'); if (bar) bar.classList.toggle('hidden', gameMode !== 'normal'); }
@@ -1353,7 +1388,7 @@ const Game = (() => {
 
         setTalkbackSilent(true);
         setLabel(I18n.t('state_casting'));
-        setTiltHint('↑', I18n.t('tilt_casting'));
+        _refreshFishingHint();
         ui.rod.style.transform = 'translateX(-50%) rotate(10deg)';
         Audio.play('splash') || Audio.play('bloop');
         Audio.play('bloop');
@@ -1367,14 +1402,14 @@ const Game = (() => {
           ui.lure.style.top     = `${_lureY}%`;
           ui.lure.style.left    = `${_lureX}%`;
           _updateLinePath();
-          sayKey('waiting');
+          _sayControlKey('waiting');
           enterState('WAITING');
         }, 600);
         break;
 
       case 'WAITING': {
         setLabel(I18n.t('state_waiting'));
-        setTiltHint('→', I18n.t('tilt_waiting'));
+        _refreshFishingHint();
         ui.rod.style.transform = 'translateX(-50%) rotate(-10deg)';
 
         // Sorteia o peixe agora para que ele já apareça nadando.
@@ -1411,14 +1446,16 @@ const Game = (() => {
         ui.scene.classList.add('bite-pulse');
         setTimeout(() => ui.scene.classList.remove('bite-pulse'), 1500);
 
+        _setFishDirectionIndicator(null);
         setLabel(I18n.t('state_biting', fishName(currentFish)));
-        setTiltHint('📳', I18n.t('tilt_biting'));
+        _refreshFishingHint();
         ui.tiltArrow.classList.add('shake-hint');
-        sayKey('fish');
+        _sayControlKey('fish');
 
         biteTimer = setTimeout(() => {
           // Peixe perdeu interesse — começa a recuar
           _fishState = 'retreating';
+          _setFishDirectionIndicator('retreating', _activeFishX < _lureX ? 'left' : 'right');
           ui.tiltArrow.classList.remove('shake-hint');
           sayKey('escaped');
           setLabel(I18n.t('state_escaped'));
@@ -1435,10 +1472,11 @@ const Game = (() => {
         _fishState = 'fighting';
         ui.tensionCont.classList.remove('hidden');
         ui.rod.style.transform = 'translateX(-50%) rotate(-50deg)';
+        _setFishDirectionIndicator(null);
         setLabel(I18n.t('state_reeling', fishName(currentFish)));
-        setTiltHint('↓', I18n.t('tilt_reeling'));
+        _refreshFishingHint();
         _lastTensionWarn = null;
-        sayKey('hooked');
+        _sayControlKey('hooked');
         Audio.startReel('neutral');
         startTensionLoop();
         break;
@@ -1558,7 +1596,31 @@ const Game = (() => {
   }
 
   // ── Tilt ──────────────────────────────────────────────────────────────────
-  function handleTilt(dir, beta, norm) {
+  function handleTilt(dir, beta, norm, source) {
+    // DeviceOrientation streams even when untouched. After keyboard input,
+    // ignore that passive stream until the sensor angle actually changes
+    // enough to represent an intentional tilt on a hybrid device.
+    if (source === 'keyboard') {
+      _setControlMode('keyboard');
+      _sensorBetaAtKeyboard = _lastSensorBeta;
+    } else if (source === 'sensor') {
+      const sensorBeta = Number.isFinite(beta) ? beta : null;
+      let intentionalTilt = false;
+      if (controlMode === 'keyboard') {
+        if (!_controlModeUsed && dir !== 'neutral') intentionalTilt = true;
+        else if (_sensorBetaAtKeyboard === null && sensorBeta !== null) {
+          _sensorBetaAtKeyboard = sensorBeta;
+        } else if (sensorBeta !== null && dir !== 'neutral'
+            && Math.abs(sensorBeta - _sensorBetaAtKeyboard) >= 8) {
+          intentionalTilt = true;
+        }
+      } else {
+        intentionalTilt = true;
+      }
+      if (sensorBeta !== null) _lastSensorBeta = sensorBeta;
+      if (!intentionalTilt && controlMode === 'keyboard') return;
+      _setControlMode('sensor');
+    }
     updateTiltIndicator(dir, norm);
 
     // Atualiza posição Y da isca com base na inclinação (visual)
@@ -1589,7 +1651,7 @@ const Game = (() => {
 
       case 'WAITING':
         if (dir === 'back') {
-          sayKey('pulled_out');
+          _sayControlKey('pulled_out');
           setLabel(I18n.t('state_pulled_out'));
           enterState('IDLE');
         }
@@ -1598,13 +1660,17 @@ const Game = (() => {
   }
 
   // ── Shake ─────────────────────────────────────────────────────────────────
-  function handleShake() {
+  function handleShake(source) {
+    if (source === 'keyboard') {
+      _setControlMode('keyboard');
+      _sensorBetaAtKeyboard = _lastSensorBeta;
+    } else if (source === 'sensor') _setControlMode('sensor');
     if (state === 'BITING') {
       clearTimeout(biteTimer);
       ui.tiltArrow.classList.remove('shake-hint');
       navigator.vibrate && navigator.vibrate(0);
       setTimeout(() => _vibrate([300, 100, 400]), 30);
-      sayKey('rehooked');
+      // A entrada em REELING anuncia a orientação já adaptada ao controle.
       enterState('REELING');
     }
   }
@@ -1662,7 +1728,7 @@ const Game = (() => {
             _fishFatigue = 0;
             fishTired = true;
             Audio.fishTiredSound();
-            sayKey('tired');
+            _sayControlKey('tired');
             setLabel(I18n.t('state_tired', fishName(currentFish)));
 
             // Timer de recuperação — se o jogador não aproveitar a janela
@@ -2762,9 +2828,66 @@ const Game = (() => {
   function _play(id) { if (A11y.get('sound')) Audio.play(id); }
 
   function setTiltHint(arrow, text) {
-    ui.tiltArrow.textContent = arrow;
-    ui.tiltText.textContent  = text;
-    ui.tiltArrow.classList.remove('shake-hint');
+    if (ui.tiltArrow) ui.tiltArrow.textContent = arrow;
+    if (ui.tiltText) ui.tiltText.textContent = text;
+    if (ui.tiltArrow) ui.tiltArrow.classList.remove('shake-hint');
+  }
+
+  function _refreshFishingHint() {
+    const suffix = controlMode === 'keyboard' ? '_keyboard' : '';
+    const hints = { IDLE: 'idle', CASTING: 'casting', WAITING: 'waiting', BITING: 'biting', REELING: 'reeling' };
+    const hintKey = hints[state];
+    if (!hintKey) return;
+    const arrows = { IDLE: controlMode === 'keyboard' ? '↑' : '↕', CASTING: '↑', WAITING: '→', BITING: controlMode === 'keyboard' ? '␣' : '📳', REELING: '↓' };
+    setTiltHint(arrows[state], I18n.t(`tilt_${hintKey}${suffix}`));
+  }
+
+  function _setControlMode(mode) {
+    if ((mode !== 'keyboard' && mode !== 'sensor') || mode === controlMode) {
+      if (mode === controlMode && (mode === 'keyboard' || mode === 'sensor')) _controlModeUsed = true;
+      return;
+    }
+    controlMode = mode;
+    _controlModeUsed = true;
+    _refreshFishingHint();
+  }
+
+  function _sayControlKey(key, ...args) {
+    sayKey(controlMode === 'keyboard' ? `${key}_keyboard` : key, ...args);
+  }
+
+  function _setFishDirectionIndicator(phase, side = null) {
+    const indicator = ui.fishDirectionIndicator;
+    if (!indicator) return;
+    if (phase !== 'approaching' && phase !== 'retreating') {
+      indicator.classList.add('hidden');
+      indicator.classList.remove('from-left', 'from-right', 'is-retreating');
+      if (_fishIndicatorPhase !== null && ui.fishDirectionAnnouncer) {
+        ui.fishDirectionAnnouncer.textContent = '';
+      }
+      _fishIndicatorPhase = null;
+      _fishIndicatorSide = null;
+      return;
+    }
+    side = side === 'left' ? 'left' : 'right';
+    indicator.classList.remove('hidden');
+    indicator.classList.toggle('from-left', side === 'left');
+    indicator.classList.toggle('from-right', side === 'right');
+    indicator.classList.toggle('is-retreating', phase === 'retreating');
+    const phaseChanged = phase !== _fishIndicatorPhase;
+    if (phaseChanged) {
+      const message = I18n.t(`fish_direction_${phase}`);
+      if (ui.fishDirectionLabel) ui.fishDirectionLabel.textContent = message;
+      if (ui.fishDirectionAnnouncer) ui.fishDirectionAnnouncer.textContent = message;
+      _fishIndicatorPhase = phase;
+    }
+    if ((side !== _fishIndicatorSide || phaseChanged) && ui.fishDirectionArrow) {
+      const pointsInward = phase === 'approaching';
+      ui.fishDirectionArrow.textContent = side === 'left'
+        ? (pointsInward ? '→' : '←')
+        : (pointsInward ? '←' : '→');
+      _fishIndicatorSide = side;
+    }
   }
 
   function updateScore() {

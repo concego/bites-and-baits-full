@@ -91,7 +91,7 @@ const Sensors = (() => {
     // Normaliza valor para UI (-1 = full forward, 0 = neutral, 1 = full back)
     const norm = Math.max(-1, Math.min(1, beta / 60));
 
-    if (_callbacks.onTilt) _callbacks.onTilt(dir, beta, norm);
+    if (_callbacks.onTilt) _callbacks.onTilt(dir, beta, norm, 'sensor');
     _lastTilt = dir;
   }
 
@@ -106,7 +106,7 @@ const Sensors = (() => {
     const now = Date.now();
     if (magnitude > SHAKE_THRESHOLD && (now - _lastShakeAt) > SHAKE_COOLDOWN_MS) {
       _lastShakeAt = now;
-      if (_callbacks.onShake) _callbacks.onShake();
+      if (_callbacks.onShake) _callbacks.onShake('sensor');
     }
   }
 
@@ -119,7 +119,7 @@ const Sensors = (() => {
   function _fireKey() {
     const beta = _keyTilt === 'forward' ? -30 : _keyTilt === 'back' ? 30 : 0;
     const norm = _keyTilt === 'forward' ? -0.5 : _keyTilt === 'back' ? 0.5 : 0;
-    if (_callbacks.onTilt) _callbacks.onTilt(_keyTilt, beta, norm);
+    if (_callbacks.onTilt) _callbacks.onTilt(_keyTilt, beta, norm, 'keyboard');
   }
 
   function _isKey(e, key, code = key) {
@@ -141,7 +141,7 @@ const Sensors = (() => {
     } else if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') {
       e.preventDefault();
       // Evita vários disparos quando o teclado mantém a tecla pressionada.
-      if (!e.repeat && _callbacks.onShake) _callbacks.onShake();
+      if (!e.repeat && _callbacks.onShake) _callbacks.onShake('keyboard');
     }
   }
 
@@ -169,5 +169,19 @@ const Sensors = (() => {
     _callbacks[event] = cb;
   }
 
-  return { requestPermission, start, stop, on, enableDesktopFallback };
+  // Only a startup hint: actual keyboard or sensor events always override it.
+  // This handles desktop PCs without requiring a fake 'neutral phone' message,
+  // while still allowing phones/tablets and hybrid OTG setups to work.
+  function preferredControl() {
+    const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+    const mobileHint = typeof navigator !== 'undefined'
+      && (navigator.userAgentData?.mobile
+        || /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
+        || (navigator.maxTouchPoints > 0
+          && typeof matchMedia === 'function'
+          && matchMedia('(pointer: coarse)').matches));
+    return mobileHint ? 'sensor' : 'keyboard';
+  }
+
+  return { requestPermission, start, stop, on, enableDesktopFallback, preferredControl };
 })();

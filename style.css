@@ -194,6 +194,32 @@ html, body {
   overflow: hidden;
 }
 
+.fish-direction-indicator {
+  position: absolute;
+  top: 42%;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(48%, 220px);
+  padding: 9px 12px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  color: #fff;
+  background: #123b54;
+  box-shadow: 0 2px 8px rgba(0,0,0,.65);
+  font-weight: 800;
+  line-height: 1.2;
+  pointer-events: none;
+}
+.fish-direction-indicator.from-left { left: 8px; }
+.fish-direction-indicator.from-right { right: 8px; }
+.fish-direction-indicator.is-retreating { background: #6b2c22; }
+.fish-direction-arrow { font-size: 1.35rem; line-height: 1; }
+@media (max-width: 420px) {
+  .fish-direction-indicator { top: 38%; max-width: 54%; padding: 7px 9px; font-size: .85rem; }
+}
+
 #sky {
   position: absolute;
   top: 0; left: 0; right: 0;

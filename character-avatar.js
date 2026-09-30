@@ -192,7 +192,7 @@ const CharacterAvatar = (() => {
         <path d="M${70 - _profileData(profile, bodyIndex).shoulder + 2} 101 Q${70 - _profileData(profile, bodyIndex).shoulder - 7} 112 43 136" stroke="${shirtDark}" stroke-width="10" fill="none" stroke-linecap="round"/>
         <path d="M${70 + _profileData(profile, bodyIndex).shoulder - 2} 101 Q${70 + _profileData(profile, bodyIndex).shoulder + 7} 112 97 136" stroke="${shirtDark}" stroke-width="10" fill="none" stroke-linecap="round"/>
         ${_hands(skin, shadow)}
-        <path d="M62 87 Q70 96 78 87 L78 101 Q70 108 62 101Z" fill="${skin}" stroke="${shadow}" stroke-width="1.1"/>
+        <path d="M62 70 Q70 79 78 70 L77 88 Q70 94 63 88Z" fill="${skin}" stroke="${shadow}" stroke-width="1.1"/>
         ${_face(faceIndex, skin, shadow, eye, eyeY, eyeSize, expressive)}
         ${hairMarkup}
         ${beard}
