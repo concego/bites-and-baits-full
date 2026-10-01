@@ -766,44 +766,9 @@
       <section id="last-catch-summary" class="last-catch-summary hidden"
                tabindex="-1" aria-hidden="true" aria-labelledby="last-catch-heading">
         <h3 id="last-catch-heading" data-i18n="last_catch_title"></h3>
-        <dl class="last-catch-list">
-          <div>
-            <dt data-i18n="last_catch_fish_label"></dt>
-            <dd id="last-catch-fish"></dd>
-          </div>
-          <div id="last-catch-size-row">
-            <dt data-i18n="last_catch_size_label"></dt>
-            <dd id="last-catch-size"></dd>
-          </div>
-          <div id="last-catch-weight-row">
-            <dt data-i18n="last_catch_weight_label"></dt>
-            <dd id="last-catch-weight"></dd>
-          </div>
-          <div id="last-catch-length-row">
-            <dt data-i18n="last_catch_length_label"></dt>
-            <dd id="last-catch-length"></dd>
-          </div>
-          <div id="last-catch-specimen-rarity-row">
-            <dt data-i18n="last_catch_specimen_rarity_label"></dt>
-            <dd id="last-catch-specimen-rarity"></dd>
-          </div>
-          <div id="last-catch-value-row">
-            <dt data-i18n="last_catch_value_label"></dt>
-            <dd id="last-catch-value"></dd>
-          </div>
-          <div id="last-catch-location-row">
-            <dt data-i18n="last_catch_location_label"></dt>
-            <dd id="last-catch-location"></dd>
-          </div>
-          <div id="last-catch-score-row">
-            <dt data-i18n="last_catch_score_label"></dt>
-            <dd id="last-catch-score"></dd>
-          </div>
-        </dl>
+        <p id="last-catch-readout" class="last-catch-narrative" role="status"
+           aria-live="off" aria-atomic="true" tabindex="-1"></p>
         <p class="last-catch-hint" data-i18n="last_catch_hint"></p>
-        <!-- Focalizável para que o leitor de tela anuncie todos os dados, não só o título. -->
-        <p id="last-catch-readout" class="sr-only" role="status"
-           aria-live="assertive" aria-atomic="true" tabindex="-1"></p>
       </section>
     </div>
 

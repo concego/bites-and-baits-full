@@ -266,12 +266,6 @@ const Game = (() => {
       shopZecaNext:   $('btn-shop-zeca-dialog-next'),
       lastCatchSummary: $('last-catch-summary'),
       lastCatchReadout: $('last-catch-readout'),
-      lastCatchFish:  $('last-catch-fish'),
-      lastCatchSize:  $('last-catch-size'),
-      lastCatchWeight: $('last-catch-weight'),
-      lastCatchValue: $('last-catch-value'),
-      lastCatchLocation: $('last-catch-location'),
-      lastCatchScore: $('last-catch-score'),
     };
 
     ui.best.textContent = best;
@@ -1532,13 +1526,16 @@ const Game = (() => {
               : currentFish.size <= 2 ? I18n.t('size_small')
               : currentFish.size <= 3 ? I18n.t('size_medium')
               : I18n.t('size_large'));
-          const kg    = caughtItem ? caughtItem.weight.toFixed(2) : null;
+          const kg    = specimen ? specimen.weight.toFixed(2) : null;
+          const lengthCm = specimen?.length ?? null;
           const coins = caughtItem ? caughtItem.value : null;
           if (gameMode === 'free' && freeResult) {
             if (freeResult.bossCaught) {
-              speak(t('free_boss_caught', fishName(currentFish), freeResult.points, freeResult.level));
+              speak(t('free_boss_caught', fishName(currentFish), freeResult.points, freeResult.level,
+                sizeDesc, kg, lengthCm, specimen?.specimenRarity, freeResult.sessionScore));
             } else {
-              speak(t('free_catch_points', fishName(currentFish), freeResult.points, freeResult.sessionScore));
+              speak(t('free_catch_points', fishName(currentFish), freeResult.points,
+                freeResult.sessionScore, sizeDesc, kg, lengthCm, specimen?.specimenRarity));
             }
             if (freeResult.advanced) {
               setTimeout(() => speak(t('free_level_up', freeResult.level)), 900);
@@ -1922,7 +1919,9 @@ const Game = (() => {
       ui.lastCatchSummary?.focus();
       return;
     }
-    // Troca o conteúdo para disparar o aria-live e focaliza o texto completo.
+    // Reanuncia o texto completo ao pedir a releitura com F.
+    readout.setAttribute('aria-live', 'assertive');
+    readout.addEventListener('blur', () => readout.setAttribute('aria-live', 'off'), { once: true });
     readout.textContent = '';
     requestAnimationFrame(() => {
       readout.textContent = _lastCatchSummaryText();

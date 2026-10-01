@@ -835,20 +835,10 @@ html, body {
   color: rgba(255,255,255,0.75);
 }
 
-.last-catch-list { 
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.last-catch-narrative {
   margin: 0;
+  line-height: 1.5;
 }
-.last-catch-list > div {
-  display: grid;
-  grid-template-columns: minmax(90px, 0.8fr) 1.2fr;
-  gap: 12px;
-  align-items: baseline;
-}
-.last-catch-list dt { font-weight: 700; color: var(--accent); }
-.last-catch-list dd { margin: 0; font-weight: 600; }
 
 .last-catch-summary {
   width: min(100%, 420px);
