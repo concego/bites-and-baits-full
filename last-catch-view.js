@@ -40,11 +40,8 @@ const LastCatchView = (() => {
   function render(info) {
     if (!info) return;
     _lastCatchInfo = info;
-    const readout = document.getElementById('last-catch-readout');
-    if (!readout) return;
-    // O painel pode ser atualizado sem repetir a fala automática da captura.
-    readout.setAttribute('aria-live', 'off');
-    readout.textContent = summaryText();
+    const narrative = document.getElementById('last-catch-narrative');
+    if (narrative) narrative.textContent = summaryText();
   }
 
   function summaryText() {

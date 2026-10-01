@@ -1922,9 +1922,7 @@ const Game = (() => {
       ui.lastCatchSummary?.focus();
       return;
     }
-    // Reanuncia o texto completo ao pedir a releitura com F.
-    readout.setAttribute('aria-live', 'assertive');
-    readout.addEventListener('blur', () => readout.setAttribute('aria-live', 'off'), { once: true });
+    // Atualiza a região assertiva sob demanda e focaliza o resumo completo.
     readout.textContent = '';
     requestAnimationFrame(() => {
       readout.textContent = _lastCatchSummaryText();
