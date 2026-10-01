@@ -4,6 +4,7 @@
  * O catálogo fornece faixas biológicas. Um único percentil compartilhado,
  * com pequena variação entre comprimento e peso, mantém as duas medidas
  * relacionadas sem transformar o catálogo em um simulador de piscicultura.
+ * Bosses usam os extremos superiores de comprimento e peso da espécie.
  */
 const FishMetrics = (() => {
   const clamp = (n, min = 0, max = 1) => Math.max(min, Math.min(max, n));
@@ -43,7 +44,21 @@ const FishMetrics = (() => {
     return ({ common: 1, uncommon: 1.12, rare: 1.28, legendary: 1.48 })[rarity] || 1;
   }
 
+  function rollBossSpecimen(fish) {
+    const [wMin, wMax] = _range(fish, 'weightRange', [0.01, 1]);
+    const [lMin, lMax] = _range(fish, 'lengthRangeCm', [5, 30]);
+    return {
+      length: _roundLength(lMax, lMin, lMax),
+      weight: _roundWeight(wMax, wMin, wMax),
+      lengthPercentile: 1,
+      weightPercentile: 1,
+      rarityScore: 1,
+      specimenRarity: 'trophy',
+    };
+  }
+
   function rollSpecimen(fish) {
+    if (fish?.role === 'boss' || fish?.freeBoss) return rollBossSpecimen(fish);
     const [wMin, wMax] = _range(fish, 'weightRange', [0.01, 1]);
     const [lMin, lMax] = _range(fish, 'lengthRangeCm', [5, 30]);
     // Favorece exemplares comuns e reserva o extremo para capturas especiais.
@@ -103,6 +118,7 @@ const FishMetrics = (() => {
 
   return {
     rollSpecimen,
+    rollBossSpecimen,
     valueFor,
     scoreFor,
     specimenMultiplier,
