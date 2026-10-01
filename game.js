@@ -1526,24 +1526,27 @@ const Game = (() => {
               : currentFish.size <= 2 ? I18n.t('size_small')
               : currentFish.size <= 3 ? I18n.t('size_medium')
               : I18n.t('size_large'));
-          const kg    = specimen ? specimen.weight.toFixed(2) : null;
-          const lengthCm = specimen?.length ?? null;
           const coins = caughtItem ? caughtItem.value : null;
+          const rarityDesc = specimen?.specimenRarity
+            ? t(`inv_rarity_${specimen.specimenRarity}`) : '';
           if (gameMode === 'free' && freeResult) {
             if (freeResult.bossCaught) {
-              speak(t('free_boss_caught', fishName(currentFish), freeResult.points, freeResult.level,
-                sizeDesc, kg, lengthCm, specimen?.specimenRarity, freeResult.sessionScore));
+              speak(t('free_boss_caught', fishName(currentFish), sizeDesc, rarityDesc,
+                freeResult.points, freeResult.sessionScore));
             } else {
-              speak(t('free_catch_points', fishName(currentFish), freeResult.points,
-                freeResult.sessionScore, sizeDesc, kg, lengthCm, specimen?.specimenRarity));
+              speak(t('free_catch_points', fishName(currentFish), sizeDesc, rarityDesc,
+                freeResult.points, freeResult.sessionScore));
             }
             if (freeResult.advanced) {
               setTimeout(() => speak(t('free_level_up', freeResult.level)), 900);
             }
-          } else if (currentFish.special) {
-            sayCatchKey('caught_special_noscore', fishName(currentFish), kg, coins, specimen?.length);
           } else {
-            sayCatchKey('caught_noscore', fishName(currentFish), sizeDesc, kg, coins, specimen?.length);
+            const cargoUsed = Inventory.holdUsed();
+            const cargoCapacity = Inventory.holdCapacity(_holdCapacityBoat());
+            const catchMessageKey = currentFish.special
+              ? 'caught_special_noscore' : 'caught_noscore';
+            sayCatchKey(catchMessageKey, fishName(currentFish), sizeDesc, rarityDesc,
+              coins, cargoUsed, cargoCapacity);
           }
         }
 

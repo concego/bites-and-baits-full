@@ -257,7 +257,7 @@ const I18n = (() => {
         const size = data.size ? `, de porte ${data.size.toLowerCase()}` : '';
         const measures = [data.length, data.weight].filter(Boolean);
         const measureText = measures.length ? `, com ${measures.join(' e ')}` : '';
-        let message = `Boa pescaria! Você tirou da água ${fish}${size}${measureText}.`;
+        let message = `Última captura. Você tirou da água ${fish}${size}${measureText}.`;
         if (data.value !== '') message += ` Ele vale ${data.value} moedas.`;
         if (data.location) message += ` Você pescou em ${data.location}.`;
         return message;
@@ -270,7 +270,7 @@ const I18n = (() => {
         const size = data.size ? `, de porte ${data.size.toLowerCase()}` : '';
         const measures = [data.length, data.weight].filter(Boolean);
         const measureText = measures.length ? `, com ${measures.join(' e ')}` : '';
-        let message = `Boa pescaria! Você tirou da água ${fish}${size}${measureText}.`;
+        let message = `Última captura. Você tirou da água ${fish}${size}${measureText}.`;
         if (data.points !== '' && data.score !== '') {
           message += ` Ele rendeu ${data.points} pontos e sua pontuação total agora é ${data.score} pontos.`;
         } else if (data.points !== '') {
@@ -496,24 +496,14 @@ const I18n = (() => {
       hud_level:        'Nível',
       hud_level_progress: 'Progresso',
       hud_boss_ready:   'Boss pronto',
-      free_catch_points: (fish, points, total, size, kg, length, rarity) => {
-        const rare = { common: 'comum', uncommon: 'incomum', rare: 'raro', legendary: 'lendário' }[rarity];
-        const caughtFish = rarity === 'trophy' ? `um peixe-troféu da espécie ${fish}`
-          : `um exemplar${rare ? ` ${rare}` : ''} de ${fish}`;
-        const sizeText = size ? `, de porte ${size}` : '';
-        const measures = [length != null ? `${length} cm` : '', kg != null ? `${kg} kg` : ''].filter(Boolean);
-        const measureText = measures.length ? `, com ${measures.join(' e ')}` : '';
-        return `Boa pescaria! Você tirou da água ${caughtFish}${sizeText}${measureText}. A captura rendeu ${points} pontos e sua pontuação agora é ${total}.`;
+      free_catch_points: (fish, size, rarity, points, total) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' ');
+        return `Última captura. ${fish}${description ? ` ${description}` : ''}. Você ganhou ${points} pontos; agora são ${total} no total.`;
       },
       free_boss_appears: (fish, level) => `Boss do nível ${level}: ${fish}. Capture-o para avançar.`,
-      free_boss_caught: (fish, points, level, size, kg, length, rarity, total) => {
-        const rare = { common: 'comum', uncommon: 'incomum', rare: 'raro', legendary: 'lendário' }[rarity];
-        const caughtFish = rarity === 'trophy' ? `um peixe-troféu da espécie ${fish}`
-          : `um exemplar especial${rare ? ` ${rare}` : ''} de ${fish}`;
-        const sizeText = size ? `, de porte ${size}` : '';
-        const measures = [length != null ? `${length} cm` : '', kg != null ? `${kg} kg` : ''].filter(Boolean);
-        const measureText = measures.length ? `, com ${measures.join(' e ')}` : '';
-        return `Que captura! Você tirou da água ${caughtFish}${sizeText}${measureText}. Ela rendeu ${points} pontos, sua pontuação chegou a ${total} e o nível ${level} foi liberado.`;
+      free_boss_caught: (fish, size, rarity, points, total) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' ');
+        return `Última captura. ${fish}${description ? ` ${description}` : ''}. Você ganhou ${points} pontos; agora são ${total} no total.`;
       },
       free_boss_failed: (level, lost) => `O Boss escapou. Nível ${level} reiniciado. ${lost} pontos perdidos.`,
       free_level_up: (level) => `Avanço confirmado. Você está no nível ${level}.`,
@@ -607,13 +597,17 @@ const I18n = (() => {
       speak_snapped:    'Linha arrebentou!',
       speak_caught:              (fish, size, score) => `${fish}! ${size}. ${score} peixes.`,
       speak_caught_special:      (fish, score) => `${fish}! Especial! ${score} peixes.`,
-      speak_caught_noscore: (fish, size, kg, coins, length) => {
-        const lengthText = length != null ? `${length} centímetros` : 'comprimento não informado';
-        return `Boa pescaria! Você capturou um exemplar de porte ${size}: ${fish}. Ele mede ${lengthText}, pesa ${kg} quilos e vale ${coins} moedas.`;
+      speak_caught_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' ');
+        const cargo = used != null && capacity != null
+          ? ` Sua carga está com ${used} de ${capacity} espaços ocupados.` : '';
+        return `Última captura. ${fish}${description ? ` ${description}` : ''}. Vale ${coins} moedas.${cargo}`;
       },
-      speak_caught_special_noscore: (fish, kg, coins, length) => {
-        const lengthText = length != null ? `${length} centímetros` : 'comprimento não informado';
-        return `Boa pescaria! Você capturou um peixe especial: ${fish}. Ele mede ${lengthText}, pesa ${kg} quilos e vale ${coins} moedas.`;
+      speak_caught_special_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' ');
+        const cargo = used != null && capacity != null
+          ? ` Sua carga está com ${used} de ${capacity} espaços ocupados.` : '';
+        return `Última captura. ${fish}${description ? ` ${description}` : ''}. Vale ${coins} moedas.${cargo}`;
       },
       speak_danger:     'Perigo! Solte!',
       speak_tension:    'Tensão alta!',
@@ -639,13 +633,17 @@ const I18n = (() => {
       vspeak_snapped:    'A linha não aguentou a tensão e arrebentou. O peixe fugiu.',
       vspeak_caught:                (fish, size, score) => `Você capturou um ${fish} ${size}! Pontuação atual: ${score} peixes.`,
       vspeak_caught_special:        (fish, score) => `Incrível! Você capturou um ${fish} especial! Pontuação atual: ${score} peixes.`,
-      vspeak_caught_noscore: (fish, size, kg, coins, length) => {
-        const lengthText = length != null ? `${length} centímetros` : 'comprimento não informado';
-        return `Boa pescaria! Você capturou um exemplar de porte ${size}: ${fish}. Ele mede ${lengthText}, pesa ${kg} quilos e vale ${coins} moedas.`;
+      vspeak_caught_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' ');
+        const cargo = used != null && capacity != null
+          ? ` Sua carga está com ${used} de ${capacity} espaços ocupados.` : '';
+        return `Última captura. ${fish}${description ? ` ${description}` : ''}. Vale ${coins} moedas.${cargo}`;
       },
-      vspeak_caught_special_noscore: (fish, kg, coins, length) => {
-        const lengthText = length != null ? `${length} centímetros` : 'comprimento não informado';
-        return `Boa pescaria! Você capturou um peixe especial: ${fish}. Ele mede ${lengthText}, pesa ${kg} quilos e vale ${coins} moedas.`;
+      vspeak_caught_special_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' ');
+        const cargo = used != null && capacity != null
+          ? ` Sua carga está com ${used} de ${capacity} espaços ocupados.` : '';
+        return `Última captura. ${fish}${description ? ` ${description}` : ''}. Vale ${coins} moedas.${cargo}`;
       },
       vspeak_danger:     'Tensão crítica! Solte um pouco a linha para evitar que ela arrebente.',
       vspeak_tension:    'A tensão da linha está alta. Cuidado para não puxar demais.',
@@ -973,7 +971,7 @@ const I18n = (() => {
         const size = data.size ? `, ${data.size} in size` : '';
         const measures = [data.length, data.weight].filter(Boolean);
         const measureText = measures.length ? `, measuring ${measures.join(' and ')}` : '';
-        let message = `Great catch! You landed ${specimen}${size}${measureText}.`;
+        let message = `Last catch. You landed ${specimen}${size}${measureText}.`;
         if (data.value !== '') message += ` It's worth ${data.value} coins.`;
         if (data.location) message += ` You caught it at ${data.location}.`;
         return message;
@@ -984,7 +982,7 @@ const I18n = (() => {
         const size = data.size ? `, ${data.size} in size` : '';
         const measures = [data.length, data.weight].filter(Boolean);
         const measureText = measures.length ? `, measuring ${measures.join(' and ')}` : '';
-        let message = `Great catch! You landed ${specimen}${size}${measureText}.`;
+        let message = `Last catch. You landed ${specimen}${size}${measureText}.`;
         if (data.points !== '' && data.score !== '') {
           message += ` It earned ${data.points} points, bringing your total to ${data.score}.`;
         } else if (data.points !== '') {
@@ -1205,22 +1203,14 @@ const I18n = (() => {
       hud_level:        'Level',
       hud_level_progress: 'Progress',
       hud_boss_ready:   'Boss ready',
-      free_catch_points: (fish, points, total, size, kg, length, rarity) => {
-        const rarityText = { common: 'a common', uncommon: 'an uncommon', rare: 'a rare', legendary: 'a legendary', trophy: 'a trophy' }[rarity];
-        const specimen = `${rarityText || 'a'} specimen of ${fish}`;
-        const sizeText = size ? `, ${size} in size` : '';
-        const measures = [length != null ? `${length} cm` : '', kg != null ? `${kg} kg` : ''].filter(Boolean);
-        const measureText = measures.length ? `, measuring ${measures.join(' and ')}` : '';
-        return `Nice catch! You landed ${specimen}${sizeText}${measureText}. It earned ${points} points, bringing your total to ${total}.`;
+      free_catch_points: (fish, size, rarity, points, total) => {
+        const descriptor = [size, rarity].filter(Boolean).join(', ');
+        return `Last catch. ${fish}${descriptor ? `, ${descriptor}` : ''}. You earned ${points} points; your total is now ${total}.`;
       },
       free_boss_appears: (fish, level) => `Level ${level} boss: ${fish}. Catch it to advance.`,
-      free_boss_caught: (fish, points, level, size, kg, length, rarity, total) => {
-        const rarityText = { common: 'a common', uncommon: 'an uncommon', rare: 'a rare', legendary: 'a legendary', trophy: 'a trophy' }[rarity];
-        const specimen = `${rarityText || 'a special'} specimen of ${fish}`;
-        const sizeText = size ? `, ${size} in size` : '';
-        const measures = [length != null ? `${length} cm` : '', kg != null ? `${kg} kg` : ''].filter(Boolean);
-        const measureText = measures.length ? `, measuring ${measures.join(' and ')}` : '';
-        return `What a catch! You landed ${specimen}${sizeText}${measureText}. It earned ${points} points, bringing your total to ${total}, and unlocked level ${level}.`;
+      free_boss_caught: (fish, size, rarity, points, total) => {
+        const descriptor = [size, rarity].filter(Boolean).join(', ');
+        return `Last catch. ${fish}${descriptor ? `, ${descriptor}` : ''}. You earned ${points} points; your total is now ${total}.`;
       },
       free_boss_failed: (level, lost) => `The boss escaped. Level ${level} restarted. ${lost} points lost.`,
       free_level_up: (level) => `Advance confirmed. You are now on level ${level}.`,
@@ -1314,13 +1304,17 @@ const I18n = (() => {
       speak_snapped:    'Line snapped!',
       speak_caught:              (fish, size, score) => `${fish}! ${size}. ${score} fish.`,
       speak_caught_special:      (fish, score) => `${fish}! Special! ${score} fish.`,
-      speak_caught_noscore: (fish, size, kg, coins, length) => {
-        const lengthText = length != null ? `${length} centimeters` : 'length not provided';
-        return `Great catch! You landed a ${size} ${fish}. It measures ${lengthText}, weighs ${kg} kilograms, and is worth ${coins} coins.`;
+      speak_caught_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(', ');
+        const cargo = used != null && capacity != null
+          ? ` Your cargo has ${used} of ${capacity} slots occupied.` : '';
+        return `Last catch. ${fish}${description ? `, ${description}` : ''}. Worth ${coins} coins.${cargo}`;
       },
-      speak_caught_special_noscore: (fish, kg, coins, length) => {
-        const lengthText = length != null ? `${length} centimeters` : 'length not provided';
-        return `Great catch! You landed a special ${fish}. It measures ${lengthText}, weighs ${kg} kilograms, and is worth ${coins} coins.`;
+      speak_caught_special_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(', ');
+        const cargo = used != null && capacity != null
+          ? ` Your cargo has ${used} of ${capacity} slots occupied.` : '';
+        return `Last catch. ${fish}${description ? `, ${description}` : ''}. Worth ${coins} coins.${cargo}`;
       },
       speak_danger:     'Danger! Release!',
       speak_tension:    'High tension!',
@@ -1346,13 +1340,17 @@ const I18n = (() => {
       vspeak_snapped:    'The line couldn\'t hold the tension and snapped. The fish got away.',
       vspeak_caught:                (fish, size, score) => `You caught a ${size} ${fish}! Current score: ${score} fish.`,
       vspeak_caught_special:        (fish, score) => `Amazing! You caught a special ${fish}! Current score: ${score} fish.`,
-      vspeak_caught_noscore: (fish, size, kg, coins, length) => {
-        const lengthText = length != null ? `${length} centimeters` : 'length not provided';
-        return `Great catch! You landed a ${size} ${fish}. It measures ${lengthText}, weighs ${kg} kilograms, and is worth ${coins} coins.`;
+      vspeak_caught_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(', ');
+        const cargo = used != null && capacity != null
+          ? ` Your cargo has ${used} of ${capacity} slots occupied.` : '';
+        return `Last catch. ${fish}${description ? `, ${description}` : ''}. Worth ${coins} coins.${cargo}`;
       },
-      vspeak_caught_special_noscore: (fish, kg, coins, length) => {
-        const lengthText = length != null ? `${length} centimeters` : 'length not provided';
-        return `Great catch! You landed a special ${fish}. It measures ${lengthText}, weighs ${kg} kilograms, and is worth ${coins} coins.`;
+      vspeak_caught_special_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(', ');
+        const cargo = used != null && capacity != null
+          ? ` Your cargo has ${used} of ${capacity} slots occupied.` : '';
+        return `Last catch. ${fish}${description ? `, ${description}` : ''}. Worth ${coins} coins.${cargo}`;
       },
       vspeak_danger:     'Critical tension! Ease up on the line to avoid snapping it.',
       vspeak_tension:    'The line tension is high. Be careful not to pull too hard.',
@@ -1495,22 +1493,14 @@ const I18n = (() => {
       hud_level:        'Szint',
       hud_level_progress: 'Haladás',
       hud_boss_ready:   'Boss kész',
-      free_catch_points: (fish, points, total, size, kg, length, rarity) => {
-        const rarityWord = { common: 'gyakori', uncommon: 'nem gyakori', rare: 'ritka', legendary: 'legendás', trophy: 'trófea' }[rarity];
-        const specimen = `${rarityWord ? `egy ${rarityWord} ` : 'egy '}${fish} példány`;
-        const sizeText = size ? `, ${size} méretű` : '';
-        const measures = [length != null ? `${length} cm hosszú` : '', kg != null ? `${kg} kg súlyú` : ''].filter(Boolean);
-        const measureText = measures.length ? `, ${measures.join(' és ')}` : '';
-        return `Szép fogás! ${specimen} akadt horogra${sizeText}${measureText}. Ez a fogás ${points} pontot ért, az összpontszámod pedig ${total} pont.`;
+      free_catch_points: (fish, size, rarity, points, total) => {
+        const descriptor = [size, rarity].filter(Boolean).join(' és ');
+        return `Utolsó fogás. ${fish}${descriptor ? `, ${descriptor}` : ''}. ${points} pontot szereztél, most ${total} pontod van.`;
       },
       free_boss_appears: (fish, level) => `${level}. szintű boss: ${fish}. Fogd ki a továbblépéshez.`,
-      free_boss_caught: (fish, points, level, size, kg, length, rarity, total) => {
-        const rarityWord = { common: 'gyakori', uncommon: 'nem gyakori', rare: 'ritka', legendary: 'legendás', trophy: 'trófea' }[rarity];
-        const specimen = `${rarityWord ? `egy ${rarityWord} ` : 'egy különleges '}${fish} példány`;
-        const sizeText = size ? `, ${size} méretű` : '';
-        const measures = [length != null ? `${length} cm hosszú` : '', kg != null ? `${kg} kg súlyú` : ''].filter(Boolean);
-        const measureText = measures.length ? `, ${measures.join(' és ')}` : '';
-        return `Szép fogás! ${specimen} akadt horogra${sizeText}${measureText}. Ez a fogás ${points} pontot ért, az összpontszámod ${total} pontra nőtt, és feloldottad a(z) ${level}. szintet.`;
+      free_boss_caught: (fish, size, rarity, points, total) => {
+        const descriptor = [size, rarity].filter(Boolean).join(' és ');
+        return `Utolsó fogás. ${fish}${descriptor ? `, ${descriptor}` : ''}. ${points} pontot szereztél, most ${total} pontod van.`;
       },
       free_boss_failed: (level, lost) => `A boss elmenekült. A(z) ${level}. szint újraindul. Elveszett pontok: ${lost}.`,
       free_level_up: (level) => `A továbblépés megtörtént. Most a(z) ${level}. szinten vagy.`,
@@ -1975,13 +1965,17 @@ btn_story:        'Történet',
       bait_no_stock:    'Nincs csali! Nyisd meg a Felszerelést a cseréhez.',
       speak_escaped_reel: 'Túl lassú. A hal elment.',
       speak_recovered:  'Visszanyerte az erejét! Figyelj a feszességre!',
-      speak_caught_noscore: (fish, size, kg, coins, length) => {
-        const measureText = length != null ? `${length} cm hosszú és ${kg} kg súlyú` : `hossza nem ismert, súlya ${kg} kg`;
-        return `Szép fogás! ${fish} akadt horogra, egy ${size} méretű példány. A példány ${measureText}, értéke ${coins} érme.`;
+      speak_caught_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' és ');
+        const cargo = used != null && capacity != null
+          ? ` A rakományban ${used} hal van a ${capacity} helyből.` : '';
+        return `Utolsó fogás. ${fish}${description ? `, ${description}` : ''}. ${coins} érmét ér.${cargo}`;
       },
-      speak_caught_special_noscore: (fish, kg, coins, length) => {
-        const measureText = length != null ? `${length} cm hosszú és ${kg} kg súlyú` : `hossza nem ismert, súlya ${kg} kg`;
-        return `Különleges fogás! ${fish} akadt horogra. A példány ${measureText}, értéke ${coins} érme.`;
+      speak_caught_special_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' és ');
+        const cargo = used != null && capacity != null
+          ? ` A rakományban ${used} hal van a ${capacity} helyből.` : '';
+        return `Utolsó fogás. ${fish}${description ? `, ${description}` : ''}. ${coins} érmét ér.${cargo}`;
       },
       vspeak_ready:      'A vízparton állsz felszerelt bottal. Döntsd előre a telefont a dobáshoz.',
       vspeak_ready_keyboard: 'A bot készen áll. A dobáshoz nyomd meg a felfelé nyilat.',
@@ -2002,13 +1996,17 @@ btn_story:        'Történet',
       vspeak_snapped:    'A zsinór nem bírta a feszességet és elszakadt. A hal elmenekült.',
       vspeak_caught:                (fish, size, score) => `Fogtál egy ${size} ${fish}t! Jelenlegi pontszám: ${score} hal.`,
       vspeak_caught_special:        (fish, score) => `Fantasztikus! Fogtál egy különleges ${fish}t! Jelenlegi pontszám: ${score} hal.`,
-      vspeak_caught_noscore: (fish, size, kg, coins, length) => {
-        const measureText = length != null ? `${length} cm hosszú és ${kg} kg súlyú` : `hossza nem ismert, súlya ${kg} kg`;
-        return `Fantasztikus fogás! ${fish} akadt horogra, egy ${size} méretű példány. A példány ${measureText}, értéke ${coins} érme.`;
+      vspeak_caught_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' és ');
+        const cargo = used != null && capacity != null
+          ? ` A rakományban ${used} hal van a ${capacity} helyből.` : '';
+        return `Utolsó fogás. ${fish}${description ? `, ${description}` : ''}. ${coins} érmét ér.${cargo}`;
       },
-      vspeak_caught_special_noscore: (fish, kg, coins, length) => {
-        const measureText = length != null ? `${length} cm hosszú és ${kg} kg súlyú` : `hossza nem ismert, súlya ${kg} kg`;
-        return `Fantasztikus különleges fogás! ${fish} akadt horogra. A példány ${measureText}, értéke ${coins} érme.`;
+      vspeak_caught_special_noscore: (fish, size, rarity, coins, used, capacity) => {
+        const description = [size, rarity].filter(Boolean).map(word => word.toLowerCase()).join(' és ');
+        const cargo = used != null && capacity != null
+          ? ` A rakományban ${used} hal van a ${capacity} helyből.` : '';
+        return `Utolsó fogás. ${fish}${description ? `, ${description}` : ''}. ${coins} érmét ér.${cargo}`;
       },
       vspeak_danger:     'Kritikus feszesség! Engedd a zsinórt, hogy ne szakadjon el.',
       vspeak_tension:    'A zsinór feszessége magas. Vigyázz, ne húzz túl erősen.',
@@ -2103,7 +2101,7 @@ btn_story:        'Történet',
         const size = data.size ? `, ${data.size} méretű` : '';
         const measures = [data.length ? `${data.length} hosszú` : '', data.weight ? `${data.weight} súlyú` : ''].filter(Boolean);
         const measureText = measures.length ? `, ${measures.join(' és ')}` : '';
-        let message = `Szép fogás! ${specimen} került horogra${size}${measureText}.`;
+        let message = `Utolsó fogás. ${specimen} került horogra${size}${measureText}.`;
         if (data.value !== '') message += ` ${data.value} érmét ér.`;
         if (data.location) message += ` A hal ${data.location} vizéből került elő.`;
         return message;
@@ -2115,7 +2113,7 @@ btn_story:        'Történet',
         const size = data.size ? `, ${data.size} méretű` : '';
         const measures = [data.length ? `${data.length} hosszú` : '', data.weight ? `${data.weight} súlyú` : ''].filter(Boolean);
         const measureText = measures.length ? `, ${measures.join(' és ')}` : '';
-        let message = `Szép fogás! ${specimen} került horogra${size}${measureText}.`;
+        let message = `Utolsó fogás. ${specimen} került horogra${size}${measureText}.`;
         if (data.points !== '' && data.score !== '') {
           message += ` Ez a fogás ${data.points} pontot ért, most ${data.score} pontnál jársz.`;
         } else if (data.points !== '') {
