@@ -66,10 +66,7 @@ const Game = (() => {
   let waitTimer        = null;
   let biteTimer        = null;
   let fishEls          = [];     // peixes decorativos de fundo
-  let _pulling         = false;  // sinalizado por pullFish(), lido pelo tensionLoop
-  let _pullGraceTicks  = 0;      // janela de tolerância após último pull
-  let _staticTicks     = 0;      // ticks consecutivos sem o jogador puxar
-  let _fishFatigue     = 0;      // acúmulo de cansaço por inércia do jogador
+  let _combatState     = FishingCombat.create();
   // ── Peixe ativo (física SVG) ───────────────────────────────────────────────
   let _activeFishEl    = null;   // elemento SVG do peixe ativo
   let _activeFishAnim  = null;   // requestAnimationFrame id
@@ -79,7 +76,8 @@ const Game = (() => {
   let _fishState       = 'idle'; // 'idle'|'approaching'|'retreating'|'biting'|'fighting'
   let _fishIndicatorPhase = null;
   let _fishIndicatorSide = null;
-  let _fishPullImpulse = 0;      // reação visual acumulada aos puxões do jogador
+  let _fishPullImpulse = 0;      // movimento visual do peixe em direção à isca ao puxar
+  let _fishReleaseImpulse = 0;   // movimento visual do peixe para longe ao aliviar a linha
   let _lureX           = 50;     // posição X da isca em % (referência para o peixe)
   let _lureY           = 20;     // posição Y da isca em % (referência)
   let _approachBeepCooldown = 0;
@@ -1136,16 +1134,23 @@ const Game = (() => {
           _activeFishX = _activeFishX * 0.97 + _lureX * 0.03;
           _activeFishY = _activeFishY * 0.97 + _lureY * 0.03;
 
-          // Cada puxão gera uma reação visual: o peixe se afasta da isca
-          // e o impulso desaparece gradualmente, sem alterar a física da tensão.
+          // Puxar aproxima o peixe; aliviar a linha deixa que ele ganhe distância.
           if (_fishPullImpulse > 0) {
-            const awayX = Math.abs(_activeFishX - _lureX) > 0.5
-              ? Math.sign(_activeFishX - _lureX) : fightDir;
-            const awayY = Math.abs(_activeFishY - _lureY) > 0.5
-              ? Math.sign(_activeFishY - _lureY) : 1;
-            _activeFishX += awayX * _fishPullImpulse * 0.08;
-            _activeFishY += awayY * _fishPullImpulse * 0.06;
+            const dx = _lureX - _activeFishX;
+            const dy = _lureY - _activeFishY;
+            const distance = Math.hypot(dx, dy) || 1;
+            _activeFishX += dx / distance * _fishPullImpulse * 0.08;
+            _activeFishY += dy / distance * _fishPullImpulse * 0.06;
             _fishPullImpulse = Math.max(0, _fishPullImpulse - 0.12);
+          }
+          if (_fishReleaseImpulse > 0) {
+            const dx = _activeFishX - _lureX;
+            const dy = _activeFishY - _lureY;
+            const distance = Math.hypot(dx, dy) || 1;
+            const escapeStrength = fishTired ? 0.3 : 1;
+            _activeFishX += dx / distance * _fishReleaseImpulse * 0.08 * escapeStrength;
+            _activeFishY += dy / distance * _fishReleaseImpulse * 0.06 * escapeStrength;
+            _fishReleaseImpulse = Math.max(0, _fishReleaseImpulse - 0.12);
           }
 
           _activeFishEl.style.transform = fightDir < 0 ? 'scaleX(-1)' : 'scaleX(1)';
@@ -1322,6 +1327,7 @@ const Game = (() => {
         currentFish      = null;
         fishTired        = false;
         _fishPullImpulse = 0;
+        _fishReleaseImpulse = 0;
         updateTensionBar();
         ui.tensionCont.classList.add('hidden');
         ui.lure.style.display  = 'none';
@@ -1414,14 +1420,10 @@ const Game = (() => {
         fishPull         = currentFish.pull;
         fishTired        = false;
         _fishPullImpulse = 0;
+        _fishReleaseImpulse = 0;
         _fishStrengthMult = 1.0;
         clearTimeout(recoveryTimer);
         recoveryTimer = null;
-        _pulling        = false;
-        _pullGraceTicks = 0;
-        _staticTicks    = 0;
-        _fishFatigue    = 0;
-
         _spawnActiveFish(currentFish);
         if (gameMode === 'free' && currentFish.freeBoss) {
           const bossState = FreeFishingSystem.getState();
@@ -1644,6 +1646,9 @@ const Game = (() => {
           releaseLine(1.2);
           _lureY = Math.min(80, _lureY + 0.2);
         } else {
+          // O estado neutro explícito termina uma ação de puxar/soltar mesmo
+          // quando a amostragem do sensor ou a tecla de retorno chega no tick.
+          FishingCombat.neutral(_combatState);
           Audio.setReelMode('neutral');
         }
         _updateLinePath();
@@ -1675,86 +1680,63 @@ const Game = (() => {
     }
   }
 
-  // ── Tensão ────────────────────────────────────────────────────────────────
-  let _pullProgress = 0;
-
+  // ── Tensão e dinâmica do combate ─────────────────────────────────────────
   function startTensionLoop() {
-    _pullProgress    = 0;
-    let _resistCooldown  = 0;
-    _staticTicks     = 0;
-    _fishFatigue     = 0;
-    _pulling         = false;
-    _pullGraceTicks  = 0;
-
+    _combatState = FishingCombat.create(10);
+    tension = _combatState.tension;
+    let resistCooldown = 0;
+    _fishStrengthMult = 1.0;
     tensionLoop = setInterval(() => {
       if (state !== 'REELING') { clearInterval(tensionLoop); return; }
 
-      // ── Força do peixe ─────────────────────────────────────────────────
-      // fishTired → mult cai para 0.3; ao recuperar, sobe gradualmente de volta a 1.0
       if (fishTired) {
         _fishStrengthMult = Math.max(0.3, _fishStrengthMult - 0.04);
       } else {
-        _fishStrengthMult = Math.min(1.0, _fishStrengthMult + 0.015); // ramp-up lento
+        _fishStrengthMult = Math.min(1.0, _fishStrengthMult + 0.015);
       }
-      const fishForce = fishPull * _fishStrengthMult;
-      const delta = fishForce * 0.05;
-      tension = Math.min(100, tension + delta);
 
-      if (fishPull >= 5 && delta > 0.2 && _resistCooldown <= 0 && _fishStrengthMult > 0.8) {
+      const result = FishingCombat.step(_combatState, {
+        fishPull,
+        strengthMultiplier: _fishStrengthMult,
+        stamina: currentFish.stamina ?? 15,
+        escapePatience: currentFish.escapePatience ?? 50,
+        fishTired,
+      });
+      tension = result.tension;
+
+      if (result.action === 'pull' && fishPull >= 5
+          && result.resistanceDelta > 0.2 && resistCooldown <= 0
+          && _fishStrengthMult > 0.8) {
         Audio.fishResist();
         Audio.setReelMode('neutral');
-        _resistCooldown = 8;
+        resistCooldown = 8;
       }
-      if (_resistCooldown > 0) _resistCooldown--;
+      if (resistCooldown > 0) resistCooldown--;
 
-      // ── Cansaço por inércia (linha estática com peixe lutando) ─────────
-      if (_pulling) {
-        // Jogador está puxando — zera inércia e não acumula cansaço
-        _staticTicks = 0;
-        _fishFatigue = 0;
-        _pulling = false; // reset até próximo pullFish()
-        _pullGraceTicks = 4; // janela de tolerância: 4 ticks (~480ms) após último pull
-      } else if (_pullGraceTicks > 0) {
-        // Ainda dentro da janela de graça — não penaliza
-        _pullGraceTicks--;
-      } else {
-        _staticTicks++;
-
-        // Peixe se debatendo e jogador parado → acumula fadiga
-        if (!fishTired && fishPull > 0) {
-          _fishFatigue++;
-          const stamina = currentFish.stamina ?? 15;
-          if (_fishFatigue >= stamina) {
-            _fishFatigue = 0;
-            fishTired = true;
-            Audio.fishTiredSound();
-            _sayControlKey('tired');
-            setLabel(I18n.t('state_tired', fishName(currentFish)));
-
-            // Timer de recuperação — se o jogador não aproveitar a janela
-            clearTimeout(recoveryTimer);
-            const recovMs = (currentFish.recovery ?? 5000) * A11y.timeScale();
-            recoveryTimer = setTimeout(() => {
-              if (state === 'REELING' && fishTired) {
-                fishTired = false;
-                Audio.fishRecoveredSound();
-                sayKey('recovered');
-                setLabel(I18n.t('state_reeling', fishName(currentFish)));
-              }
-            }, recovMs);
+      if (result.becameTired) {
+        fishTired = true;
+        Audio.fishTiredSound();
+        _sayControlKey('tired');
+        setLabel(I18n.t('state_tired', fishName(currentFish)));
+        clearTimeout(recoveryTimer);
+        const recovMs = (currentFish.recovery ?? 5000) * A11y.timeScale();
+        recoveryTimer = setTimeout(() => {
+          if (state === 'REELING' && fishTired) {
+            fishTired = false;
+            FishingCombat.resetFatigue(_combatState);
+            Audio.fishRecoveredSound();
+            sayKey('recovered');
+            setLabel(I18n.t('state_reeling', fishName(currentFish)));
           }
-        }
-
-        // Punição por inércia total — peixe perde a paciência e escapa
-        const patience = currentFish.escapePatience ?? 50;
-        if (_staticTicks >= patience) {
-          clearInterval(tensionLoop);
-          enterState('ESCAPED');
-          return;
-        }
+        }, recovMs);
       }
 
-      // ── Níveis de tensão ───────────────────────────────────────────────
+      if (result.escaped) {
+        clearInterval(tensionLoop);
+        enterState('ESCAPED');
+        return;
+      }
+
       if (tension > 85) {
         _vibrate(30);
         setTensionClass('tension-danger');
@@ -1776,7 +1758,7 @@ const Game = (() => {
         setTensionClass('tension-low');
       }
 
-      if (tension >= 100) { clearInterval(tensionLoop); enterState('SNAPPED'); return; }
+      if (result.snapped) { clearInterval(tensionLoop); enterState('SNAPPED'); return; }
       _updateLinePath();
       updateTensionBar();
     }, 120);
@@ -1785,12 +1767,11 @@ const Game = (() => {
   function pullFish(amount) {
     if (state !== 'REELING') return;
     Audio.setReelMode('pulling');
-    _pullProgress += amount;
-    _pulling = true; // sinaliza ao tensionLoop que houve ação neste tick
+    FishingCombat.pull(_combatState, amount);
+    tension = _combatState.tension;
     _fishPullImpulse = Math.min(12, _fishPullImpulse + amount * 2.5);
-    tension = Math.min(100, tension + amount * 0.4);
     updateTensionBar();
-    if (_pullProgress >= currentFish.pullNeeded) {
+    if (_combatState.progress >= currentFish.pullNeeded) {
       clearInterval(tensionLoop);
       enterState('CAUGHT');
     }
@@ -1799,8 +1780,9 @@ const Game = (() => {
   function releaseLine(amount) {
     if (state !== 'REELING') return;
     Audio.setReelMode('releasing');
-    tension = Math.max(0, tension - amount * 1.5);
-    _pullProgress = Math.max(0, _pullProgress - amount * 0.3);
+    FishingCombat.release(_combatState, amount, fishTired ? 0.3 : 1);
+    tension = _combatState.tension;
+    _fishReleaseImpulse = Math.min(12, _fishReleaseImpulse + amount * 2.5);
     updateTensionBar();
   }
 
