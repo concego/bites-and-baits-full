@@ -1544,9 +1544,9 @@ const Game = (() => {
               setTimeout(() => speak(t('free_level_up', freeResult.level)), 900);
             }
           } else if (currentFish.special) {
-            sayCatchKey('caught_special_noscore', fishName(currentFish), kg, coins);
+            sayCatchKey('caught_special_noscore', fishName(currentFish), kg, coins, specimen?.length);
           } else {
-            sayCatchKey('caught_noscore', fishName(currentFish), sizeDesc, kg, coins);
+            sayCatchKey('caught_noscore', fishName(currentFish), sizeDesc, kg, coins, specimen?.length);
           }
         }
 

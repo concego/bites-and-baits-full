@@ -249,6 +249,35 @@ const I18n = (() => {
       last_catch_location_label: 'Local',
       last_catch_score_label: 'Pontuação',
       last_catch_hint:    'Pressione F no PC para ler estes dados novamente.',
+      last_catch_readout_story: data => {
+        const measures = [data.length, data.weight].filter(Boolean);
+        const size = data.size ? ` de porte ${data.size.toLowerCase()}` : '';
+        const measureText = measures.length ? `, com ${measures.join(' e ')}` : '';
+        const rarity = { common: 'comum', uncommon: 'incomum', rare: 'rara', legendary: 'lendária' }[data.rarity];
+        let message = `Boa pescaria! Você capturou um exemplar de ${data.fish}${size}${measureText}.`;
+        if (data.rarity === 'trophy') message += ' Que achado: um peixe-troféu!';
+        else if (rarity) message += ` Essa é uma captura ${rarity}.`;
+        if (data.value !== '') message += ` Essa captura vale ${data.value} moedas.`;
+        if (data.location) message += ` Você pescou esse exemplar em ${data.location}.`;
+        return message;
+      },
+      last_catch_readout_free: data => {
+        const measures = [data.length, data.weight].filter(Boolean);
+        const size = data.size ? ` de porte ${data.size.toLowerCase()}` : '';
+        const measureText = measures.length ? `, com ${measures.join(' e ')}` : '';
+        const rarity = { common: 'comum', uncommon: 'incomum', rare: 'rara', legendary: 'lendária' }[data.rarity];
+        let message = `Boa pescaria! Você capturou um exemplar de ${data.fish}${size}${measureText}.`;
+        if (data.rarity === 'trophy') message += ' Que achado: um peixe-troféu!';
+        else if (rarity) message += ` Essa é uma captura ${rarity}.`;
+        if (data.points !== '' && data.score !== '') {
+          message += ` Essa captura rendeu ${data.points} pontos. Sua pontuação acumulada agora é ${data.score} pontos.`;
+        } else if (data.points !== '') {
+          message += ` Essa captura rendeu ${data.points} pontos.`;
+        } else if (data.score !== '') {
+          message += ` Sua pontuação acumulada é ${data.score} pontos.`;
+        }
+        return message;
+      },
       btn_instructions: 'Como jogar',
       credits_by:       'Por',
       credits_brand:    'Eu Concego Jogar',
@@ -560,8 +589,14 @@ const I18n = (() => {
       speak_snapped:    'Linha arrebentou!',
       speak_caught:              (fish, size, score) => `${fish}! ${size}. ${score} peixes.`,
       speak_caught_special:      (fish, score) => `${fish}! Especial! ${score} peixes.`,
-      speak_caught_noscore:      (fish, size, kg, coins) => `${fish}! ${size}. ${kg} kg. Vale ${coins} moedas.`,
-      speak_caught_special_noscore: (fish, kg, coins) => `${fish}! Especial! ${kg} kg. Vale ${coins} moedas.`,
+      speak_caught_noscore: (fish, size, kg, coins, length) => {
+        const lengthText = length != null ? `${length} centímetros` : 'comprimento não informado';
+        return `Boa pescaria! Você capturou um exemplar de porte ${size}: ${fish}. Ele mede ${lengthText}, pesa ${kg} quilos e vale ${coins} moedas.`;
+      },
+      speak_caught_special_noscore: (fish, kg, coins, length) => {
+        const lengthText = length != null ? `${length} centímetros` : 'comprimento não informado';
+        return `Boa pescaria! Você capturou um peixe especial: ${fish}. Ele mede ${lengthText}, pesa ${kg} quilos e vale ${coins} moedas.`;
+      },
       speak_danger:     'Perigo! Solte!',
       speak_tension:    'Tensão alta!',
       speak_no_sensor:  'Permissão de sensores negada. Usando teclado para teste.',
@@ -586,8 +621,14 @@ const I18n = (() => {
       vspeak_snapped:    'A linha não aguentou a tensão e arrebentou. O peixe fugiu.',
       vspeak_caught:                (fish, size, score) => `Você capturou um ${fish} ${size}! Pontuação atual: ${score} peixes.`,
       vspeak_caught_special:        (fish, score) => `Incrível! Você capturou um ${fish} especial! Pontuação atual: ${score} peixes.`,
-      vspeak_caught_noscore:        (fish, size, kg, coins) => `Você capturou um ${fish} ${size}! Peso: ${kg} kg. Vai para o inventário por ${coins} moedas.`,
-      vspeak_caught_special_noscore: (fish, kg, coins) => `Incrível! Você capturou um ${fish} especial! Peso: ${kg} kg. Vale ${coins} moedas!`,
+      vspeak_caught_noscore: (fish, size, kg, coins, length) => {
+        const lengthText = length != null ? `${length} centímetros` : 'comprimento não informado';
+        return `Boa pescaria! Você capturou um exemplar de porte ${size}: ${fish}. Ele mede ${lengthText}, pesa ${kg} quilos e vale ${coins} moedas.`;
+      },
+      vspeak_caught_special_noscore: (fish, kg, coins, length) => {
+        const lengthText = length != null ? `${length} centímetros` : 'comprimento não informado';
+        return `Boa pescaria! Você capturou um peixe especial: ${fish}. Ele mede ${lengthText}, pesa ${kg} quilos e vale ${coins} moedas.`;
+      },
       vspeak_danger:     'Tensão crítica! Solte um pouco a linha para evitar que ela arrebente.',
       vspeak_tension:    'A tensão da linha está alta. Cuidado para não puxar demais.',
 
@@ -908,6 +949,43 @@ const I18n = (() => {
       last_catch_location_label: 'Location',
       last_catch_score_label: 'Score',
       last_catch_hint:    'Press F on PC to read these details again.',
+      last_catch_readout_story: data => {
+        const measures = [data.length, data.weight].filter(Boolean);
+        const specimen = data.size ? `a ${data.size} specimen of ${data.fish}` : data.fish;
+        const measureText = measures.length ? `, measuring ${measures.join(' and ')}` : '';
+        const rarity = { common: 'common', uncommon: 'uncommon', rare: 'rare', legendary: 'legendary' }[data.rarity];
+        let message = `Great catch! You landed ${specimen}${measureText}.`;
+        if (data.rarity === 'trophy') message += ' What a find—a trophy fish!';
+        else if (rarity) message += ` This is a ${rarity} catch.`;
+        if (data.value !== '') message += ` This catch is worth ${data.value} coins.`;
+        if (data.location) message += ` You caught it at ${data.location}.`;
+        return message;
+      },
+      last_catch_readout_free: data => {
+        const measures = [data.length, data.weight].filter(Boolean);
+        const specimen = data.size ? `a ${data.size} specimen of ${data.fish}` : data.fish;
+        const measureText = measures.length ? `, measuring ${measures.join(' and ')}` : '';
+        const rarity = { common: 'common', uncommon: 'uncommon', rare: 'rare', legendary: 'legendary' }[data.rarity];
+        let message = `Great catch! You landed ${specimen}${measureText}.`;
+        if (data.rarity === 'trophy') message += ' What a find—a trophy fish!';
+        else if (rarity) message += ` This is a ${rarity} catch.`;
+        if (data.points !== '' && data.score !== '') {
+          message += ` This catch earned ${data.points} points. Your total score is now ${data.score} points.`;
+        } else if (data.points !== '') {
+          message += ` This catch earned ${data.points} points.`;
+        } else if (data.score !== '') {
+          message += ` Your total score is ${data.score} points.`;
+        }
+        return message;
+      },
+      last_catch_readout_caught: fish => `You caught a fish: ${fish}.`,
+      last_catch_readout_size: size => `It is a ${size} specimen.`,
+      last_catch_readout_length: length => `It measures ${length}.`,
+      last_catch_readout_weight: weight => `It weighs ${weight}.`,
+      last_catch_readout_rarity: rarity => `This catch is classified as ${rarity}.`,
+      last_catch_readout_value: value => `This catch is worth ${value} in Story mode.`,
+      last_catch_readout_location: location => `You caught this fish at ${location}.`,
+      last_catch_readout_score: score => `Your accumulated score is ${score} points.`,
       btn_instructions: 'How to play',
       credits_by:       'By',
       credits_brand:    'Eu Concego Jogar',
@@ -1214,8 +1292,14 @@ const I18n = (() => {
       speak_snapped:    'Line snapped!',
       speak_caught:              (fish, size, score) => `${fish}! ${size}. ${score} fish.`,
       speak_caught_special:      (fish, score) => `${fish}! Special! ${score} fish.`,
-      speak_caught_noscore:      (fish, size, kg, coins) => `${fish}! ${size}. ${kg} kg. Worth ${coins} coins.`,
-      speak_caught_special_noscore: (fish, kg, coins) => `${fish}! Special! ${kg} kg. Worth ${coins} coins.`,
+      speak_caught_noscore: (fish, size, kg, coins, length) => {
+        const lengthText = length != null ? `${length} centimeters` : 'length not provided';
+        return `Great catch! You landed a ${size} ${fish}. It measures ${lengthText}, weighs ${kg} kilograms, and is worth ${coins} coins.`;
+      },
+      speak_caught_special_noscore: (fish, kg, coins, length) => {
+        const lengthText = length != null ? `${length} centimeters` : 'length not provided';
+        return `Great catch! You landed a special ${fish}. It measures ${lengthText}, weighs ${kg} kilograms, and is worth ${coins} coins.`;
+      },
       speak_danger:     'Danger! Release!',
       speak_tension:    'High tension!',
       speak_no_sensor:  'Sensor permission denied. Using keyboard fallback.',
@@ -1240,8 +1324,14 @@ const I18n = (() => {
       vspeak_snapped:    'The line couldn\'t hold the tension and snapped. The fish got away.',
       vspeak_caught:                (fish, size, score) => `You caught a ${size} ${fish}! Current score: ${score} fish.`,
       vspeak_caught_special:        (fish, score) => `Amazing! You caught a special ${fish}! Current score: ${score} fish.`,
-      vspeak_caught_noscore:        (fish, size, kg, coins) => `You caught a ${size} ${fish}! Weight: ${kg} kg. Goes to inventory for ${coins} coins.`,
-      vspeak_caught_special_noscore: (fish, kg, coins) => `Amazing! You caught a special ${fish}! Weight: ${kg} kg. Worth ${coins} coins!`,
+      vspeak_caught_noscore: (fish, size, kg, coins, length) => {
+        const lengthText = length != null ? `${length} centimeters` : 'length not provided';
+        return `Great catch! You landed a ${size} ${fish}. It measures ${lengthText}, weighs ${kg} kilograms, and is worth ${coins} coins.`;
+      },
+      vspeak_caught_special_noscore: (fish, kg, coins, length) => {
+        const lengthText = length != null ? `${length} centimeters` : 'length not provided';
+        return `Great catch! You landed a special ${fish}. It measures ${lengthText}, weighs ${kg} kilograms, and is worth ${coins} coins.`;
+      },
       vspeak_danger:     'Critical tension! Ease up on the line to avoid snapping it.',
       vspeak_tension:    'The line tension is high. Be careful not to pull too hard.',
 
@@ -1450,9 +1540,9 @@ const I18n = (() => {
       speak_no_sensor:  'Az érzékelők engedélyezése sikertelen. Billentyűzetes vezérlés használata.',
 
       // Méretleírások
-      size_tiny:   'apró',
-      size_small:  'kicsi',
-      size_medium: 'közepes',
+      size_tiny:   'kicsi',
+      size_small:  'közepes',
+      size_medium: 'nagy',
       size_large:  'hatalmas',
 
       // Halnevek
@@ -1849,8 +1939,14 @@ btn_story:        'Történet',
       bait_no_stock:    'Nincs csali! Nyisd meg a Felszerelést a cseréhez.',
       speak_escaped_reel: 'Túl lassú. A hal elment.',
       speak_recovered:  'Visszanyerte az erejét! Figyelj a feszességre!',
-      speak_caught_noscore:      (fish, size, kg, coins) => `${fish}! ${size}. ${kg} kg. Értéke ${coins} érem.`,
-      speak_caught_special_noscore: (fish, kg, coins) => `${fish}! Különleges! ${kg} kg. Értéke ${coins} érem.`,
+      speak_caught_noscore: (fish, size, kg, coins, length) => {
+        const measureText = length != null ? `${length} cm hosszú és ${kg} kg súlyú` : `hossza nem ismert, súlya ${kg} kg`;
+        return `Szép fogás! ${fish} akadt horogra, egy ${size} méretű példány. A példány ${measureText}, értéke ${coins} érme.`;
+      },
+      speak_caught_special_noscore: (fish, kg, coins, length) => {
+        const measureText = length != null ? `${length} cm hosszú és ${kg} kg súlyú` : `hossza nem ismert, súlya ${kg} kg`;
+        return `Különleges fogás! ${fish} akadt horogra. A példány ${measureText}, értéke ${coins} érme.`;
+      },
       vspeak_ready:      'A vízparton állsz felszerelt bottal. Döntsd előre a telefont a dobáshoz.',
       vspeak_ready_keyboard: 'A bot készen áll. A dobáshoz nyomd meg a felfelé nyilat.',
       vspeak_waiting:    'A csali a vízben van. Várd a halat anélkül, hogy megdöntenéd a telefont.',
@@ -1870,8 +1966,14 @@ btn_story:        'Történet',
       vspeak_snapped:    'A zsinór nem bírta a feszességet és elszakadt. A hal elmenekült.',
       vspeak_caught:                (fish, size, score) => `Fogtál egy ${size} ${fish}t! Jelenlegi pontszám: ${score} hal.`,
       vspeak_caught_special:        (fish, score) => `Fantasztikus! Fogtál egy különleges ${fish}t! Jelenlegi pontszám: ${score} hal.`,
-      vspeak_caught_noscore:        (fish, size, kg, coins) => `Fogtál egy ${size} ${fish}t! Súly: ${kg} kg. Leltárba kerül ${coins} éremért.`,
-      vspeak_caught_special_noscore: (fish, kg, coins) => `Fantasztikus! Fogtál egy különleges ${fish}t! Súly: ${kg} kg. Értéke ${coins} érem!`,
+      vspeak_caught_noscore: (fish, size, kg, coins, length) => {
+        const measureText = length != null ? `${length} cm hosszú és ${kg} kg súlyú` : `hossza nem ismert, súlya ${kg} kg`;
+        return `Fantasztikus fogás! ${fish} akadt horogra, egy ${size} méretű példány. A példány ${measureText}, értéke ${coins} érme.`;
+      },
+      vspeak_caught_special_noscore: (fish, kg, coins, length) => {
+        const measureText = length != null ? `${length} cm hosszú és ${kg} kg súlyú` : `hossza nem ismert, súlya ${kg} kg`;
+        return `Fantasztikus különleges fogás! ${fish} akadt horogra. A példány ${measureText}, értéke ${coins} érme.`;
+      },
       vspeak_danger:     'Kritikus feszesség! Engedd a zsinórt, hogy ne szakadjon el.',
       vspeak_tension:    'A zsinór feszessége magas. Vigyázz, ne húzz túl erősen.',
       fish_cara:                    'Kár-sügér',
@@ -1958,6 +2060,47 @@ btn_story:        'Történet',
       last_catch_location_label: 'Helyszín',
       last_catch_score_label: 'Pontszám',
       last_catch_hint:    'Nyomja meg az F billentyűt a számítógépen az adatok újbóli felolvasásához.',
+      last_catch_readout_story: data => {
+        const measures = [];
+        if (data.length) measures.push(`${data.length} hosszú`);
+        if (data.weight) measures.push(`${data.weight} súlyú`);
+        const measureText = measures.length ? ` ${measures.join(' és ')}.` : '';
+        const size = data.size ? `, egy ${data.size} méretű példány` : '';
+        const rarity = { common: 'gyakori', uncommon: 'nem gyakori', rare: 'ritka', legendary: 'legendás' }[data.rarity];
+        let message = `Szép fogás! ${data.fish} akadt horogra${size}.${measureText}`;
+        if (data.rarity === 'trophy') message += ' Micsoda fogás: egy trófeahal!';
+        else if (rarity) message += ` Ez egy ${rarity} fogás.`;
+        if (data.value !== '') message += ` Ez a fogás ${data.value} érmét ér.`;
+        if (data.location) message += ` Itt fogtad: ${data.location}.`;
+        return message;
+      },
+      last_catch_readout_free: data => {
+        const measures = [];
+        if (data.length) measures.push(`${data.length} hosszú`);
+        if (data.weight) measures.push(`${data.weight} súlyú`);
+        const measureText = measures.length ? ` ${measures.join(' és ')}.` : '';
+        const size = data.size ? `, egy ${data.size} méretű példány` : '';
+        const rarity = { common: 'gyakori', uncommon: 'nem gyakori', rare: 'ritka', legendary: 'legendás' }[data.rarity];
+        let message = `Szép fogás! ${data.fish} akadt horogra${size}.${measureText}`;
+        if (data.rarity === 'trophy') message += ' Micsoda fogás: egy trófeahal!';
+        else if (rarity) message += ` Ez egy ${rarity} fogás.`;
+        if (data.points !== '' && data.score !== '') {
+          message += ` Ez a fogás ${data.points} pontot ért. Az összpontszámod most ${data.score} pont.`;
+        } else if (data.points !== '') {
+          message += ` Ez a fogás ${data.points} pontot ért.`;
+        } else if (data.score !== '') {
+          message += ` Az összpontszámod ${data.score} pont.`;
+        }
+        return message;
+      },
+      last_catch_readout_caught: fish => `Sikerült fognod egy halat: ${fish}.`,
+      last_catch_readout_size: size => `Ez a példány ${size} méretű.`,
+      last_catch_readout_length: length => `Hossza ${length}.`,
+      last_catch_readout_weight: weight => `Súlya ${weight}.`,
+      last_catch_readout_rarity: rarity => `Ez a fogás ${rarity} minősítést kapott.`,
+      last_catch_readout_value: value => `Történet módban ${value} az értéke.`,
+      last_catch_readout_location: location => `Ezt a halat itt fogtad: ${location}.`,
+      last_catch_readout_score: score => `Az összesített pontszámod jelenleg ${score} pont.`,
       travel_go:          'Mehet',
       travel_go_to:       'Mehet ide',
       travel_need_boat:   'Csónak szükséges',

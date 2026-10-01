@@ -7,9 +7,11 @@
 
 const LastCatchView = (() => {
   const $ = id => document.getElementById(id);
+  let _lastCatchInfo = null;
 
   function render(info) {
     if (!info) return;
+    _lastCatchInfo = info;
     const fish = FISH_CATALOG[info.fishId];
     const map = info.mapId ? MAP_CATALOG[info.mapId] : null;
     const zone = map && info.zoneId
@@ -42,21 +44,21 @@ const LastCatchView = (() => {
   }
 
   function summaryText() {
-    const parts = [I18n.t('last_catch_title')];
-    const add = (labelKey, elementId, rowId) => {
-      const row = $(rowId);
-      const value = $(elementId)?.textContent?.trim();
-      if (value && !row?.hidden) parts.push(`${I18n.t(labelKey)}: ${value}`);
+    const value = id => $(id)?.textContent?.trim() || '';
+    const info = _lastCatchInfo || {};
+    const data = {
+      fish: value('last-catch-fish'),
+      size: value('last-catch-size'),
+      length: value('last-catch-length'),
+      weight: value('last-catch-weight'),
+      rarity: info.specimenRarity || '',
+      value: info.value != null ? info.value : '',
+      location: value('last-catch-location'),
+      points: info.points != null ? info.points : '',
+      score: value('last-catch-score'),
     };
-    add('last_catch_fish_label', 'last-catch-fish', 'last-catch-fish-row');
-    add('last_catch_size_label', 'last-catch-size', 'last-catch-size-row');
-    add('last_catch_weight_label', 'last-catch-weight', 'last-catch-weight-row');
-    add('last_catch_length_label', 'last-catch-length', 'last-catch-length-row');
-    add('last_catch_specimen_rarity_label', 'last-catch-specimen-rarity', 'last-catch-specimen-rarity-row');
-    add('last_catch_value_label', 'last-catch-value', 'last-catch-value-row');
-    add('last_catch_location_label', 'last-catch-location', 'last-catch-location-row');
-    add('last_catch_score_label', 'last-catch-score', 'last-catch-score-row');
-    return parts.join('. ');
+    const key = info.mode === 'free' ? 'last_catch_readout_free' : 'last_catch_readout_story';
+    return I18n.t(key, data);
   }
 
   return { render, summaryText };
