@@ -3,8 +3,15 @@ const CharacterVisualView = (() => {
   function readAppearance({ categories, getElement }) {
     const appearance = {};
     categories.forEach(category => {
-      const select = getElement(`character-visual-${category.key}`);
-      appearance[category.key] = select ? select.value : '';
+      const control = getElement(`character-visual-${category.key}`);
+      if (control) {
+        appearance[category.key] = control.value;
+        return;
+      }
+      const selected = document.querySelector(
+        `input[type="radio"][name="character-visual-${category.key}"]:checked`
+      );
+      appearance[category.key] = selected ? selected.value : '';
     });
     return appearance;
   }
@@ -85,61 +92,65 @@ const CharacterVisualView = (() => {
     target.appendChild(list);
   }
 
-  function updateOutfitDetails({ target, categories, appearance, lang, translate }) {
-    if (!target) return;
-    target.innerHTML = '';
-    ['arrivalOutfit', 'fishingOutfit'].forEach(categoryKey => {
-      const category = categories.find(item => item.key === categoryKey);
-      if (!category) return;
-      const option = category.options.find(item => item.value === appearance[categoryKey]);
-      const block = document.createElement('article');
-      block.className = 'character-outfit-detail';
-      const title = document.createElement('h4');
-      title.textContent = option
-        ? `${characterVisualLabel(category, lang)}: ${characterVisualLabel(option, lang)}`
-        : `${characterVisualLabel(category, lang)}: ${translate('character_visual_placeholder')}`;
-      block.appendChild(title);
+  function appendOutfitChoices({ fieldset, category, appearance, lang, translate, onChange }) {
+    const groupName = `character-visual-${category.key}`;
+    category.options.forEach((option, index) => {
+      const choice = document.createElement('div');
+      choice.className = 'character-outfit-choice';
 
-      const items = starterSetItems(categoryKey, option);
-      if (items.length) {
-        appendPieceList(block, items, lang);
-      } else {
-        const description = document.createElement('p');
-        description.textContent = option
-          ? characterVisualOptionDescription(option, categoryKey, lang, category.options, translate)
-          : translate('character_outfit_not_selected');
-        block.appendChild(description);
-      }
-      target.appendChild(block);
-    });
-  }
+      const label = document.createElement('label');
+      label.className = 'character-outfit-option';
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.id = `${groupName}-${index + 1}`;
+      radio.name = groupName;
+      radio.value = option.value;
+      radio.required = true;
+      radio.checked = appearance[category.key] === option.value;
+      const optionName = document.createElement('span');
+      optionName.textContent = characterVisualLabel(option, lang);
+      label.appendChild(radio);
+      label.appendChild(optionName);
+      choice.appendChild(label);
 
-  function updateOutfitCatalog({ categories, lang, translate }) {
-    [
-      ['arrivalOutfit', 'character-arrival-outfit-catalog'],
-      ['fishingOutfit', 'character-fishing-outfit-catalog'],
-    ].forEach(([categoryKey, listId]) => {
-      const list = document.getElementById(listId);
-      const category = categories.find(item => item.key === categoryKey);
-      if (!list || !category) return;
-      list.innerHTML = '';
-      category.options.forEach(option => {
-        const entry = document.createElement('li');
-        const name = document.createElement('strong');
-        name.textContent = characterVisualLabel(option, lang);
-        entry.appendChild(name);
-        const items = starterSetItems(categoryKey, option);
-        if (items.length) {
-          appendPieceList(entry, items, lang);
-        } else {
-          const description = document.createElement('span');
-          description.textContent = characterVisualOptionDescription(
-            option, categoryKey, lang, category.options, translate
-          );
-          entry.appendChild(description);
-        }
-        list.appendChild(entry);
+      const detailsButton = document.createElement('button');
+      detailsButton.type = 'button';
+      detailsButton.className = 'btn-secondary character-outfit-description-button';
+      detailsButton.id = `${groupName}-description-button-${index + 1}`;
+      detailsButton.textContent = translate('character_outfit_view_description');
+      const details = document.createElement('div');
+      details.className = 'character-outfit-description';
+      details.id = `${groupName}-description-${index + 1}`;
+      details.hidden = true;
+      details.setAttribute('role', 'region');
+      details.setAttribute('aria-labelledby', detailsButton.id);
+      appendPieceList(details, starterSetItems(category.key, option), lang);
+      detailsButton.setAttribute('aria-controls', details.id);
+      detailsButton.setAttribute('aria-expanded', 'false');
+      detailsButton.setAttribute('aria-label',
+        `${detailsButton.textContent} — ${characterVisualLabel(option, lang)}`);
+      detailsButton.addEventListener('click', () => {
+        const expanded = detailsButton.getAttribute('aria-expanded') === 'true';
+        const nextExpanded = !expanded;
+        details.hidden = !nextExpanded;
+        detailsButton.setAttribute('aria-expanded', String(nextExpanded));
+        const labelKey = nextExpanded
+          ? 'character_outfit_hide_description'
+          : 'character_outfit_view_description';
+        detailsButton.textContent = translate(labelKey);
+        detailsButton.setAttribute('aria-label',
+          `${detailsButton.textContent} — ${characterVisualLabel(option, lang)}`);
       });
+      choice.appendChild(detailsButton);
+      choice.appendChild(details);
+
+      radio.addEventListener('change', () => {
+        document.querySelectorAll(`input[name="${groupName}"]`).forEach(input => {
+          input.removeAttribute('aria-invalid');
+        });
+        onChange();
+      });
+      fieldset.appendChild(choice);
     });
   }
 
@@ -157,11 +168,16 @@ const CharacterVisualView = (() => {
     summary.textContent = parts.join('. ') + '.';
   }
 
-  function open({ fields, summary, outfitDetails, preview, character, categories, lang, translate, getElement }) {
+  function open({ fields, summary, preview, character, categories, lang, translate, getElement }) {
     if (!fields) return;
     const appearance = character.appearance || {};
     fields.innerHTML = '';
-    updateOutfitCatalog({ categories, lang, translate });
+
+    function handleAppearanceChange() {
+      const selected = readAppearance({ categories, getElement });
+      updateSummary({ summary, categories, appearance: selected, lang, translate });
+      renderAvatar({ target: preview, character, appearanceOverride: selected });
+    }
 
     categories.forEach(category => {
       const fieldset = document.createElement('fieldset');
@@ -169,6 +185,14 @@ const CharacterVisualView = (() => {
       const legend = document.createElement('legend');
       legend.textContent = characterVisualLabel(category, lang);
       fieldset.appendChild(legend);
+
+      if (['arrivalOutfit', 'fishingOutfit'].includes(category.key)) {
+        fieldset.classList.add('character-outfit-field');
+        appendOutfitChoices({ fieldset, category, appearance, lang, translate, onChange: handleAppearanceChange });
+        fields.appendChild(fieldset);
+        return;
+      }
+
       const select = document.createElement('select');
       select.id = `character-visual-${category.key}`;
       select.name = category.key;
@@ -189,26 +213,22 @@ const CharacterVisualView = (() => {
       description.className = 'character-visual-option-description';
       description.id = `character-visual-${category.key}-description`;
       description.hidden = true;
-      const isOutfit = ['arrivalOutfit', 'fishingOutfit'].includes(category.key);
       const hasDescription = category.options.some(option =>
         characterVisualOptionDescription(option, category.key, lang, category.options, translate)
       );
-      if (hasDescription && !isOutfit) select.setAttribute('aria-describedby', description.id);
+      if (hasDescription) select.setAttribute('aria-describedby', description.id);
       updateOptionDescription({ select, description, category, lang });
       select.addEventListener('change', () => {
         select.removeAttribute('aria-invalid');
         updateOptionDescription({ select, description, category, lang });
-        const selected = readAppearance({ categories, getElement });
-        updateOutfitDetails({ target: outfitDetails, categories, appearance: selected, lang, translate });
-        updateSummary({ summary, categories, appearance: selected, lang, translate });
-        renderAvatar({ target: preview, character, appearanceOverride: selected });
+        handleAppearanceChange();
       });
       fieldset.appendChild(select);
-      if (hasDescription && !isOutfit) fieldset.appendChild(description);
+      if (hasDescription) fieldset.appendChild(description);
       fields.appendChild(fieldset);
     });
+
     const selected = readAppearance({ categories, getElement });
-    updateOutfitDetails({ target: outfitDetails, categories, appearance: selected, lang, translate });
     updateSummary({ summary, categories, appearance: selected, lang, translate });
     renderAvatar({ target: preview, character, appearanceOverride: selected });
   }
@@ -217,8 +237,6 @@ const CharacterVisualView = (() => {
     readAppearance,
     renderAvatar,
     updateSummary,
-    updateOutfitDetails,
-    updateOutfitCatalog,
     describeStarterSet,
     open,
   };

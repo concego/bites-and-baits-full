@@ -187,7 +187,6 @@ const Game = (() => {
       characterVisualFormError: $('character-visual-form-error'),
       characterRandomize: $('btn-character-randomize'),
       characterVisualSummary: $('character-visual-summary'),
-      characterOutfitDetails: $('character-outfit-details-content'),
       characterAvatarPreview: $('character-avatar-preview'),
       characterAvatar: $('character-avatar'),
       openingSceneVisual: $('opening-scene-visual'),
@@ -807,9 +806,16 @@ const Game = (() => {
     const categories = getCharacterVisualCategories(gender);
     const missing = categories.filter(category => !appearance[category.key]);
     if (missing.length) {
-      missing.forEach(category => $(`character-visual-${category.key}`)?.setAttribute('aria-invalid', 'true'));
+      missing.forEach(category => {
+        const select = $(`character-visual-${category.key}`);
+        const radio = document.querySelector(`input[name="character-visual-${category.key}"]`);
+        (select || radio)?.setAttribute('aria-invalid', 'true');
+      });
       speak(t('character_visual_error'));
-      $(`character-visual-${missing[0].key}`)?.focus();
+      const firstKey = missing[0].key;
+      const firstControl = $(`character-visual-${firstKey}`)
+        || document.querySelector(`input[name="character-visual-${firstKey}"]`);
+      firstControl?.focus();
       return;
     }
     Character.confirmIdentity(name, gender);
@@ -823,7 +829,6 @@ const Game = (() => {
     CharacterVisualView.open({
       fields: ui.characterVisualFields,
       summary: ui.characterVisualSummary,
-      outfitDetails: ui.characterOutfitDetails,
       preview: ui.characterAvatarPreview,
       character: current,
       categories: getCharacterVisualCategories(ui.characterVisualGender?.value || current.genderProfile || 'neutral'),
@@ -876,11 +881,19 @@ const Game = (() => {
     }
     _updateRandomNameButtons();
     _visualCategories().forEach(category => {
-      const select = $(`character-visual-${category.key}`);
-      if (!select || !category.options.length) return;
+      if (!category.options.length) return;
       const option = category.options[Math.floor(Math.random() * category.options.length)];
-      select.value = option.value;
-      select.dispatchEvent(new Event('change', { bubbles: true }));
+      const select = $(`character-visual-${category.key}`);
+      if (select) {
+        select.value = option.value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        return;
+      }
+      const radio = Array.from(document.querySelectorAll(`input[name="character-visual-${category.key}"]`))
+        .find(input => input.value === option.value);
+      if (!radio) return;
+      radio.checked = true;
+      radio.dispatchEvent(new Event('change', { bubbles: true }));
     });
     speak(t('character_randomized'));
   }
