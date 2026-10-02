@@ -125,7 +125,7 @@ check(Inventory.getClothing().length === 3, 'legacy migration is idempotent and 
 JSON.stringify({items:CLOTHING_CATALOG.length, garmentModels:16, arrivalProducts:CLOTHING_CATALOG.filter(function(i){return i.modes.includes('arrival');}).length, fishingProducts:CLOTHING_CATALOG.filter(function(i){return i.modes.includes('fishing');}).length, dailyArrivalModels:dayOneArrival.length, dailyFishingModels:dayOneFishing.length, dailyColorRotation:true, starterSets:10, freeStarter:true, purchaseDeducted:20, duplicateNotCharged:true, insufficientProtected:true, persistence:true, legacyMigration:true, equipBothContexts:true, equippedChangesPlayerAvatar:true, npcUnaffected:true});
 '''
 result = json.loads(dukpy.evaljs(js))
-# Verify the page exposes the route, accessible controls, live feedback, and no quest wiring.
+# Verify the page exposes the route, accessible controls, live feedback, and the quest's shop prerequisite.
 html = (root / 'index.html').read_text()
 game = (root / 'game.js').read_text()
 for token in ('btn-hub-clothing-shop', 'screen-clothing-shop', 'clothing-mode', 'clothing-shop-feedback', 'clothing-shop-rotation-note', 'btn-clothing-shop-people', 'clothing-stock.js', 'inv-tab-clothing', 'inv-clothing-mode', 'inv-clothing-list'):
@@ -139,7 +139,8 @@ assert 'aria-live="assertive"' in html and 'id="inv-feedback"' in html, 'invento
 player_text = (root / 'i18n.js').read_text() + shop_view + game
 for secret in ('Mãe de Dani', "Dani's mother", 'Dani is Marta', 'Dani az anyja'):
     assert secret not in player_text, f'Marta/Dani relationship must stay hidden before the quest: {secret}'
-assert "id: 'dani'" not in game, 'Dani quest/person should remain unimplemented'
+assert "id: 'dani'" in game and 'DaniQuest.canMeet()' in game, 'Dani appears only behind the quest prerequisite gate'
+assert 'typeof ClothingShopView !== \'undefined\'' in (root / 'dani-quest.js').read_text(), 'Dani availability requires the clothing shop feature'
 i18n = (root / 'i18n.js').read_text() + r'''
 var required = ['btn_clothing_shop_marta','clothing_shop_title','clothing_shop_mode_label','clothing_shop_everyday','clothing_shop_fishing','clothing_shop_provisional_prices','clothing_shop_balance_label','people_location_clothing_shop','people_marta_name','people_marta_desc','people_marta_generic_01','people_marta_generic_02','inv_tab_clothing','inv_empty_clothing','inv_clothing_mode_label','inv_clothing_equip_arrival','inv_clothing_equip_fishing','inv_clothing_equipped','inv_clothing_success','inv_clothing_slot_top','inv_clothing_slot_bottom','inv_clothing_slot_outerwear','inv_clothing_slot_headwear','inv_clothing_slot_gloves','inv_equip_btn'];
 ['pt','en','hu'].forEach(function(lang) { I18n.setLang(lang); required.forEach(function(key) { if (I18n.t(key) === key) throw new Error('missing '+lang+' translation: '+key); }); });

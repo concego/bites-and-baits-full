@@ -31,8 +31,7 @@ const A11yAnnouncer = (() => {
 
   // Capturas usam uma atualização separada para leitores como NVDA, que
   // podem ignorar a troca quando ela ocorre junto da transição visual.
-  function sayCatchKey(key, ...args) {
-    const message = _messageKey(key, ...args);
+  function _sayCatchMessage(message) {
     const announcer = _element();
     if (!announcer) return;
     announcer.textContent = '';
@@ -41,5 +40,15 @@ const A11yAnnouncer = (() => {
     }, 80);
   }
 
-  return { speak, sayKey, sayCatchKey };
+  function sayCatchKey(key, ...args) {
+    _sayCatchMessage(_messageKey(key, ...args));
+  }
+
+  // Keep a quest follow-up in the same live-region announcement as the catch,
+  // so it neither interrupts the catch details nor disappears after navigation.
+  function sayCatchKeyWithFollowup(key, followup, ...args) {
+    _sayCatchMessage(`${_messageKey(key, ...args)} ${followup}`);
+  }
+
+  return { speak, sayKey, sayCatchKey, sayCatchKeyWithFollowup };
 })();
