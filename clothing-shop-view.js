@@ -5,6 +5,7 @@ const ClothingShopView = (() => {
       everyday:'Roupa do dia a dia', fishing:'Roupa de pesca',
       top:'Peça superior', bottom:'Calça', outerwear:'Sobreposição', headwear:'Proteção para a cabeça', gloves:'Luvas',
       owned:'No guarda-roupa', equipped:'Em uso', wear:'Vestir neste conjunto', notOwned:'Essa peça não está no guarda-roupa.',
+      color:(value)=>`Cor: ${value}`, rotationNote:'As cores disponíveis mudam a cada dia do jogo.',
       buy:'Comprar', price:(n)=>`${n} moedas`, notEnough:'Moedas insuficientes.',
       purchased:(name)=>`${name} adicionada ao guarda-roupa.`, worn:(name)=>`${name} vestida.`,
       npc:'Marta — mãe de Dani e funcionária da loja.',
@@ -13,6 +14,7 @@ const ClothingShopView = (() => {
       everyday:'Everyday clothes', fishing:'Fishing clothes',
       top:'Top', bottom:'Trousers', outerwear:'Outer layer', headwear:'Headwear', gloves:'Gloves',
       owned:'In wardrobe', equipped:'Wearing', wear:'Wear with this outfit', notOwned:'This item is not in your wardrobe.',
+      color:(value)=>`Color: ${value}`, rotationNote:'Available colors change each in-game day.',
       buy:'Buy', price:(n)=>`${n} coins`, notEnough:'Not enough coins.',
       purchased:(name)=>`${name} added to your wardrobe.`, worn:(name)=>`${name} equipped.`,
       npc:'Marta — Dani’s mother and the shop attendant.',
@@ -21,6 +23,7 @@ const ClothingShopView = (() => {
       everyday:'Mindennapi ruházat', fishing:'Horgászruházat',
       top:'Felsőrész', bottom:'Nadrág', outerwear:'Külső réteg', headwear:'Fejfedő', gloves:'Kesztyű',
       owned:'A ruhatárban', equipped:'Viselve', wear:'Felvétel ehhez az összeállításhoz', notOwned:'Ez a darab nincs a ruhatáradban.',
+      color:(value)=>`Szín: ${value}`, rotationNote:'Az elérhető színek minden játékbeli napon változnak.',
       buy:'Vásárlás', price:(n)=>`${n} érme`, notEnough:'Nincs elég érméd.',
       purchased:(name)=>`${name} bekerült a ruhatáradba.`, worn:(name)=>`${name} felvéve.`,
       npc:'Marta — Dani édesanyja és az üzlet alkalmazottja.',
@@ -38,6 +41,7 @@ const ClothingShopView = (() => {
     const modeSelect = document.getElementById('clothing-mode');
     const balance = document.getElementById('clothing-shop-coins');
     const npc = document.getElementById('clothing-shop-npc');
+    const rotationNote = document.getElementById('clothing-shop-rotation-note');
     const list = document.getElementById('clothing-catalog-list');
     const feedback = document.getElementById('clothing-shop-feedback');
     if (!list || !balance) return;
@@ -48,12 +52,15 @@ const ClothingShopView = (() => {
     }
     balance.textContent = String(coins);
     if (npc) npc.textContent = text.npc;
+    if (rotationNote) rotationNote.textContent = text.rotationNote;
     if (feedback) { feedback.textContent = ''; feedback.classList.add('hidden'); }
 
     const owned = new Set(Wardrobe.ownedIds());
     const equipped = Wardrobe.getEquipped(mode);
     list.innerHTML = '';
-    const items = CLOTHING_CATALOG.filter(item => item.modes.includes(mode));
+    const available = ClothingStock.getAvailableItems(mode);
+    const ownedItems = CLOTHING_CATALOG.filter(item => item.modes.includes(mode) && owned.has(item.id));
+    const items = [...new Map([...available, ...ownedItems].map(item => [item.id, item])).values()];
     items.forEach(item => {
       const card = document.createElement('article');
       card.className = 'clothing-card';
@@ -70,7 +77,10 @@ const ClothingShopView = (() => {
       const slot = document.createElement('p');
       slot.className = 'clothing-slot';
       slot.textContent = text[item.slot] || item.slot;
-      info.append(title, description, slot);
+      const color = document.createElement('p');
+      color.className = 'clothing-color';
+      color.textContent = text.color(item.colorName[lang]);
+      info.append(title, description, slot, color);
       const action = document.createElement('div');
       action.className = 'clothing-card-action';
       const price = document.createElement('span');
@@ -83,17 +93,17 @@ const ClothingShopView = (() => {
         button.textContent = text.equipped;
         button.disabled = true;
         button.className = 'btn-equipped';
-        button.setAttribute('aria-label', `${item.name[lang]} — ${text.equipped}`);
+        button.setAttribute('aria-label', `${item.name[lang]}, ${text.color(item.colorName[lang])} — ${text.equipped}`);
       } else if (isOwned) {
         button.textContent = text.wear;
         button.className = 'btn-secondary';
-        button.setAttribute('aria-label', `${text.wear}: ${item.name[lang]}`);
+        button.setAttribute('aria-label', `${text.wear}: ${item.name[lang]}, ${text.color(item.colorName[lang])}`);
         button.addEventListener('click', () => onEquip(item.id, item));
       } else {
         button.textContent = text.buy;
         button.className = 'btn-primary';
         button.disabled = coins < item.price;
-        button.setAttribute('aria-label', `${text.buy} ${item.name[lang]} — ${text.price(item.price)}`);
+        button.setAttribute('aria-label', `${text.buy} ${item.name[lang]}, ${text.color(item.colorName[lang])} — ${text.price(item.price)}`);
         button.addEventListener('click', () => onBuy(item.id, item));
       }
       action.append(price, button);

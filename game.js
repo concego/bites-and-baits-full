@@ -2731,7 +2731,8 @@ const Game = (() => {
       onBuy: (id, item) => {
         const result = Wardrobe.buy(id);
         if (result.ok) {
-          _renderClothingShop(id, ClothingShopView.textFor('purchased', item.name[I18n.getLang() || 'pt']));
+          const lang = I18n.getLang() || 'pt';
+          _renderClothingShop(id, ClothingShopView.textFor('purchased', `${item.name[lang]} — ${item.colorName[lang]}`));
         } else if (result.reason === 'coins') {
           _renderClothingShop(id, ClothingShopView.textFor('notEnough'));
         } else if (result.reason === 'owned') {
@@ -2740,8 +2741,9 @@ const Game = (() => {
       },
       onEquip: (id, item) => {
         const equipped = Wardrobe.equip(id, clothingShopMode);
+        const lang = I18n.getLang() || 'pt';
         const message = equipped
-          ? ClothingShopView.textFor('worn', item.name[I18n.getLang() || 'pt'])
+          ? ClothingShopView.textFor('worn', `${item.name[lang]} — ${item.colorName[lang]}`)
           : ClothingShopView.textFor('notOwned');
         _renderClothingShop(id, message);
         if (equipped) _renderCharacterPresenceCards();

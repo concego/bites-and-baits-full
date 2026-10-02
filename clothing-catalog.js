@@ -1,70 +1,134 @@
 /* clothing-catalog.js — Bites & Baits
- * Peças avulsas derivadas das descrições dos dez conjuntos iniciais.
- * Preços e decomposição visual são valores de protótipo, sujeitos a balanceamento.
+ * Models describe the garment's cut/appearance; products are color variants.
+ * In-game descriptions avoid references to character-creator outfits.
+ * Prototype prices remain provisional and subject to balance.
  */
-const CLOTHING_CATALOG = Object.freeze([
-  { id:'top_light_casual', slot:'top', modes:['arrival'], price:10, color:'#d9e7e8',
-    name:{pt:'Camiseta clara',en:'Light T-shirt',hu:'Világos póló'},
-    description:{pt:'Peça superior do conjunto Casual claro.',en:'Top from the Light casual set.',hu:'A Világos hétköznapi összeállítás felsőrésze.'} },
-  { id:'bottom_simple', slot:'bottom', modes:['arrival','fishing'], price:10, color:'#596570',
-    name:{pt:'Calça simples',en:'Simple trousers',hu:'Egyszerű nadrág'},
-    description:{pt:'Calça básica dos conjuntos iniciais.',en:'Basic trousers from the starter sets.',hu:'Alapnadrág a kezdő összeállításokból.'} },
-  { id:'top_dark_casual', slot:'top', modes:['arrival'], price:10, color:'#355b70',
-    name:{pt:'Camiseta escura',en:'Dark T-shirt',hu:'Sötét póló'},
-    description:{pt:'Peça superior do conjunto Casual escuro.',en:'Top from the Dark casual set.',hu:'A Sötét hétköznapi összeállítás felsőrésze.'} },
-  { id:'top_loose_comfort', slot:'top', modes:['arrival'], price:12, color:'#c9977c',
-    name:{pt:'Blusa solta',en:'Loose top',hu:'Laza felső'},
-    description:{pt:'Peça superior do conjunto Confortável.',en:'Top from the Comfortable set.',hu:'A Kényelmes összeállítás felsőrésze.'} },
-  { id:'bottom_comfort', slot:'bottom', modes:['arrival'], price:12, color:'#857b70',
-    name:{pt:'Calça confortável',en:'Comfortable trousers',hu:'Kényelmes nadrág'},
-    description:{pt:'Calça confortável do conjunto Confortável.',en:'Comfortable trousers from the Comfortable set.',hu:'A Kényelmes összeállítás nadrágja.'} },
-  { id:'top_urban', slot:'top', modes:['arrival'], price:14, color:'#8174a0',
-    name:{pt:'Camisa urbana',en:'Urban shirt',hu:'Városi ing'},
-    description:{pt:'Peça superior do conjunto Urbano.',en:'Top from the Urban set.',hu:'A Városi összeállítás felsőrésze.'} },
-  { id:'jacket_light', slot:'outerwear', layer:'jacket', modes:['arrival'], price:20, color:'#59647d',
-    name:{pt:'Jaqueta leve',en:'Light jacket',hu:'Könnyű dzseki'},
-    description:{pt:'Alternativa de sobreposição para o conjunto Urbano.',en:'Optional layer for the Urban set.',hu:'Opcionális réteg a Városi összeállításhoz.'} },
-  { id:'top_sturdy', slot:'top', modes:['arrival','fishing'], price:14, color:'#80664d',
-    name:{pt:'Camisa resistente',en:'Sturdy shirt',hu:'Strapabíró felső'},
-    description:{pt:'Peça superior simples e resistente.',en:'Simple, sturdy top.',hu:'Egyszerű, strapabíró felsőrész.'} },
-  { id:'bottom_sturdy', slot:'bottom', modes:['arrival','fishing'], price:14, color:'#4c4d4c',
-    name:{pt:'Calça resistente',en:'Sturdy trousers',hu:'Strapabíró nadrág'},
-    description:{pt:'Calça resistente dos conjuntos de pesca.',en:'Sturdy trousers from the fishing sets.',hu:'Strapabíró nadrág a horgász összeállításokból.'} },
-  { id:'top_fishing_light', slot:'top', modes:['fishing'], price:12, color:'#45778c',
-    name:{pt:'Camisa leve de pesca',en:'Light fishing shirt',hu:'Könnyű horgászfelső'},
-    description:{pt:'Peça superior do conjunto Pescador clássico.',en:'Top from the Classic angler set.',hu:'A Klasszikus horgász összeállítás felsőrésze.'} },
-  { id:'vest_simple', slot:'outerwear', layer:'vest', modes:['fishing'], price:16, color:'#c3a46c',
-    name:{pt:'Colete simples',en:'Simple vest',hu:'Egyszerű mellény'},
-    description:{pt:'Colete leve do conjunto Pescador clássico.',en:'Simple vest from the Classic angler set.',hu:'Egyszerű mellény a Klasszikus horgász összeállításból.'} },
-  { id:'top_river', slot:'top', modes:['fishing'], price:12, color:'#547b83',
-    name:{pt:'Camisa do rio',en:'River shirt',hu:'Folyóparti felső'},
-    description:{pt:'Tons azuis e terrosos, inspirados no conjunto Rio.',en:'Blue and earth tones inspired by the River set.',hu:'Kék és földszínek a Folyó összeállítás ihletésére.'} },
-  { id:'vest_light', slot:'outerwear', layer:'vest', modes:['fishing'], price:16, color:'#8b806b',
-    name:{pt:'Camada leve de proteção',en:'Light protective layer',hu:'Könnyű védőréteg'},
-    description:{pt:'Sobreposição leve do conjunto Rio.',en:'Light outer layer from the River set.',hu:'Könnyű felső réteg a Folyó összeállításból.'} },
-  { id:'top_lake', slot:'top', modes:['fishing'], price:12, color:'#67885d',
-    name:{pt:'Camisa do lago',en:'Lake shirt',hu:'Tavi felső'},
-    description:{pt:'Peça superior em tons verdes do conjunto Lago.',en:'Green-toned top from the Lake set.',hu:'Zöld felsőrész a Tó összeállításból.'} },
-  { id:'sun_hat', slot:'headwear', modes:['fishing'], price:14, color:'#b38b4f',
-    name:{pt:'Chapéu de sol',en:'Sun hat',hu:'Napkalap'},
-    description:{pt:'Peça de proteção solar do conjunto Lago.',en:'Sun-protection piece from the Lake set.',hu:'Napvédő darab a Tó összeállításból.'} },
-  { id:'rain_cape', slot:'outerwear', layer:'cape', modes:['fishing'], price:22, color:'#5d7a90',
-    name:{pt:'Capa leve de chuva',en:'Light rain cape',hu:'Könnyű esőköpeny'},
-    description:{pt:'Capa do conjunto Chuva.',en:'Cape from the Rain set.',hu:'Köpeny az Eső összeállításból.'} },
-  { id:'top_waterproof', slot:'top', modes:['fishing'], price:18, color:'#416b7f',
+const CLOTHING_STYLES = Object.freeze({
+  basic_tshirt: {
+    name:{pt:'Camiseta básica lisa',en:'Plain basic T-shirt',hu:'Egyszerű egyszínű póló'},
+    description:{pt:'Gola redonda, mangas curtas e tecido sem estampa.',en:'Crew neck, short sleeves, and plain fabric.',hu:'Kerek nyakkivágás, rövid ujjak és mintátlan anyag.'},
+  },
+  straight_trousers: {
+    name:{pt:'Calça reta básica',en:'Basic straight-leg trousers',hu:'Egyszerű egyenes szárú nadrág'},
+    description:{pt:'Corte reto, cintura regular e bolsos laterais.',en:'Straight cut, regular waist, and side pockets.',hu:'Egyenes szabás, normál derék és oldalzsebek.'},
+  },
+  relaxed_blouse: {
+    name:{pt:'Blusa ampla de manga curta',en:'Relaxed short-sleeve blouse',hu:'Laza, rövid ujjú felső'},
+    description:{pt:'Caimento solto, mangas curtas e barra simples.',en:'Loose fit, short sleeves, and a plain hem.',hu:'Laza szabás, rövid ujjak és egyszerű szegély.'},
+  },
+  comfort_trousers: {
+    name:{pt:'Calça confortável',en:'Comfort-fit trousers',hu:'Kényelmes szabású nadrág'},
+    description:{pt:'Cós confortável e corte que facilita os movimentos.',en:'Comfortable waistband and a cut made for easy movement.',hu:'Kényelmes derékrész és szabad mozgást engedő szabás.'},
+  },
+  button_shirt: {
+    name:{pt:'Camisa casual de botões',en:'Casual button-up shirt',hu:'Hétköznapi gombos ing'},
+    description:{pt:'Gola clássica, abertura frontal com botões e mangas longas.',en:'Classic collar, button front, and long sleeves.',hu:'Klasszikus gallér, gombos eleje és hosszú ujjak.'},
+  },
+  light_jacket: {
+    name:{pt:'Jaqueta leve com zíper',en:'Light zip-front jacket',hu:'Könnyű, cipzáras dzseki'},
+    description:{pt:'Tecido leve, fechamento frontal e gola baixa.',en:'Lightweight fabric, front closure, and a low collar.',hu:'Könnyű anyag, elülső záródás és alacsony gallér.'},
+  },
+  work_shirt: {
+    name:{pt:'Camisa de trabalho',en:'Work shirt',hu:'Munkásing'},
+    description:{pt:'Mangas curtas, tecido encorpado e bolso frontal.',en:'Short sleeves, sturdy fabric, and a front pocket.',hu:'Rövid ujjak, erősebb anyag és elülső zseb.'},
+  },
+  utility_trousers: {
+    name:{pt:'Calça utilitária',en:'Utility trousers',hu:'Praktikus nadrág'},
+    description:{pt:'Corte reto e bolsos laterais espaçosos.',en:'Straight cut with roomy side pockets.',hu:'Egyenes szabás és tágas oldalzsebek.'},
+  },
+  fishing_shirt: {
+    name:{pt:'Camisa de pesca com bolso',en:'Pocket fishing shirt',hu:'Zsebes horgászing'},
+    description:{pt:'Mangas curtas, abertura frontal e bolso no peito.',en:'Short sleeves, front opening, and a chest pocket.',hu:'Rövid ujjak, elülső nyílás és mellzseb.'},
+  },
+  fishing_vest: {
+    name:{pt:'Colete de pesca com bolsos',en:'Pocket fishing vest',hu:'Zsebes horgászmellény'},
+    description:{pt:'Colete leve com bolsos frontais e ajuste lateral.',en:'Light vest with front pockets and side adjustment.',hu:'Könnyű mellény elülső zsebekkel és oldalsó állítással.'},
+  },
+  sun_hat: {
+    name:{pt:'Chapéu de aba curva',en:'Curved-brim hat',hu:'Hajlított karimájú kalap'},
+    description:{pt:'Aba curva e copa baixa para uma cobertura ampla.',en:'Curved brim and a low crown for broad coverage.',hu:'Hajlított karima és alacsony korona a szélesebb takarásért.'},
+  },
+  rain_cape: {
+    name:{pt:'Capa de chuva leve',en:'Light rain cape',hu:'Könnyű esőköpeny'},
+    description:{pt:'Corte amplo, comprimento até o quadril e abertura frontal.',en:'Roomy cut, hip length, and a front opening.',hu:'Bő szabás, csípőig érő hossz és elülső nyílás.'},
+  },
+  waterproof_top: {
     name:{pt:'Blusa impermeável',en:'Waterproof top',hu:'Vízálló felső'},
-    description:{pt:'Peça impermeável do conjunto Chuva.',en:'Waterproof piece from the Rain set.',hu:'Vízálló darab az Eső összeállításból.'} },
-  { id:'bottom_waterproof', slot:'bottom', modes:['fishing'], price:18, color:'#455c67',
+    description:{pt:'Mangas compridas, fechamento frontal e punhos ajustados.',en:'Long sleeves, front closure, and adjustable cuffs.',hu:'Hosszú ujjak, elülső záródás és állítható mandzsetta.'},
+  },
+  waterproof_trousers: {
     name:{pt:'Calça impermeável',en:'Waterproof trousers',hu:'Vízálló nadrág'},
-    description:{pt:'Calça impermeável do conjunto Chuva.',en:'Waterproof trousers from the Rain set.',hu:'Vízálló nadrág az Eső összeállításból.'} },
-  { id:'vest_reinforced', slot:'outerwear', layer:'vest', modes:['fishing'], price:22, color:'#66513f',
+    description:{pt:'Corte reto, cintura ajustável e tecido impermeável.',en:'Straight cut, adjustable waist, and waterproof fabric.',hu:'Egyenes szabás, állítható derék és vízálló anyag.'},
+  },
+  reinforced_vest: {
     name:{pt:'Colete reforçado',en:'Reinforced vest',hu:'Megerősített mellény'},
-    description:{pt:'Colete do conjunto Trabalho pesado.',en:'Vest from the Heavy work set.',hu:'Mellény a Nehéz munka összeállításból.'} },
-  { id:'fishing_gloves', slot:'gloves', modes:['fishing'], price:8, color:'#655e50',
+    description:{pt:'Estrutura reforçada, fechamento frontal e bolsos amplos.',en:'Reinforced structure, front closure, and roomy pockets.',hu:'Megerősített szerkezet, elülső záródás és tágas zsebek.'},
+  },
+  fishing_gloves: {
     name:{pt:'Luvas de pesca',en:'Fishing gloves',hu:'Horgászkesztyű'},
-    description:{pt:'Luvas visuais do conjunto Trabalho pesado.',en:'Gloves from the Heavy work set.',hu:'Kesztyű a Nehéz munka összeállításból.'} },
+    description:{pt:'Modelo curto com reforço visual na palma.',en:'Short-cut design with a reinforced palm.',hu:'Rövid fazon, megerősített tenyérrésszel.'},
+  },
+});
+
+function _clothingProduct(id, styleId, slot, modes, price, color, colorName, layer) {
+  const style = CLOTHING_STYLES[styleId];
+  return Object.freeze({ id, styleId, slot, modes, price, color, colorName, layer:layer || null,
+    name:style.name, description:style.description });
+}
+
+const CLOTHING_CATALOG = Object.freeze([
+  // Camiseta básica lisa: o modelo é o mesmo; a cor identifica cada variante.
+  _clothingProduct('top_light_casual','basic_tshirt','top',['arrival'],10,'#d9e7e8',{pt:'Off-white',en:'Off-white',hu:'Törtfehér'}),
+  _clothingProduct('top_dark_casual','basic_tshirt','top',['arrival'],10,'#355b70',{pt:'Azul-petróleo',en:'Petrol blue',hu:'Olajkék'}),
+  _clothingProduct('top_basic_tee_navy','basic_tshirt','top',['arrival'],10,'#26384d',{pt:'Azul-marinho',en:'Navy',hu:'Sötétkék'}),
+  _clothingProduct('top_basic_tee_olive','basic_tshirt','top',['arrival'],10,'#66734f',{pt:'Verde-oliva',en:'Olive green',hu:'Olívazöld'}),
+
+  // Calças de corte reto em variações de cor.
+  _clothingProduct('bottom_simple','straight_trousers','bottom',['arrival','fishing'],10,'#596570',{pt:'Grafite',en:'Graphite',hu:'Grafitszürke'}),
+  _clothingProduct('bottom_simple_navy','straight_trousers','bottom',['arrival','fishing'],10,'#354b62',{pt:'Azul-marinho',en:'Navy',hu:'Sötétkék'}),
+  _clothingProduct('bottom_simple_brown','straight_trousers','bottom',['arrival','fishing'],10,'#705640',{pt:'Marrom',en:'Brown',hu:'Barna'}),
+
+  _clothingProduct('top_loose_comfort','relaxed_blouse','top',['arrival'],12,'#c9977c',{pt:'Terracota',en:'Terracotta',hu:'Terrakotta'}),
+  _clothingProduct('top_loose_sage','relaxed_blouse','top',['arrival'],12,'#8e9c7a',{pt:'Verde-sálvia',en:'Sage green',hu:'Zsályazöld'}),
+  _clothingProduct('bottom_comfort','comfort_trousers','bottom',['arrival'],12,'#857b70',{pt:'Taupe',en:'Taupe',hu:'Szürkésbarna'}),
+  _clothingProduct('bottom_comfort_navy','comfort_trousers','bottom',['arrival'],12,'#45566b',{pt:'Azul-ardósia',en:'Slate blue',hu:'Palakék'}),
+
+  _clothingProduct('top_urban','button_shirt','top',['arrival'],14,'#8174a0',{pt:'Malva',en:'Mauve',hu:'Mályva'}),
+  _clothingProduct('top_button_shirt_ivory','button_shirt','top',['arrival'],14,'#d9cfb9',{pt:'Marfim',en:'Ivory',hu:'Elefántcsont'}),
+  _clothingProduct('jacket_light','light_jacket','outerwear',['arrival'],20,'#59647d',{pt:'Azul-ardósia',en:'Slate blue',hu:'Palakék'},'jacket'),
+  _clothingProduct('jacket_light_olive','light_jacket','outerwear',['arrival'],20,'#677350',{pt:'Verde-oliva',en:'Olive green',hu:'Olívazöld'},'jacket'),
+
+  _clothingProduct('top_sturdy','work_shirt','top',['arrival','fishing'],14,'#80664d',{pt:'Marrom',en:'Brown',hu:'Barna'}),
+  _clothingProduct('top_work_shirt_olive','work_shirt','top',['arrival','fishing'],14,'#55684d',{pt:'Verde-floresta',en:'Forest green',hu:'Erdőzöld'}),
+  _clothingProduct('bottom_sturdy','utility_trousers','bottom',['arrival','fishing'],14,'#4c4d4c',{pt:'Chumbo',en:'Charcoal',hu:'Antracitszürke'}),
+  _clothingProduct('bottom_utility_olive','utility_trousers','bottom',['arrival','fishing'],14,'#62694c',{pt:'Oliva escuro',en:'Dark olive',hu:'Sötét olíva'}),
+
+  // Camisa de pesca: mesmo modelo, cores que variam na vitrine.
+  _clothingProduct('top_fishing_light','fishing_shirt','top',['fishing'],12,'#45778c',{pt:'Azul-oceano',en:'Ocean blue',hu:'Óceánkék'}),
+  _clothingProduct('top_river','fishing_shirt','top',['fishing'],12,'#547b83',{pt:'Azul-esverdeado',en:'Blue teal',hu:'Kékeszöld'}),
+  _clothingProduct('top_lake','fishing_shirt','top',['fishing'],12,'#67885d',{pt:'Verde-folha',en:'Leaf green',hu:'Levélzöld'}),
+  _clothingProduct('top_fishing_burgundy','fishing_shirt','top',['fishing'],12,'#764e55',{pt:'Vinho',en:'Burgundy',hu:'Bordó'}),
+
+  _clothingProduct('vest_simple','fishing_vest','outerwear',['fishing'],16,'#c3a46c',{pt:'Areia',en:'Sand',hu:'Homokszín'},'vest'),
+  _clothingProduct('vest_light','fishing_vest','outerwear',['fishing'],16,'#8b806b',{pt:'Caqui',en:'Khaki',hu:'Khaki'},'vest'),
+  _clothingProduct('vest_fishing_olive','fishing_vest','outerwear',['fishing'],16,'#65704e',{pt:'Verde-oliva',en:'Olive green',hu:'Olívazöld'},'vest'),
+
+  _clothingProduct('sun_hat','sun_hat','headwear',['fishing'],14,'#b38b4f',{pt:'Palha',en:'Straw',hu:'Szalmaszín'}),
+  _clothingProduct('sun_hat_olive','sun_hat','headwear',['fishing'],14,'#63714d',{pt:'Verde-oliva',en:'Olive green',hu:'Olívazöld'}),
+
+  _clothingProduct('rain_cape','rain_cape','outerwear',['fishing'],22,'#5d7a90',{pt:'Azul-ardósia',en:'Slate blue',hu:'Palakék'},'cape'),
+  _clothingProduct('rain_cape_yellow','rain_cape','outerwear',['fishing'],22,'#b69a49',{pt:'Mostarda',en:'Mustard',hu:'Mustársárga'},'cape'),
+  _clothingProduct('top_waterproof','waterproof_top','top',['fishing'],18,'#416b7f',{pt:'Azul-petróleo',en:'Petrol blue',hu:'Olajkék'}),
+  _clothingProduct('top_waterproof_olive','waterproof_top','top',['fishing'],18,'#59694e',{pt:'Verde-musgo',en:'Moss green',hu:'Mohazöld'}),
+  _clothingProduct('bottom_waterproof','waterproof_trousers','bottom',['fishing'],18,'#455c67',{pt:'Chumbo azulado',en:'Blue charcoal',hu:'Kékes antracit'}),
+  _clothingProduct('bottom_waterproof_dark','waterproof_trousers','bottom',['fishing'],18,'#333b41',{pt:'Carvão',en:'Coal',hu:'Szénfekete'}),
+  _clothingProduct('vest_reinforced','reinforced_vest','outerwear',['fishing'],22,'#66513f',{pt:'Castanho',en:'Chestnut',hu:'Gesztenyebarna'},'vest'),
+  _clothingProduct('vest_reinforced_gray','reinforced_vest','outerwear',['fishing'],22,'#62605a',{pt:'Cinza-escuro',en:'Dark gray',hu:'Sötétszürke'},'vest'),
+  _clothingProduct('fishing_gloves','fishing_gloves','gloves',['fishing'],8,'#655e50',{pt:'Oliva',en:'Olive',hu:'Olíva'}),
+  _clothingProduct('fishing_gloves_sand','fishing_gloves','gloves',['fishing'],8,'#b29c78',{pt:'Areia',en:'Sand',hu:'Homokszín'}),
 ]);
 
+// Mapeia a roupa selecionada na criação do personagem para peças grátis iniciais.
 const CLOTHING_STARTER_SETS = Object.freeze({
   arrival: Object.freeze({
     1: { top:'top_light_casual', bottom:'bottom_simple' },

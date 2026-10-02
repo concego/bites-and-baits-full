@@ -1995,6 +1995,8 @@ html, body {
 .clothing-card-action { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .clothing-card-action button { min-height: 42px; }
 #clothing-shop-feedback { margin-top: 12px; }
+.clothing-shop-price-note, .clothing-shop-rotation-note { margin: 6px 0; opacity: .82; line-height: 1.4; }
+.clothing-color { opacity: .82; font-size: .9rem; }
 @media (max-width: 560px) {
   .clothing-shop-panel { padding: 12px 10px 24px; }
   .clothing-shop-header h2 { text-align: start; }

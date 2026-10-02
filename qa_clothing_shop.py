@@ -22,17 +22,19 @@ localStorage.setItem('bb_character', JSON.stringify({
   appearance:{arrivalOutfit:'neutral-arrivalOutfit-2', fishingOutfit:'neutral-fishingOutfit-4'}
 }));
 '''
-for name in ('clothing-catalog.js', 'wardrobe.js', 'character-avatar.js'):
+for name in ('clothing-catalog.js', 'clothing-stock.js', 'wardrobe.js', 'character-avatar.js'):
     js += (root / name).read_text() + '\n'
 js += r'''
 function check(condition, message) { if (!condition) throw new Error(message); }
 var ids = {};
 CLOTHING_CATALOG.forEach(function(item) {
   check(item.id && !ids[item.id], 'unique product id'); ids[item.id] = true;
+  check(item.styleId && CLOTHING_STYLES[item.styleId], 'known garment style '+item.id);
   check(['top','bottom','outerwear','headwear','gloves'].indexOf(item.slot) >= 0, 'valid slot '+item.id);
   check(item.price >= 8 && item.price <= 22, 'provisional prototype price range '+item.id);
-  check(['pt','en','hu'].every(function(lang) { return item.name[lang] && item.description[lang]; }), 'localized item '+item.id);
+  check(['pt','en','hu'].every(function(lang) { return item.name[lang] && item.description[lang] && item.colorName[lang]; }), 'localized item and color '+item.id);
   check(item.modes.length > 0 && item.modes.every(function(mode) { return mode === 'arrival' || mode === 'fishing'; }), 'valid modes '+item.id);
+  check(!/conjunto|character-creator|creator outfit|creator's outfit|összeállítás/i.test(item.description.pt+' '+item.description.en+' '+item.description.hu), 'customer description has no creator-set reference '+item.id);
 });
 ['arrival','fishing'].forEach(function(mode) {
   for (var setNo=1; setNo<=5; setNo++) {
@@ -44,8 +46,19 @@ CLOTHING_CATALOG.forEach(function(item) {
     });
   }
 });
-check(CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('arrival')>=0;}).length === 9, 'everyday mode filtering');
-check(CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('fishing')>=0;}).length === 14, 'fishing mode filtering');
+check(CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('arrival')>=0;}).length >= 9, 'everyday mode filtering');
+check(CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('fishing')>=0;}).length >= 14, 'fishing mode filtering');
+var dayOneArrival = ClothingStock.getAvailableItems('arrival', {year:1, month:3, day:1});
+var dayTwoArrival = ClothingStock.getAvailableItems('arrival', {year:1, month:3, day:2});
+check(dayOneArrival.length < CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('arrival')>=0;}).length, 'daily rotation filters the catalog');
+check(dayOneArrival.map(function(item){return item.styleId;}).sort().join('|') === dayTwoArrival.map(function(item){return item.styleId;}).sort().join('|'), 'rotation keeps garment models');
+var dayOneStyleIds = dayOneArrival.map(function(item){return item.styleId;});
+check(new Set(dayOneStyleIds).size === dayOneStyleIds.length, 'one color per model each day');
+var teeDayOne = dayOneArrival.filter(function(item){return item.styleId === 'basic_tshirt';})[0];
+var teeDayTwo = dayTwoArrival.filter(function(item){return item.styleId === 'basic_tshirt';})[0];
+check(teeDayOne && teeDayTwo && teeDayOne.id !== teeDayTwo.id, 'basic T-shirt color rotates by in-game day');
+var teeVariants = CLOTHING_CATALOG.filter(function(item){return item.styleId === 'basic_tshirt';});
+check(teeVariants.length >= 3 && teeVariants.every(function(item){return item.name.pt === teeVariants[0].name.pt && item.description.pt === teeVariants[0].description.pt;}), 'same garment name and description across color variants');
 var before = Inventory.coins();
 var starter = Wardrobe.state();
 check(Inventory.coins() === before, 'starting clothes are free');
@@ -71,13 +84,13 @@ var poor = Wardrobe.buy('vest_reinforced');
 check(!poor.ok && poor.reason === 'coins' && Inventory.coins() === 5 && !Wardrobe.owns('vest_reinforced'), 'unaffordable purchase has no side effects');
 var persisted = Wardrobe.state();
 check(persisted.owned.indexOf('jacket_light') >= 0 && persisted.equipped.arrival.outerwear === 'jacket_light', 'ownership and equip persist');
-JSON.stringify({items:CLOTHING_CATALOG.length, arrival:9, fishing:14, starterSets:10, freeStarter:true, purchaseDeducted:20, duplicateNotCharged:true, insufficientProtected:true, persistence:true, equippedChangesPlayerAvatar:true, npcUnaffected:true});
+JSON.stringify({items:CLOTHING_CATALOG.length, arrivalProducts:CLOTHING_CATALOG.filter(function(i){return i.modes.includes('arrival');}).length, fishingProducts:CLOTHING_CATALOG.filter(function(i){return i.modes.includes('fishing');}).length, dailyArrivalModels:dayOneArrival.length, dailyColorRotation:true, starterSets:10, freeStarter:true, purchaseDeducted:20, duplicateNotCharged:true, insufficientProtected:true, persistence:true, equippedChangesPlayerAvatar:true, npcUnaffected:true});
 '''
 result = json.loads(dukpy.evaljs(js))
 # Verify the page exposes the route, accessible controls, live feedback, and no quest wiring.
 html = (root / 'index.html').read_text()
 game = (root / 'game.js').read_text()
-for token in ('btn-hub-clothing-shop', 'screen-clothing-shop', 'clothing-mode', 'clothing-shop-feedback', 'btn-clothing-shop-people'):
+for token in ('btn-hub-clothing-shop', 'screen-clothing-shop', 'clothing-mode', 'clothing-shop-feedback', 'clothing-shop-rotation-note', 'btn-clothing-shop-people', 'clothing-stock.js'): 
     assert token in html, f'missing shop UI hook: {token}'
 for token in ("_openPeoplePanel('clothing_shop'", "id: 'marta'", "Wardrobe.buy(id)", "Wardrobe.equip(id, clothingShopMode)"):
     assert token in game, f'missing game integration: {token}'
