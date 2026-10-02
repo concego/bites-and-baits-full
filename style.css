@@ -1997,6 +1997,13 @@ html, body {
 #clothing-shop-feedback { margin-top: 12px; }
 .clothing-shop-price-note, .clothing-shop-rotation-note { margin: 6px 0; opacity: .82; line-height: 1.4; }
 .clothing-color { opacity: .82; font-size: .9rem; }
+.inv-clothing-controls { display: grid; gap: 6px; margin: 10px 0 14px; max-width: 420px; }
+.inv-clothing-controls select { min-height: 42px; padding: 8px 12px; border-radius: 8px; }
+.inv-clothing-item { flex-wrap: wrap; align-items: flex-start; }
+.inv-clothing-swatch { flex: 0 0 38px; width: 38px; height: 38px; }
+.inv-clothing-item .inv-item-info { flex: 1 1 calc(100% - 52px); }
+.inv-clothing-item .inv-item-name, .inv-clothing-item .inv-item-detail { overflow-wrap: anywhere; }
+.inv-clothing-item .inv-item-actions { flex: 0 0 100%; justify-content: flex-start; width: 100%; }
 @media (max-width: 560px) {
   .clothing-shop-panel { padding: 12px 10px 24px; }
   .clothing-shop-header h2 { text-align: start; }

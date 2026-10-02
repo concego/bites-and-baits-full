@@ -41,6 +41,7 @@ const BAIT_CATALOG = {
 const Inventory = (() => {
 
   const STORAGE_KEY_ITEMS  = 'bb_inventory';
+  const STORAGE_KEY_CLOTHING = 'bb_clothing_inventory';
   const STORAGE_KEY_COINS  = 'bb_coins';
   const STORAGE_KEY_BAITS  = 'bb_baits';
   const STORAGE_KEY_BAITS_V = 'bb_baits_v';
@@ -161,6 +162,42 @@ const Inventory = (() => {
     return _load().length;
   }
 
+  // Roupas usam uma coleção separada: não ocupam a carga de peixes.
+  function _loadClothing() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_CLOTHING) || '[]');
+      if (!Array.isArray(saved)) return [];
+      return [...new Set(saved.filter(id => typeof id === 'string'
+        && typeof getClothingItem === 'function' && getClothingItem(id)))];
+    } catch { return []; }
+  }
+
+  function _saveClothing(ids) {
+    try { localStorage.setItem(STORAGE_KEY_CLOTHING, JSON.stringify(ids)); } catch { /* noop */ }
+  }
+
+  function getClothing() { return _loadClothing().reverse(); }
+
+  function hasClothing(id) { return _loadClothing().includes(id); }
+
+  /** Adiciona uma peça única ao inventário de roupas. */
+  function addClothing(id) {
+    if (typeof getClothingItem !== 'function' || !getClothingItem(id)) return false;
+    const owned = _loadClothing();
+    if (owned.includes(id)) return false;
+    owned.push(id);
+    _saveClothing(owned);
+    return true;
+  }
+
+  function removeClothing(id) {
+    const owned = _loadClothing();
+    const filtered = owned.filter(itemId => itemId !== id);
+    if (filtered.length === owned.length) return false;
+    _saveClothing(filtered);
+    return true;
+  }
+
   // Capacidade da pesca da margem: vem do cesto equipado.
   // O fallback mantém saves antigos jogáveis enquanto o equipamento é migrado.
   const DEFAULT_HOLD_CAPACITY = 8;
@@ -257,6 +294,7 @@ const Inventory = (() => {
   /** Limpa inventário e moedas (reset total — usar com cuidado) */
   function reset() {
     _save([]);
+    _saveClothing([]);
     _saveCoins(0);
   }
 
@@ -655,6 +693,11 @@ const Inventory = (() => {
     basePricePerKg: id => BASE_PRICE_PER_KG[id] ?? 3,
     calcValue,
     reset,
+    // Roupas
+    getClothing,
+    hasClothing,
+    addClothing,
+    removeClothing,
     // Iscas
     getBaits,
     baitCount,

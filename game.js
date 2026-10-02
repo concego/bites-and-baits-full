@@ -99,7 +99,7 @@ const Game = (() => {
       // Permite recomeçar a QA sem depender de cache/histórico do navegador.
       // O idioma fica preservado; somente o progresso do jogo é apagado.
       [
-        'bb_character', 'bb_story_opening_complete', 'bb_wardrobe_v1', 'bb_inventory', 'bb_coins',
+        'bb_character', 'bb_story_opening_complete', 'bb_wardrobe_v1', 'bb_clothing_inventory', 'bb_clothing_equipment_v1', 'bb_inventory', 'bb_coins',
         'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_initial_gear_received', 'bb_lake_shore_fished', 'bb_river_attempted', 'bb_zeca_river_advice', 'bb_gear_mods', 'bb_protected',
         'bb_owned_equip', 'bb_active_boat', 'bb_house_level', 'bb_zonemap',
         'bb_activezone', 'bb_map', 'bb_best', 'bb_time',
@@ -524,6 +524,7 @@ const Game = (() => {
   let openingRenderedStep = null;
   let shopZecaDialogueIndex = 0;
   let clothingShopMode = 'arrival';
+  let clothingInventoryMode = 'arrival';
   let peopleLocation = 'hub';
   let peopleConversation = null;
   let peopleDialogueIndex = 0;
@@ -2383,6 +2384,8 @@ const Game = (() => {
   /* ── INVENTÁRIO ──────────────────────────────────────────────────────── */
   function renderInventory() {
     _bindInventoryNavigation();
+    Wardrobe.syncStarterPieces();
+    clothingInventoryMode = $('inv-clothing-mode')?.value || clothingInventoryMode;
     // Controla elementos que só existem no modo história
     const isStory = (gameMode === 'normal');
     const sellAllBar = document.querySelector('.inv-sell-all-bar');
@@ -2502,6 +2505,25 @@ const Game = (() => {
         equipList.appendChild(li);
       });
     }
+
+    InventoryClothingView.render({
+      translate: t,
+      mode: clothingInventoryMode,
+      onModeChange: mode => {
+        clothingInventoryMode = mode === 'fishing' ? 'fishing' : 'arrival';
+        renderInventory();
+      },
+      onEquip: (id, item, mode) => {
+        const equipped = Wardrobe.equip(id, mode);
+        if (!equipped) return;
+        _renderCharacterPresenceCards();
+        renderInventory();
+        const lang = I18n.getLang() || 'pt';
+        const context = t(mode === 'fishing' ? 'clothing_shop_fishing' : 'clothing_shop_everyday');
+        _invFeedback(fbEl, t('inv_clothing_success', item.name[lang], item.colorName[lang], context), true);
+        InventoryClothingView.focusItem(id);
+      },
+    });
   }
 
   function _invFeedback(el, msg, ok = true) {
@@ -2738,15 +2760,6 @@ const Game = (() => {
         } else if (result.reason === 'owned') {
           _renderClothingShop(id, ClothingShopView.textFor('owned'));
         }
-      },
-      onEquip: (id, item) => {
-        const equipped = Wardrobe.equip(id, clothingShopMode);
-        const lang = I18n.getLang() || 'pt';
-        const message = equipped
-          ? ClothingShopView.textFor('worn', `${item.name[lang]} — ${item.colorName[lang]}`)
-          : ClothingShopView.textFor('notOwned');
-        _renderClothingShop(id, message);
-        if (equipped) _renderCharacterPresenceCards();
       },
     });
     if (feedback) ClothingShopView.showFeedback(feedback);

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Bites &amp; Baits</title>
-  <link rel="stylesheet" href="style.css?v=marta-store-02" />
+  <link rel="stylesheet" href="style.css?v=clothing-inventory-01" />
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css?v=avatar-layout-feedback-01" />
   <link rel="stylesheet" href="style-narrative.css?v=vitor-shore-02" />
@@ -883,6 +883,8 @@
                 data-tab="baits" data-screen="screen-inventory" data-i18n="inv_tab_baits"></button>
         <button class="shop-tab" role="tab" aria-selected="false"
                 data-tab="equip" data-screen="screen-inventory" data-i18n="inv_tab_equip"></button>
+        <button class="shop-tab" role="tab" aria-selected="false"
+                data-tab="clothing" data-screen="screen-inventory" data-i18n="inv_tab_clothing"></button>
       </div>
 
       <!-- Aba: Peixes -->
@@ -905,6 +907,19 @@
       <div id="inv-tab-equip" class="shop-tab-content hidden">
         <div id="inv-equip-empty" class="shop-empty hidden" data-i18n="inv_empty_equip"></div>
         <ul id="inv-equip-list" class="inv-list" role="list"></ul>
+      </div>
+
+      <!-- Aba: Roupas — equipáveis diretamente pelo inventário -->
+      <div id="inv-tab-clothing" class="shop-tab-content hidden">
+        <div class="inv-clothing-controls">
+          <label for="inv-clothing-mode" data-i18n="inv_clothing_mode_label"></label>
+          <select id="inv-clothing-mode">
+            <option value="arrival" data-i18n="clothing_shop_everyday"></option>
+            <option value="fishing" data-i18n="clothing_shop_fishing"></option>
+          </select>
+        </div>
+        <div id="inv-clothing-empty" class="shop-empty hidden" data-i18n="inv_empty_clothing"></div>
+        <ul id="inv-clothing-list" class="inv-list" role="list"></ul>
       </div>
 
       <div id="inv-feedback" class="shop-feedback hidden" aria-live="assertive"></div>
@@ -1052,7 +1067,7 @@
     });
   </script>
   <script src="a11y.js"></script>
-  <script src="i18n.js?v=marta-store-01"></script>
+  <script src="i18n.js?v=clothing-inventory-01"></script>
   <script src="accessibility-announcer.js?v=refactor-01"></script>
   <script src="last-catch-storage.js?v=refactor-02"></script>
   <script src="fish-data.js"></script>
@@ -1068,7 +1083,7 @@
   <script src="inventory-fish-view.js?v=refactor-11"></script>
   <script src="inventory-bait-view.js?v=refactor-12"></script>
   <script src="score-system.js"></script>
-  <script src="inventory.js?v=people-menu-01"></script>
+  <script src="inventory.js?v=clothing-inventory-01"></script>
   <script src="hub-hud.js?v=refactor-04"></script>
   <script src="shop-data.js"></script>
   <script src="house-data.js"></script>
@@ -1079,15 +1094,16 @@
   <script src="sensors.js"></script>
   <script src="visuals.js?v=3ed5296"></script>
   <script src="character-data.js"></script>
-  <script src="clothing-catalog.js?v=marta-store-02"></script>
-  <script src="wardrobe.js?v=marta-store-02"></script>
+  <script src="clothing-catalog.js?v=clothing-inventory-01"></script>
+  <script src="wardrobe.js?v=clothing-inventory-01"></script>
   <script src="clothing-stock.js?v=marta-store-02"></script>
   <script src="character-name-data.js?v=random-name-01"></script>
   <script src="npc-data.js?v=vitor-01"></script>
   <script src="character-visual-data.js?v=character-options-03"></script>
-  <script src="character-avatar.js?v=marta-wardrobe-02"></script>
-  <script src="clothing-shop-view.js?v=marta-store-02"></script>
-  <script src="character-visual-view.js?v=marta-wardrobe-02"></script>
+  <script src="character-avatar.js?v=clothing-inventory-01"></script>
+  <script src="clothing-shop-view.js?v=clothing-inventory-01"></script>
+  <script src="inventory-clothing-view.js?v=clothing-inventory-01"></script>
+  <script src="character-visual-view.js?v=clothing-inventory-01"></script>
   <script src="result-view.js?v=refactor-20"></script>
   <script src="zone-view.js?v=refactor-19"></script>
   <script src="travel-view.js?v=river-advice-04"></script>
@@ -1096,7 +1112,7 @@
   <script src="shop-sell-view.js?v=refactor-15"></script>
   <script src="shop-buy-view.js?v=refactor-14"></script>
   <script src="fishing-combat.js?v=idea-031-prototype-01"></script>
-  <script src="game.js?v=marta-store-01"></script>
+  <script src="game.js?v=clothing-inventory-01"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"
