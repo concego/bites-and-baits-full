@@ -16,7 +16,7 @@ const ClothingStock = (() => {
 
   /** One color per clothing model is offered on a given in-game day. */
   function getAvailableItems(mode, date) {
-    const dailyItems = CLOTHING_CATALOG.filter(item => item.modes.includes(mode));
+    const dailyItems = CLOTHING_CATALOG.filter(item => !item.giftOnly && item.modes.includes(mode));
     const groups = new Map();
     dailyItems.forEach(item => {
       const key = item.styleId || item.id;

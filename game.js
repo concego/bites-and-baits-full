@@ -103,7 +103,7 @@ const Game = (() => {
         'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_initial_gear_received', 'bb_lake_shore_fished', 'bb_river_attempted', 'bb_zeca_river_advice', 'bb_gear_mods', 'bb_protected',
         'bb_owned_equip', 'bb_active_boat', 'bb_house_level', 'bb_zonemap',
         'bb_activezone', 'bb_map', 'bb_best', 'bb_time',
-        'bb_last_catch_story', 'bb_last_catch_free', 'bb_last_catch', 'bb_quest_dani_lambari',
+        'bb_last_catch_story', 'bb_last_catch_free', 'bb_last_catch', 'bb_quest_dani_lambari', 'bb_home_decorations',
       ].forEach(key => localStorage.removeItem(key));
       try { sessionStorage.setItem('bb_testreset_token', _resetToken); } catch {}
     }
@@ -1435,13 +1435,19 @@ const Game = (() => {
 
         // Sorteia o peixe agora para que ele já apareça nadando.
         // Pesca Livre usa níveis próprios, sem ficar presa ao bioma do mapa visual.
+        const period = typeof GameTime !== 'undefined' && typeof GameTime.period === 'function'
+          ? GameTime.period() : null;
         const questBoss = gameMode === 'normal'
-          && typeof GameTime !== 'undefined'
-          && typeof GameTime.period === 'function'
-          && DaniQuest.shouldSpawnBoss(activeMap?.id, activeZone, GameTime.period())
+          && DaniQuest.shouldSpawnBoss(activeMap?.id, activeZone, period)
           ? DaniQuest.createBossFish()
           : null;
-        currentFish = questBoss || (gameMode === 'free'
+        const postQuestBoss = gameMode === 'normal'
+          && !questBoss
+          && DaniQuest.shouldSpawnPostQuestBoss(activeMap?.id, activeZone, period)
+          && DaniQuest.markPostQuestBossSpawned()
+          ? DaniQuest.createPostQuestBossFish()
+          : null;
+        currentFish = questBoss || postQuestBoss || (gameMode === 'free'
           ? FreeFishingSystem.pickFish()
           : pickFishFromMap(activeMap, activeZone));
         fishPull         = currentFish.pull;
@@ -1454,6 +1460,8 @@ const Game = (() => {
         _spawnActiveFish(currentFish);
         if (currentFish?.storyQuestId === DaniQuest.id) {
           speak(t('dani_quest_boss_appears'));
+        } else if (currentFish?.postQuestBoss) {
+          speak(t('dani_post_quest_boss_appears'));
         } else if (gameMode === 'free' && currentFish.freeBoss) {
           const bossState = FreeFishingSystem.getState();
           speak(t('free_boss_appears', fishName(currentFish), bossState.level));
@@ -1517,7 +1525,7 @@ const Game = (() => {
         // História: registra no inventário e calcula moedas.
         // Pesca Livre: mede o exemplar e converte a captura em pontos.
         const caughtItem = (gameMode !== 'free') ? Inventory.addFish(currentFish) : null;
-        const isDaniQuestCatch = gameMode === 'normal' && DaniQuest.recordCatch(currentFish);
+        const isDaniQuestCatch = gameMode === 'normal' && DaniQuest.recordCatch(currentFish, caughtItem);
         const freeSpecimen = (gameMode === 'free') ? FishMetrics.rollSpecimen(currentFish) : null;
         const freeResult = (gameMode === 'free')
           ? FreeFishingSystem.catchFish(currentFish, freeSpecimen)
@@ -2551,6 +2559,7 @@ const Game = (() => {
         InventoryClothingView.focusItem(id);
       },
     });
+    InventoryDecorationView.render({ translate: t });
   }
 
   function _invFeedback(el, msg, ok = true) {
@@ -2710,6 +2719,12 @@ const Game = (() => {
       ];
     }
     if (personId === 'marta') {
+      if (DaniQuest.canClaimMartaGift()) {
+        return [
+          { speaker: t('people_marta_name'), text: t('people_marta_dani_thanks_01') },
+          { speaker: t('people_marta_name'), text: t('people_marta_dani_thanks_02') },
+        ];
+      }
       const name = Character.load().name || '';
       return [
         { speaker: t('people_marta_name'), text: t('people_marta_generic_01') },
@@ -2792,7 +2807,18 @@ const Game = (() => {
         questMessage = t('dani_quest_started');
       } else if (questStatus === 'caught') {
         const reward = DaniQuest.claimRewards();
-        if (reward.ok) questMessage = t('dani_quest_reward_received', reward.coinsAwarded);
+        if (reward.ok) {
+          _refreshHubHUD();
+          questMessage = t('dani_quest_reward_received', reward.coinsAwarded, reward.balance);
+        }
+      }
+    } else if (peopleConversationPersonId === 'marta' && DaniQuest.canClaimMartaGift()) {
+      const gift = DaniQuest.claimMartaGift();
+      if (gift.ok) {
+        const item = getClothingItem(gift.itemId);
+        const lang = I18n.getLang() || 'pt';
+        _renderClothingShop();
+        questMessage = t('marta_dani_gift_received', item.name[lang], item.colorName[lang]);
       }
     }
     _closePeoplePanel();
@@ -2809,12 +2835,21 @@ const Game = (() => {
     requestAnimationFrame(() => ui.peopleClose?.focus());
   }
 
+  function _openMartaThankYouConversation() {
+    peopleLocation = 'clothing_shop';
+    peopleReturnFocus = $('btn-clothing-shop-people') || document.activeElement;
+    _renderPeopleList();
+    ui.peoplePanel.classList.remove('hidden');
+    _openPeopleConversation('marta');
+  }
+
   function _openClothingShop() {
     clothingShopMode = $('clothing-mode')?.value || clothingShopMode;
     Wardrobe.syncStarterPieces();
     _renderClothingShop();
     showScreen('clothingShop');
     _startCityScreenMusic('city');
+    if (DaniQuest.canClaimMartaGift()) _openMartaThankYouConversation();
   }
 
   function _renderClothingShop(focusItemId = null, feedback = '') {

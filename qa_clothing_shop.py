@@ -45,7 +45,8 @@ CLOTHING_CATALOG.forEach(function(item) {
   check(item.id && !ids[item.id], 'unique product id'); ids[item.id] = true;
   check(item.styleId && CLOTHING_STYLES[item.styleId], 'known garment style '+item.id);
   check(['top','bottom','outerwear','headwear','gloves'].indexOf(item.slot) >= 0, 'valid slot '+item.id);
-  check(item.price >= 8 && item.price <= 22, 'provisional prototype price range '+item.id);
+  if (item.giftOnly) check(item.id === 'top_marta_courtesy' && item.price === 0, 'Marta courtesy shirt is free and gift-only');
+  else check(item.price >= 8 && item.price <= 22, 'provisional prototype price range '+item.id);
   check(['pt','en','hu'].every(function(lang) { return item.name[lang] && item.description[lang] && item.colorName[lang]; }), 'localized item and color '+item.id);
   check(item.modes.length > 0 && item.modes.every(function(mode) { return mode === 'arrival' || mode === 'fishing'; }), 'valid modes '+item.id);
   check(!/conjunto|character-creator|creator outfit|creator's outfit|összeállítás/i.test(item.description.pt+' '+item.description.en+' '+item.description.hu), 'customer description has no creator-set reference '+item.id);
@@ -60,14 +61,17 @@ CLOTHING_CATALOG.forEach(function(item) {
     });
   }
 });
-check(new Set(CLOTHING_CATALOG.map(function(item){return item.styleId;})).size === 16, '38 color variants represent 16 garment models');
+check(CLOTHING_CATALOG.filter(function(item){return !item.giftOnly;}).length === 38, '38 purchasable variants remain in the shop');
+check(CLOTHING_CATALOG.length === 39, 'the courtesy shirt is an additional gift-only inventory item');
+check(new Set(CLOTHING_CATALOG.map(function(item){return item.styleId;})).size === 16, 'catalog still represents 16 garment models');
 check(CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('arrival')>=0;}).length >= 9, 'everyday mode filtering');
 check(CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('fishing')>=0;}).length >= 14, 'fishing mode filtering');
 var dayOneArrival = ClothingStock.getAvailableItems('arrival', {year:1, month:3, day:1});
 var dayTwoArrival = ClothingStock.getAvailableItems('arrival', {year:1, month:3, day:2});
 var dayOneFishing = ClothingStock.getAvailableItems('fishing', {year:1, month:3, day:1});
 var dayTwoFishing = ClothingStock.getAvailableItems('fishing', {year:1, month:3, day:2});
-check(dayOneArrival.length < CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('arrival')>=0;}).length, 'daily rotation filters the catalog');
+check(!dayOneArrival.some(function(item){return item.giftOnly;}), 'gift-only shirt is not offered in store rotation');
+check(dayOneArrival.length < CLOTHING_CATALOG.filter(function(item){return item.modes.indexOf('arrival')>=0 && !item.giftOnly;}).length, 'daily rotation filters the catalog');
 check(dayOneArrival.map(function(item){return item.styleId;}).sort().join('|') === dayTwoArrival.map(function(item){return item.styleId;}).sort().join('|'), 'rotation keeps garment models');
 var dayOneStyleIds = dayOneArrival.map(function(item){return item.styleId;});
 check(new Set(dayOneStyleIds).size === dayOneStyleIds.length, 'one color per model each day');

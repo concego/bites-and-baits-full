@@ -42,6 +42,7 @@ const Inventory = (() => {
 
   const STORAGE_KEY_ITEMS  = 'bb_inventory';
   const STORAGE_KEY_CLOTHING = 'bb_clothing_inventory';
+  const STORAGE_KEY_DECORATIONS = 'bb_home_decorations';
   const STORAGE_KEY_COINS  = 'bb_coins';
   const STORAGE_KEY_BAITS  = 'bb_baits';
   const STORAGE_KEY_BAITS_V = 'bb_baits_v';
@@ -138,6 +139,8 @@ const Inventory = (() => {
       special:  fish.special ?? false,
       rarity:   fish.rarity || (fish.special ? 'rare' : 'common'),
       role:     fish.role || null,
+      storyQuestId: fish.storyQuestId || null,
+      postQuestBoss: fish.postQuestBoss === true,
       mapId:    fish.mapId || null,
       zoneId:   fish.zoneId || null,
       caughtAt: Date.now(),
@@ -198,6 +201,34 @@ const Inventory = (() => {
     return true;
   }
 
+  // Decorações são itens únicos, separados da carga de peixes e das roupas.
+  function _loadDecorations() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_DECORATIONS) || '[]');
+      if (!Array.isArray(saved)) return [];
+      return [...new Set(saved.filter(id => typeof id === 'string'
+        && typeof getHomeDecorationItem === 'function' && getHomeDecorationItem(id)))];
+    } catch { return []; }
+  }
+
+  function _saveDecorations(ids) {
+    try { localStorage.setItem(STORAGE_KEY_DECORATIONS, JSON.stringify(ids)); } catch { /* noop */ }
+  }
+
+  function getDecorations() { return _loadDecorations().reverse(); }
+
+  function hasDecoration(id) { return _loadDecorations().includes(id); }
+
+  /** Adiciona uma decoração única ao inventário do jogador. */
+  function addDecoration(id) {
+    if (typeof getHomeDecorationItem !== 'function' || !getHomeDecorationItem(id)) return false;
+    const owned = _loadDecorations();
+    if (owned.includes(id)) return false;
+    owned.push(id);
+    _saveDecorations(owned);
+    return true;
+  }
+
   // Capacidade da pesca da margem: vem do cesto equipado.
   // O fallback mantém saves antigos jogáveis enquanto o equipamento é migrado.
   const DEFAULT_HOLD_CAPACITY = 8;
@@ -230,11 +261,25 @@ const Inventory = (() => {
    * Remove um item do inventário pelo id (para quando vender na loja).
    * Retorna true se removido, false se não encontrado.
    */
-  function removeItem(itemId) {
+  function removeItem(itemId, allowQuestRemoval = false) {
+    if (!allowQuestRemoval && _isQuestLockedItem(itemId)) return false;
     const items    = _load();
     const filtered = items.filter(i => i.id !== itemId);
     if (filtered.length === items.length) return false;
     _save(filtered);
+    const protectedItems = _loadProtected();
+    if (protectedItems.delete(itemId)) _saveProtected(protectedItems);
+    return true;
+  }
+
+  /** Garante que um exemplar ligado a uma quest não possa ser vendido. */
+  function markQuestItem(itemId, questId) {
+    const items = _load();
+    const item = items.find(entry => entry.id === itemId);
+    if (!item) return false;
+    if (item.storyQuestId === questId) return true;
+    item.storyQuestId = questId;
+    _save(items);
     return true;
   }
 
@@ -246,6 +291,7 @@ const Inventory = (() => {
     const items = _load();
     const item  = items.find(i => i.id === itemId);
     if (!item) return { ok: false, reason: 'not_found' };
+    if (isProtected(itemId)) return { ok: false, reason: 'protected' };
     const filtered = items.filter(i => i.id !== itemId);
     _save(filtered);
     const coins = _loadCoins() + item.value;
@@ -295,6 +341,7 @@ const Inventory = (() => {
   function reset() {
     _save([]);
     _saveClothing([]);
+    _saveDecorations([]);
     _saveCoins(0);
   }
 
@@ -434,11 +481,18 @@ const Inventory = (() => {
     catch { /* noop */ }
   }
 
-  /** Retorna true se o item está protegido */
-  function isProtected(itemId) { return _loadProtected().has(itemId); }
+  function _isQuestLockedItem(itemId) {
+    return _load().some(item => item.id === itemId && !!item.storyQuestId);
+  }
 
-  /** Alterna proteção de um item. Retorna o novo estado (true = protegido). */
+  /** Itens vinculados a quests também ficam protegidos contra venda. */
+  function isProtected(itemId) {
+    return _isQuestLockedItem(itemId) || _loadProtected().has(itemId);
+  }
+
+  /** Alterna proteção; um item de quest não pode ser desprotegido antes da entrega. */
   function toggleProtect(itemId) {
+    if (_isQuestLockedItem(itemId)) return true;
     const set = _loadProtected();
     if (set.has(itemId)) { set.delete(itemId); } else { set.add(itemId); }
     _saveProtected(set);
@@ -448,11 +502,10 @@ const Inventory = (() => {
   /** Vende todos os peixes NÃO protegidos. Retorna { ok, earned, count }. */
   function sellAll() {
     const items     = _load();
-    const protected_ = _loadProtected();
-    const toSell    = items.filter(i => !protected_.has(i.id));
+    const toSell    = items.filter(i => !isProtected(i.id));
     if (toSell.length === 0) return { ok: false, reason: 'empty' };
     const earned    = toSell.reduce((s, i) => s + i.value, 0);
-    const keep      = items.filter(i => protected_.has(i.id));
+    const keep      = items.filter(i => isProtected(i.id));
     _save(keep);
     const coins = _loadCoins() + earned;
     _saveCoins(coins);
@@ -683,6 +736,7 @@ const Inventory = (() => {
     holdUsed,
     hasHoldSpace,
     removeItem,
+    markQuestItem,
     sellItem,
     sellFishQty,
     sellAll,
@@ -698,6 +752,10 @@ const Inventory = (() => {
     hasClothing,
     addClothing,
     removeClothing,
+    // Decoração da casa
+    getDecorations,
+    hasDecoration,
+    addDecoration,
     // Iscas
     getBaits,
     baitCount,

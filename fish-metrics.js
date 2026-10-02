@@ -81,6 +81,7 @@ const FishMetrics = (() => {
   }
 
   function valueFor(fish, specimen) {
+    if (Number.isFinite(fish?.saleValue)) return Math.max(1, Math.round(fish.saleValue));
     const basePrice = (typeof Inventory !== 'undefined' && Inventory.basePricePerKg)
       ? Inventory.basePricePerKg(fish.id) : 3;
     const contextRarity = fish.rarity || (fish.special ? 'rare' : 'common');

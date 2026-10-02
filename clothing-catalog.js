@@ -82,6 +82,11 @@ const CLOTHING_CATALOG = Object.freeze([
   _clothingProduct('top_dark_casual','basic_tshirt','top',['arrival'],10,'#355b70',{pt:'Azul-petróleo',en:'Petrol blue',hu:'Olajkék'}),
   _clothingProduct('top_basic_tee_navy','basic_tshirt','top',['arrival'],10,'#26384d',{pt:'Azul-marinho',en:'Navy',hu:'Sötétkék'}),
   _clothingProduct('top_basic_tee_olive','basic_tshirt','top',['arrival'],10,'#66734f',{pt:'Verde-oliva',en:'Olive green',hu:'Olívazöld'}),
+  Object.freeze({
+    ..._clothingProduct('top_marta_courtesy','basic_tshirt','top',['arrival'],0,'#849579',
+      {pt:'Verde-sálvia',en:'Sage green',hu:'Zsályazöld'}),
+    giftOnly: true,
+  }),
 
   // Calças de corte reto em variações de cor.
   _clothingProduct('bottom_simple','straight_trousers','bottom',['arrival','fishing'],10,'#596570',{pt:'Grafite',en:'Graphite',hu:'Grafitszürke'}),

@@ -24,6 +24,8 @@ const InventoryFishView = (() => {
     fishEmpty.classList.add('hidden');
     fishes.forEach(fish => {
       const prot = Inventory.isProtected(fish.id);
+      const questLocked = !!fish.storyQuestId;
+      const protectLabel = questLocked ? t('inv_quest_item_locked') : (prot ? t('inv_unprotect') : t('inv_protect'));
       const fishName = t(fish.nameKey) || fish.nameKey;
       const specimenRarity = fish.specimenRarity
         ? (t('inv_rarity_' + fish.specimenRarity) || fish.specimenRarity) : '';
@@ -51,13 +53,15 @@ const InventoryFishView = (() => {
           </button>
           <button class="btn-inv-protect btn-secondary"
                   data-item-id="${fish.id}"
-                  aria-pressed="${prot}">
-            ${prot ? t('inv_unprotect') : t('inv_protect')}
+                  aria-pressed="${prot}"
+                  ${questLocked ? 'disabled' : ''}>
+            ${protectLabel}
           </button>
           <button class="btn-inv-discard btn-danger"
                   data-item-id="${fish.id}"
                   data-item-name="${fishName}"
-                  aria-label="${t('inv_discard')} ${fishName}">
+                  aria-label="${questLocked ? protectLabel : `${t('inv_discard')} ${fishName}`}"
+                  ${questLocked ? 'disabled' : ''}>
             ${t('inv_discard')}
           </button>
         </div>`;
