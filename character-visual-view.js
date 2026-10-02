@@ -12,7 +12,7 @@ const CharacterVisualView = (() => {
   function renderAvatar({ target, character, appearanceOverride }) {
     if (!target || typeof CharacterAvatar === 'undefined') return;
     const rendered = appearanceOverride ? { ...character, appearance: appearanceOverride } : character;
-    CharacterAvatar.render(target, rendered);
+    CharacterAvatar.render(target, rendered, { isPlayer: true });
   }
 
   const OUTFIT_DESCRIPTION_FALLBACKS = {

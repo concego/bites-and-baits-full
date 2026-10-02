@@ -1937,3 +1937,73 @@ html, body {
 .character-presence-copy strong { font-size: 1.05rem; }
 .character-presence-copy span { opacity: .82; font-size: .9rem; }
 .house-character-presence { margin: 0 auto 14px; }
+
+/* Loja de roupas da Marta — catálogo acessível e responsivo. */
+#screen-clothing-shop {
+  display: none;
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+#screen-clothing-shop.active { display: flex; }
+.clothing-shop-panel {
+  width: min(980px, 100%);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 18px clamp(14px, 3vw, 30px) 28px;
+  overflow: visible;
+}
+.clothing-shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.clothing-shop-header h2 { flex: 1 1 240px; text-align: center; }
+.clothing-shop-npc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: var(--radius);
+  background: rgba(0,0,0,.2);
+}
+.clothing-avatar-preview { flex: 0 0 64px; width: 64px; height: 90px; }
+.clothing-avatar-preview .character-avatar-svg { width: 64px; height: 90px; }
+.clothing-shop-npc p { margin-top: 4px; opacity: .9; }
+.clothing-shop-controls { display: grid; gap: 6px; margin: 12px 0 16px; max-width: 420px; }
+.clothing-shop-controls select { min-height: 44px; padding: 8px 12px; border-radius: 8px; }
+.clothing-catalog-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.clothing-card {
+  display: grid;
+  grid-template-columns: 42px minmax(0,1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.23);
+  border-radius: 12px;
+  background: rgba(0,0,0,.24);
+}
+.clothing-swatch { display: block; width: 38px; height: 38px; border: 2px solid rgba(255,255,255,.72); border-radius: 8px; }
+.clothing-card-info h3 { margin: 0 0 5px; }
+.clothing-card-info p { margin: 0 0 5px; line-height: 1.35; }
+.clothing-slot { opacity: .8; font-size: .9rem; }
+.clothing-card-action { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.clothing-card-action button { min-height: 42px; }
+#clothing-shop-feedback { margin-top: 12px; }
+@media (max-width: 560px) {
+  .clothing-shop-panel { padding: 12px 10px 24px; }
+  .clothing-shop-header h2 { text-align: start; }
+  .clothing-shop-npc { align-items: flex-start; }
+}
+
+.clothing-shop-price-note {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border-inline-start: 4px solid var(--accent, #d6b45a);
+  background: rgba(0,0,0,.18);
+}

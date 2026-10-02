@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Bites &amp; Baits</title>
-  <link rel="stylesheet" href="style.css?v=free-fishing-menu-flow-01" />
+  <link rel="stylesheet" href="style.css?v=marta-store-01" />
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css?v=avatar-layout-feedback-01" />
   <link rel="stylesheet" href="style-narrative.css?v=vitor-shore-02" />
@@ -389,6 +389,7 @@
       <nav class="city-menu" aria-label="Menu da cidade">
         <button id="btn-hub-home"   class="btn-city"          data-i18n="btn_hub_home"></button>
         <button id="btn-hub-shop"   class="btn-city"          data-i18n="btn_hub_shop"></button>
+        <button id="btn-hub-clothing-shop" class="btn-city" data-i18n="btn_clothing_shop_marta"></button>
         <button id="btn-hub-vessel" class="btn-city"          data-i18n="btn_hub_vessel"></button>
         <button id="btn-hub-travel" class="btn-city"          data-i18n="btn_hub_travel"></button>
         <button id="btn-hub-inv"    class="btn-city"          data-i18n="btn_hub_inv"></button>
@@ -911,6 +912,32 @@
   </div>
 
 
+  <!-- ── Loja de roupas da Marta ───────────────────────────────────────── -->
+  <div id="screen-clothing-shop" class="screen" role="dialog" aria-modal="true" aria-labelledby="clothing-shop-title">
+    <main class="clothing-shop-panel">
+      <header class="clothing-shop-header">
+        <button id="btn-clothing-shop-back" class="btn-ghost screen-back-top" data-i18n="btn_back_hub"></button>
+        <h2 id="clothing-shop-title" data-i18n="clothing_shop_title"></h2>
+        <div class="coins-display" aria-live="polite"><span aria-hidden="true">🪙</span><span data-i18n="clothing_shop_balance_label"></span><span id="clothing-shop-coins"></span></div>
+      </header>
+      <button id="btn-clothing-shop-people" class="btn-secondary people-menu-button" data-i18n="btn_people_present"></button>
+      <section class="clothing-shop-npc" aria-labelledby="clothing-shop-npc-name">
+        <div id="clothing-avatar-preview" class="clothing-avatar-preview" aria-hidden="true"></div>
+        <div><h3 id="clothing-shop-npc-name" data-i18n="clothing_shop_marta_name"></h3><p id="clothing-shop-npc"></p></div>
+      </section>
+      <div class="clothing-shop-controls">
+        <label for="clothing-mode" data-i18n="clothing_shop_mode_label"></label>
+        <select id="clothing-mode">
+          <option value="arrival" data-i18n="clothing_shop_everyday"></option>
+          <option value="fishing" data-i18n="clothing_shop_fishing"></option>
+        </select>
+      </div>
+      <p class="clothing-shop-price-note" data-i18n="clothing_shop_provisional_prices"></p>
+      <div id="clothing-catalog-list" class="clothing-catalog-list"></div>
+      <div id="clothing-shop-feedback" class="shop-feedback hidden" role="status" aria-live="polite"></div>
+    </main>
+  </div>
+
   <!-- ── Tela da Loja ───────────────────────────────────────────────────── -->
   <div id="screen-shop" class="screen">
     <div class="shop-dialog">
@@ -1024,7 +1051,7 @@
     });
   </script>
   <script src="a11y.js"></script>
-  <script src="i18n.js?v=river-event-01"></script>
+  <script src="i18n.js?v=marta-store-01"></script>
   <script src="accessibility-announcer.js?v=refactor-01"></script>
   <script src="last-catch-storage.js?v=refactor-02"></script>
   <script src="fish-data.js"></script>
@@ -1047,15 +1074,18 @@
   <script src="audio.js?v=travel-folk-01"></script>
   <script src="city-music.js?v=refactor-05"></script>
   <script src="opening-audio.js?v=arrival-sound-layer-01"></script>
-  <script src="screen-navigation.js?v=refactor-03"></script>
+  <script src="screen-navigation.js?v=marta-store-01"></script>
   <script src="sensors.js"></script>
   <script src="visuals.js?v=3ed5296"></script>
   <script src="character-data.js"></script>
+  <script src="clothing-catalog.js?v=marta-store-01"></script>
+  <script src="wardrobe.js?v=marta-store-01"></script>
   <script src="character-name-data.js?v=random-name-01"></script>
   <script src="npc-data.js?v=vitor-01"></script>
   <script src="character-visual-data.js?v=character-options-03"></script>
-  <script src="character-avatar.js?v=neck-position-feedback-01"></script>
-  <script src="character-visual-view.js?v=appearance-presence-07"></script>
+  <script src="character-avatar.js?v=marta-wardrobe-02"></script>
+  <script src="clothing-shop-view.js?v=marta-store-01"></script>
+  <script src="character-visual-view.js?v=marta-wardrobe-02"></script>
   <script src="result-view.js?v=refactor-20"></script>
   <script src="zone-view.js?v=refactor-19"></script>
   <script src="travel-view.js?v=river-advice-04"></script>
@@ -1064,7 +1094,7 @@
   <script src="shop-sell-view.js?v=refactor-15"></script>
   <script src="shop-buy-view.js?v=refactor-14"></script>
   <script src="fishing-combat.js?v=idea-031-prototype-01"></script>
-  <script src="game.js?v=river-event-01"></script>
+  <script src="game.js?v=marta-store-01"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"

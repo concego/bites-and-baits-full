@@ -7,7 +7,7 @@
 
 const ScreenNavigation = (() => {
   const CITY_MUSIC_SCREENS = [
-    'storyHub', 'house', 'shop', 'travel', 'inventory', 'vessel',
+    'storyHub', 'house', 'shop', 'clothingShop', 'travel', 'inventory', 'vessel',
   ];
 
   function show(screens, name) {

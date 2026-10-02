@@ -99,7 +99,7 @@ const Game = (() => {
       // Permite recomeçar a QA sem depender de cache/histórico do navegador.
       // O idioma fica preservado; somente o progresso do jogo é apagado.
       [
-        'bb_character', 'bb_story_opening_complete', 'bb_inventory', 'bb_coins',
+        'bb_character', 'bb_story_opening_complete', 'bb_wardrobe_v1', 'bb_inventory', 'bb_coins',
         'bb_baits', 'bb_baits_v', 'bb_equip', 'bb_initial_gear_received', 'bb_lake_shore_fished', 'bb_river_attempted', 'bb_zeca_river_advice', 'bb_gear_mods', 'bb_protected',
         'bb_owned_equip', 'bb_active_boat', 'bb_house_level', 'bb_zonemap',
         'bb_activezone', 'bb_map', 'bb_best', 'bb_time',
@@ -159,6 +159,7 @@ const Game = (() => {
       options:      $('screen-options'),
       inventory:    $('screen-inventory'),
       shop:         $('screen-shop'),
+      clothingShop: $('screen-clothing-shop'),
       travel:       $('screen-travel'),
       vessel:       $('screen-vessel'),
       house:        $('screen-house'),
@@ -213,6 +214,7 @@ const Game = (() => {
       travelPeople:   $('btn-travel-people'),
       vesselPeople:   $('btn-vessel-people'),
       shopPeople:     $('btn-shop-people'),
+      clothingShopPeople: $('btn-clothing-shop-people'),
       gamePeople:     $('btn-bar-people'),
       peoplePanel:    $('people-panel'),
       peopleLocation: $('people-location'),
@@ -319,6 +321,9 @@ const Game = (() => {
       _startCityScreenMusic('shop');
       _openShopZecaDialogue();
     });
+    $('btn-hub-clothing-shop')?.addEventListener('click', _openClothingShop);
+    $('btn-clothing-shop-back')?.addEventListener('click', () => showStoryHub());
+    ui.clothingShopPeople?.addEventListener('click', event => _openPeoplePanel('clothing_shop', event.currentTarget));
     $('btn-hub-inv')?.addEventListener('click',    () => { renderInventory(); showScreen('inventory'); _startCityScreenMusic('city'); });
     ui.hubPeople?.addEventListener('click', event => _openPeoplePanel('hub', event.currentTarget));
     ui.housePeople?.addEventListener('click', event => _openPeoplePanel('house', event.currentTarget));
@@ -464,7 +469,7 @@ const Game = (() => {
   function _renderCharacterPresence(avatar, nameEl, outfitEl, outfit = 'arrival') {
     const character = Character.load();
     if (avatar && typeof CharacterAvatar !== 'undefined') {
-      CharacterAvatar.render(avatar, character, { outfit });
+      CharacterAvatar.render(avatar, character, { outfit, isPlayer: true });
     }
     if (nameEl) nameEl.textContent = character.name || t('character_unknown_name');
     if (outfitEl) {
@@ -518,6 +523,7 @@ const Game = (() => {
   let shoreDialogueIndex = 0;
   let openingRenderedStep = null;
   let shopZecaDialogueIndex = 0;
+  let clothingShopMode = 'arrival';
   let peopleLocation = 'hub';
   let peopleConversation = null;
   let peopleDialogueIndex = 0;
@@ -1226,7 +1232,7 @@ const Game = (() => {
 
       // 1. Troca de tela PRIMEIRO — imediato, sem await
       showScreen('game');
-      CharacterAvatar.render(ui.characterAvatar, Character.load(), { outfit: 'fishing' });
+      CharacterAvatar.render(ui.characterAvatar, Character.load(), { outfit: 'fishing', isPlayer: true });
 
       // 2. Sensores e áudio: fire-and-forget, nunca bloqueiam
       Sensors.requestPermission().then(ok => {
@@ -2570,6 +2576,7 @@ const Game = (() => {
       hub: 'people_location_hub',
       house: 'people_location_house',
       shop: 'people_location_shop',
+      clothing_shop: 'people_location_clothing_shop',
       vessel: 'people_location_vessel',
       lake: 'people_location_lake',
       river_shore: 'people_location_river_shore',
@@ -2582,6 +2589,7 @@ const Game = (() => {
       hub: [{ id: 'vitor', name: 'people_vitor_name', desc: 'people_vitor_desc' }],
       house: [],
       shop: [{ id: 'zeca', name: 'people_zeca_name', desc: 'people_zeca_desc' }],
+      clothing_shop: [{ id: 'marta', name: 'people_marta_name', desc: 'people_marta_desc' }],
       vessel: [{ id: 'vitor', name: 'people_vitor_name', desc: 'people_vitor_desc' }],
       lake: [],
       river_shore: [],
@@ -2615,6 +2623,14 @@ const Game = (() => {
         { speaker: t('people_zeca_name'), text: t('people_zeca_generic_01') },
         { speaker: Character.load().name || '', text: t('people_player_generic_01') },
         { speaker: t('people_zeca_name'), text: t('people_zeca_generic_02') },
+      ];
+    }
+    if (personId === 'marta') {
+      const name = Character.load().name || '';
+      return [
+        { speaker: t('people_marta_name'), text: t('people_marta_generic_01') },
+        { speaker: name, text: t('people_player_generic_01') },
+        { speaker: t('people_marta_name'), text: t('people_marta_generic_02') },
       ];
     }
     if (personId === 'vitor') {
@@ -2694,6 +2710,45 @@ const Game = (() => {
     _renderPeopleList();
     ui.peoplePanel.classList.remove('hidden');
     requestAnimationFrame(() => ui.peopleClose?.focus());
+  }
+
+  function _openClothingShop() {
+    clothingShopMode = $('clothing-mode')?.value || clothingShopMode;
+    Wardrobe.syncStarterPieces();
+    _renderClothingShop();
+    showScreen('clothingShop');
+    _startCityScreenMusic('city');
+  }
+
+  function _renderClothingShop(focusItemId = null, feedback = '') {
+    ClothingShopView.render({
+      mode: clothingShopMode,
+      coins: Inventory.coins(),
+      onModeChange: mode => {
+        clothingShopMode = mode === 'fishing' ? 'fishing' : 'arrival';
+        _renderClothingShop();
+      },
+      onBuy: (id, item) => {
+        const result = Wardrobe.buy(id);
+        if (result.ok) {
+          _renderClothingShop(id, ClothingShopView.textFor('purchased', item.name[I18n.getLang() || 'pt']));
+        } else if (result.reason === 'coins') {
+          _renderClothingShop(id, ClothingShopView.textFor('notEnough'));
+        } else if (result.reason === 'owned') {
+          _renderClothingShop(id, ClothingShopView.textFor('owned'));
+        }
+      },
+      onEquip: (id, item) => {
+        const equipped = Wardrobe.equip(id, clothingShopMode);
+        const message = equipped
+          ? ClothingShopView.textFor('worn', item.name[I18n.getLang() || 'pt'])
+          : ClothingShopView.textFor('notOwned');
+        _renderClothingShop(id, message);
+        if (equipped) _renderCharacterPresenceCards();
+      },
+    });
+    if (feedback) ClothingShopView.showFeedback(feedback);
+    if (focusItemId) ClothingShopView.focusItem(focusItemId);
   }
 
   function renderShop() {

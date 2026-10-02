@@ -139,8 +139,29 @@ const CharacterAvatar = (() => {
     return '';
   }
 
-  function _hands(skin, shadow) {
+  function _hands(skin, shadow, gloveColor = '') {
+    if (gloveColor) return `<circle cx="43" cy="136" r="5.8" fill="${gloveColor}" stroke="#302b27" stroke-width="1.2"/><circle cx="97" cy="136" r="5.8" fill="${gloveColor}" stroke="#302b27" stroke-width="1.2"/>`;
     return `<circle cx="43" cy="136" r="5" fill="${skin}" stroke="${shadow}" stroke-width="1"/><circle cx="97" cy="136" r="5" fill="${skin}" stroke="${shadow}" stroke-width="1"/>`;
+  }
+
+  function _headwear(color) {
+    return `<path d="M41 35 Q70 8 99 35 L95 42 Q70 33 45 42Z" fill="${color}" stroke="#34464d" stroke-width="1.5"/><path d="M82 35 Q101 34 106 40 Q94 44 82 42Z" fill="#34464d"/>`;
+  }
+
+  function _outerwear(item, profile, bodyIndex, fishing) {
+    if (!item) return '';
+    const b = _profileData(profile, bodyIndex);
+    const y = fishing ? 91 : 88;
+    if (item.layer === 'cape') {
+      return `<path d="M${70-b.shoulder} ${y+5} Q70 ${y+12} ${70+b.shoulder} ${y+5} L${70+b.hip} 139 L${70-b.hip} 139Z" fill="${item.color}" opacity=".82" stroke="#394b55" stroke-width="1.2"/><path d="M70 ${y+10} L70 137" stroke="#d5dce0" stroke-width="1.3" opacity=".7"/>`;
+    }
+    if (item.layer === 'vest') {
+      return `<path d="M${70-b.shoulder+3} ${y+5} L${70-b.waist+2} ${y+17} L${70-b.hip+2} 138 L${70-4} 138 L70 ${y+19} L${70+4} 138 L${70+b.hip-2} 138 L${70+b.waist-2} ${y+17} L${70+b.shoulder-3} ${y+5} L${70+5} ${y+11} L70 ${y+20} L${70-5} ${y+11}Z" fill="${item.color}" opacity=".88" stroke="#39433d" stroke-width="1.2"/>`;
+    }
+    if (item.layer === 'jacket') {
+      return `<path d="M${70-b.shoulder+2} ${y+3} Q70 ${y-1} ${70+b.shoulder-2} ${y+3} L${70+b.hip} 138 L70 138 L${70-b.hip} 138Z" fill="${item.color}" opacity=".62" stroke="#394b55" stroke-width="1.1"/>`;
+    }
+    return '';
   }
 
   function _legs(profile, pants, boot) {
@@ -163,9 +184,12 @@ const CharacterAvatar = (() => {
     const hairShadow = hair === '#17120f' ? '#090706' : '#24130f';
     const outfitIndex = _index(mode === 'fishing' ? appearance.fishingOutfit : appearance.arrivalOutfit);
     const outfitPalette = mode === 'fishing' ? FISHING : ARRIVAL;
-    const shirt = outfitPalette[profile][outfitIndex - 1];
+    const isConfirmedPlayer = options?.isPlayer === true && current.confirmed === true;
+    const clothes = isConfirmedPlayer && typeof Wardrobe !== 'undefined'
+      ? Wardrobe.getEquipped(mode) : {};
+    const shirt = clothes.top?.color || outfitPalette[profile][outfitIndex - 1];
     const shirtDark = mode === 'fishing' ? '#253d46' : '#4b3b55';
-    const pants = PANTS[profile];
+    const pants = clothes.bottom?.color || PANTS[profile];
     const boots = BOOTS[profile];
     const faceIndex = _index(appearance.faceShape);
     const eyeDetails = _index(appearance.eyeDetails);
@@ -177,7 +201,11 @@ const CharacterAvatar = (() => {
     const torso = _torso(profile, bodyIndex, shirt, shirtDark, mode === 'fishing');
     const shirtDetails = _shirtDetails(profile, bodyIndex, shirt, shirtDark, mode === 'fishing', outfitIndex);
     const hairMarkup = _hair(appearance.hairStyle, profile, hair, hairShadow);
-    const covering = _headCover(_index(appearance.headCovering, 7));
+    const covering = clothes.headwear
+      ? _headwear(clothes.headwear.color)
+      : _headCover(_index(appearance.headCovering, 7));
+    const outerwear = _outerwear(clothes.outerwear, profile, bodyIndex, mode === 'fishing');
+    const gloves = clothes.gloves?.color || '';
     const beard = _facialHair(profile, _index(appearance.facialHair), shadow);
     const accessory = _accessory(_index(appearance.accessories), skin);
     const fishingBadge = mode === 'fishing' ? '<path d="M57 111h26v13H57Z" fill="#e8c76a" stroke="#7f6625"/><path d="M61 117h18" stroke="#7f6625" stroke-width="1.4"/>' : '';
@@ -188,10 +216,11 @@ const CharacterAvatar = (() => {
         ${_legs(profile, pants, boots)}
         ${torso}
         ${shirtDetails}
+        ${outerwear}
         ${fishingBadge}
         <path d="M${70 - _profileData(profile, bodyIndex).shoulder + 2} 101 Q${70 - _profileData(profile, bodyIndex).shoulder - 7} 112 43 136" stroke="${shirtDark}" stroke-width="10" fill="none" stroke-linecap="round"/>
         <path d="M${70 + _profileData(profile, bodyIndex).shoulder - 2} 101 Q${70 + _profileData(profile, bodyIndex).shoulder + 7} 112 97 136" stroke="${shirtDark}" stroke-width="10" fill="none" stroke-linecap="round"/>
-        ${_hands(skin, shadow)}
+        ${_hands(skin, shadow, gloves)}
         <path d="M62 70 Q70 79 78 70 L77 88 Q70 94 63 88Z" fill="${skin}" stroke="${shadow}" stroke-width="1.1"/>
         ${_face(faceIndex, skin, shadow, eye, eyeY, eyeSize, expressive)}
         ${hairMarkup}
