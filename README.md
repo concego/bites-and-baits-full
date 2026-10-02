@@ -1,6 +1,6 @@
 # 🎣 Bites & Baits
 
-> Jogo web de pesca com controles por movimento ou teclado, dois modos de jogo e acessibilidade integrada desde a arquitetura.
+> Jogo web de pesca com História e Pesca Livre, controles por movimento ou teclado e acessibilidade integrada desde a arquitetura.
 
 **Jogar agora:** <https://concego.github.io/bites-and-baits-full/>
 
@@ -14,9 +14,10 @@ O projeto busca colocar pessoas que enxergam e pessoas cegas na mesma atividade,
 
 ### História
 
-- Progressão com mapas, zonas de pesca, moedas e inventário.
+- Progressão pela Vila Barra Serena, com mapas, zonas de pesca, moedas e inventário.
 - Equipamentos, iscas e barcos influenciam a pescaria.
 - Capturas são registradas no inventário.
+- A vila reúne casa, viagens, estaleiro, lojas e NPCs.
 - O histórico de última captura da História é mantido separadamente.
 
 ### Pesca Livre
@@ -24,7 +25,15 @@ O projeto busca colocar pessoas que enxergam e pessoas cegas na mesma atividade,
 - Pescaria rápida voltada para pontuação.
 - Não depende do inventário nem consome iscas da História.
 - A pontuação da captura aparece no resumo de resultados.
+- A progressão por níveis inclui encontros com Bosses de medidas dentro dos limites biologicamente plausíveis do catálogo.
 - Mantém seu próprio histórico de última captura, separado da História.
+
+## Roupas e inventário
+
+- A loja de roupas da Vila Barra Serena oferece **38 variantes de cor em 16 modelos**; os nomes descrevem a peça, e a cor é informada separadamente.
+- As cores disponíveis na loja giram a cada dia do calendário do jogo.
+- Roupas compradas e peças iniciais escolhidas na criação ficam no inventário; a equipagem é feita por lá, separando roupas do dia a dia e de pesca.
+- O móvel guarda-roupa, planejado para ampliar o armazenamento em casa, não está disponível nesta versão inicial.
 
 ## Controles
 
@@ -32,20 +41,30 @@ O projeto busca colocar pessoas que enxergam e pessoas cegas na mesma atividade,
 
 Com sensores disponíveis:
 
-- **Inclinar para frente** → lançar a linha ou puxar o peixe.
-- **Inclinar para trás** → aliviar a tensão da linha.
+- **Inclinar para frente** → lançar a linha; durante a briga, aliviar a tensão.
+- **Inclinar para trás** → puxar o peixe; enquanto espera, recolher a linha.
+- **Manter o aparelho neutro** → estabilizar a tensão enquanto o peixe luta.
 - **Sacudir** → fisgar quando o peixe morde.
 
 ### PC, celular sem sensores ou teclado OTG
 
 | Tecla | Ação |
 | --- | --- |
-| ↑ Seta para cima | Lançar ou puxar |
-| ↓ Seta para baixo | Aliviar a tensão |
-| Espaço | Sacudir / fisgar |
-| F | Ler novamente os dados da última captura |
+| ↑ Seta para cima | Lançar; durante a briga, aliviar a tensão |
+| ↓ Seta para baixo | Puxar o peixe; enquanto espera, recolher a linha |
+| Espaço | Sacudir / fisgar quando o peixe morde |
+| F | Ler novamente o resumo completo da última captura |
 
 Os listeners de teclado são registrados uma única vez e não substituem nem alteram a gameplay por sensores.
+
+## Briga com o peixe
+
+A captura combina progresso, tensão da linha e fadiga do peixe:
+
+- Puxar aumenta o progresso da captura, mas também eleva a tensão.
+- Manter o controle neutro estabiliza a tensão e cansa o peixe enquanto ele luta.
+- Aliviar a linha reduz a tensão, mas o peixe pode se afastar e diminuir o progresso.
+- Um peixe cansado se afasta menos durante o alívio; a linha arrebenta se a tensão chega ao limite.
 
 ## Última captura
 
