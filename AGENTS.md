@@ -64,6 +64,28 @@
 ## Código, assets e implementação
 
 - Siga a arquitetura, os padrões e as tecnologias já adotados no repositório. Não introduza framework, biblioteca ou serviço externo sem necessidade justificada e autorização quando houver impacto relevante.
+- Fatore o código e os conteúdos do jogo em arquivos e pastas separados por responsabilidade, criando quantos módulos forem necessários para manter cada parte compreensível e fácil de localizar, testar e corrigir. Evite arquivos monumentais que concentrem sistemas sem relação ou muitas responsabilidades.
+- Antes de acrescentar lógica a um arquivo já grande, avalie se ela deve ficar num módulo próprio ou num módulo existente de responsabilidade específica. Prefira delimitar a mudança ao subsistema afetado para reduzir o risco de quebrar comportamentos que já funcionam.
+- Mantenha coesão: não divida em arquivos minúsculos ou camadas artificiais sem benefício claro. Respeite o carregamento, as dependências e os padrões do projeto; se a separação exigir mudança arquitetural ampla ou risco de regressão, explique o plano e peça decisão antes de prosseguir.
+- Separe também conteúdos, dados e documentação de desenvolvimento quando isso facilitar manutenção; não misture especificações e anotações internas com arquivos executados pelo jogo.
+- Ao refatorar ou extrair módulos, preserve APIs e contratos existentes sempre que possível e teste as integrações afetadas, não apenas o arquivo recém-criado.
+
+- Reutilize os assets existentes quando forem adequados. Não substitua áudio ou arte aprovada por placeholders, síntese improvisada ou assets de origem/licença incerta.
+- Para mudanças de áudio, consulte `AUDIO-SOURCES.md`; preserve créditos e requisitos de licença.
+- Atualize documentação quando uma mudança aprovada alterar comportamento, controles ou estado do projeto. Não use a documentação para transformar uma decisão pendente em decisão tomada.
+
+## Testes e prestação de contas
+
+- Antes de testar, identifique quais verificações são possíveis no ambiente disponível e execute as relevantes.
+- Relate separadamente:
+  1. o que foi alterado;
+  2. verificações estáticas ou automatizadas executadas e seus resultados;
+  3. testes manuais realmente realizados;
+  4. o que ainda não foi possível validar.
+- Não diga que uma mudança foi “testada”, “aprovada” ou “validada” se só houve leitura de código, revisão estática ou publicação.
+- Não afirme que Anderson aprovou uma mecânica ou teste sem confirmação explícita dele.
+- Não atualize releases, README de distribuição ou publicação hospedada sem cumprir as aprovações definidas por Anderson para aquela etapa.
+
 - Reutilize os assets existentes quando forem adequados. Não substitua áudio ou arte aprovada por placeholders, síntese improvisada ou assets de origem/licença incerta.
 - Para mudanças de áudio, consulte `AUDIO-SOURCES.md`; preserve créditos e requisitos de licença.
 - Atualize documentação quando uma mudança aprovada alterar comportamento, controles ou estado do projeto. Não use a documentação para transformar uma decisão pendente em decisão tomada.
