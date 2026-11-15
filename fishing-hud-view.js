@@ -44,6 +44,39 @@ const FishingHudView = (() => {
     if (qtyEl) qtyEl.textContent = `×${qty}`;
   }
 
+  function setFishDirection({ indicator, label, announcer, arrow, phase, side, previousPhase, previousSide, translate }) {
+    if (!indicator) return { phase: previousPhase, side: previousSide };
+    if (phase !== 'approaching' && phase !== 'retreating') {
+      indicator.classList.add('hidden');
+      indicator.classList.remove('from-left', 'from-right', 'is-retreating');
+      if (previousPhase !== null && announcer) announcer.textContent = '';
+      return { phase: null, side: null };
+    }
+
+    side = side === 'left' ? 'left' : 'right';
+    indicator.classList.remove('hidden');
+    indicator.classList.toggle('from-left', side === 'left');
+    indicator.classList.toggle('from-right', side === 'right');
+    indicator.classList.toggle('is-retreating', phase === 'retreating');
+
+    const phaseChanged = phase !== previousPhase;
+    if (phaseChanged) {
+      const message = translate(`fish_direction_${phase}`);
+      if (label) label.textContent = message;
+      if (announcer) announcer.textContent = message;
+    }
+
+    let nextSide = previousSide;
+    if ((side !== previousSide || phaseChanged) && arrow) {
+      const pointsInward = phase === 'approaching';
+      arrow.textContent = side === 'left'
+        ? (pointsInward ? '→' : '←')
+        : (pointsInward ? '←' : '→');
+      nextSide = side;
+    }
+    return { phase, side: nextSide };
+  }
+
   function refreshHold({ mode, getCapacityBoat, getContainerName }) {
     if (mode !== 'normal') return;
 
@@ -62,5 +95,5 @@ const FishingHudView = (() => {
     }
   }
 
-  return { renderGearVisuals, refreshBait, refreshHold };
+  return { renderGearVisuals, refreshBait, refreshHold, setFishDirection };
 })();
