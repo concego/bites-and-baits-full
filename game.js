@@ -3019,37 +3019,19 @@ const Game = (() => {
   }
 
   function _setFishDirectionIndicator(phase, side = null) {
-    const indicator = ui.fishDirectionIndicator;
-    if (!indicator) return;
-    if (phase !== 'approaching' && phase !== 'retreating') {
-      indicator.classList.add('hidden');
-      indicator.classList.remove('from-left', 'from-right', 'is-retreating');
-      if (_fishIndicatorPhase !== null && ui.fishDirectionAnnouncer) {
-        ui.fishDirectionAnnouncer.textContent = '';
-      }
-      _fishIndicatorPhase = null;
-      _fishIndicatorSide = null;
-      return;
-    }
-    side = side === 'left' ? 'left' : 'right';
-    indicator.classList.remove('hidden');
-    indicator.classList.toggle('from-left', side === 'left');
-    indicator.classList.toggle('from-right', side === 'right');
-    indicator.classList.toggle('is-retreating', phase === 'retreating');
-    const phaseChanged = phase !== _fishIndicatorPhase;
-    if (phaseChanged) {
-      const message = I18n.t(`fish_direction_${phase}`);
-      if (ui.fishDirectionLabel) ui.fishDirectionLabel.textContent = message;
-      if (ui.fishDirectionAnnouncer) ui.fishDirectionAnnouncer.textContent = message;
-      _fishIndicatorPhase = phase;
-    }
-    if ((side !== _fishIndicatorSide || phaseChanged) && ui.fishDirectionArrow) {
-      const pointsInward = phase === 'approaching';
-      ui.fishDirectionArrow.textContent = side === 'left'
-        ? (pointsInward ? '→' : '←')
-        : (pointsInward ? '←' : '→');
-      _fishIndicatorSide = side;
-    }
+    const next = FishingHudView.setFishDirection({
+      indicator: ui.fishDirectionIndicator,
+      label: ui.fishDirectionLabel,
+      announcer: ui.fishDirectionAnnouncer,
+      arrow: ui.fishDirectionArrow,
+      phase,
+      side,
+      previousPhase: _fishIndicatorPhase,
+      previousSide: _fishIndicatorSide,
+      translate: key => I18n.t(key),
+    });
+    _fishIndicatorPhase = next.phase;
+    _fishIndicatorSide = next.side;
   }
 
   function updateScore() {
