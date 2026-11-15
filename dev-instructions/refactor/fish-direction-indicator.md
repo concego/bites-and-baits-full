@@ -28,7 +28,7 @@ Implementado somente na branch `refactor-step-1-module-map`, no primeiro recorte
 
 1. Novo QA focalizado verifica fases, seta por lado, classes, anúncio em mudança de fase, ausência de repetição ao mudar apenas o lado, limpeza e elementos ausentes.
 2. Executar `qa_clothing_shop.py`, `qa_dani_quest.py`, `qa_dani_quest_inventory.py`, `qa_home_decorations.py` e verificar sintaxe JavaScript com o motor disponível.
-3. Revisão estática confirmou que `game.js` chama o mesmo adaptador nos mesmos cinco pontos (spawn/destruição/estados de aproximação e recuo); não foram alterados CSS, dados, regras ou strings. O HTML mudou apenas o cache-buster do módulo existente.
+3. Revisão estática confirmou que `game.js` chama o mesmo adaptador nos mesmos seis pontos (spawn/destruição/estados de aproximação e recuo); não foram alterados CSS, dados, regras ou strings. O HTML mudou apenas o cache-buster do módulo existente.
 4. Não publicar Pages, alterar releases ou tocar na demo nesta etapa.
 
 ### Execução em 2026-11-15
