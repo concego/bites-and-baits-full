@@ -1,3 +1,6 @@
+Source: Web Fetch
+URL: https://raw.githubusercontent.com/concego/bites-and-baits-full/ec13f14cbaef9bd0678ffa4fc32d5385cd4abfbc/AGENTS.md
+---
 # Orientações para agentes de IA — Bites & Baits
 
 ## Escopo e autoridade
@@ -12,7 +15,8 @@
 ## Documentos de orientação e releases
 
 - `AGENTS.md` e documentos criados para orientar o desenvolvimento são internos ao repositório: não devem fazer parte de releases ou outros pacotes de distribuição.
-- Guarde novos documentos dessa finalidade em `dev-instructions/`. Arquivos de instruções específicos de subdiretórios podem usar o nome `AGENTS.md` onde forem necessários. Ambos estão excluídos dos arquivos gerados por `git archive` por `.gitattributes`.
+- Guarde especificações e orientações de implementação em `dev-instructions/`. Arquivos de instruções específicos de subdiretórios podem usar o nome `AGENTS.md` onde forem necessários. Esses documentos estão excluídos dos arquivos gerados por `git archive` por `.gitattributes`.
+- **Não leia, pesquise, busque nem use o arquivo `BRAINSTORMING.md`, suas cópias ou registros históricos.** Ele é material privado de conversa entre Anderson e Zapia, fica fora do repositório e não é fonte para a IA durante tarefas de desenvolvimento. Só Anderson pode trazer uma ideia para o trabalho técnico; quando isso ocorrer, siga a solicitação específica e os documentos de implementação autorizados, sem consultar o brainstorming.
 - Em pacotes montados por outros processos, exclua esses documentos explicitamente e confira o conteúdo antes de publicar. Não presuma que `.gitattributes` controla ferramentas que não usam `git archive`.
 - Não remova créditos ou licenças necessários à distribuição sob pretexto de excluir orientações internas.
 
