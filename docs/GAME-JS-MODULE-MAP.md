@@ -86,16 +86,16 @@ As faixas são aproximadas e devem ser recalculadas após cada extração. Módu
 
 ## Prioridade sugerida e etapas independentes
 
-1. **Manter este mapa atualizado** e verificar o tamanho/limites atuais. Documentação somente; sem alteração de gameplay.
-2. **Extrair um subsistema de apresentação/interface de baixo risco** que já esteja isolado por callbacks e módulos de view. Antes de escolher a extração exata, revisar no código as dependências e documentar a especificação aprovada; não selecionar automaticamente pelo tamanho.
-3. Após cada extração, executar os testes automatizados existentes afetados e regressões, comparar comportamento público/API, revisar IDs e ordem de scripts e realizar smoke test manual no navegador sem declarar TalkBack validado se não testado.
-4. Somente depois de resultado aceitável, especificar o próximo subsistema e repetir. `init`, `enterState`, timers, física, sensores e migração para ES Modules ficam para etapas posteriores e separadas.
+1. **Atualizar mapa:** concluído nesta branch; faixas e limites foram conferidos contra `main` consultada em 2026-11-15.
+2. **Primeira extração de apresentação:** concluída nesta branch. A atualização do indicador de direção do peixe foi movida para a função `FishingHudView.setFishDirection`; `Game` preserva o estado de fase/lado e chama a view nos mesmos pontos. Especificação: `dev-instructions/refactor/fish-direction-indicator.md`.
+3. **Testar após cada passo:** nesta extração passaram o QA focalizado (17 asserções), as quatro suítes de regressão disponíveis e a análise de sintaxe de 51 arquivos JS com DukPy. Smoke test manual de navegador/leitor de tela/sensores segue pendente.
+4. **Próximo passo ainda não iniciado:** revisar a etapa seguinte, identificar a próxima fronteira de baixo risco, registrar especificação aprovada e só então alterar código. Não combinar múltiplas extrações. `init`, `enterState`, timers, física, sensores e migração para ES Modules continuam em fases posteriores separadas.
 
 ## Testes e limitações registrados na auditoria
 
-No branch `main` consultado foram encontrados QA automatizados específicos: `qa_clothing_shop.py`, `qa_dani_quest.py`, `qa_dani_quest_inventory.py` e `qa_home_decorations.py`. Não foi encontrado um script de QA geral/automático no inventário de arquivos consultado. Testes automatizados dos fluxos não equivalem a smoke test do site nem validação manual de acessibilidade.
+No `main` consultado foram encontrados QA automatizados específicos: `qa_clothing_shop.py`, `qa_dani_quest.py`, `qa_dani_quest_inventory.py` e `qa_home_decorations.py`. Não foi encontrado um script geral no inventário consultado. Para a extração do indicador, foi adicionado `qa_fishing_direction_view.py`. Testes automatizados não equivalem a smoke test do site ou validação manual de acessibilidade.
 
-Em 2026-11-15, as quatro suítes acima foram executadas nesta cópia de referência e passaram. `node` não estava instalado no ambiente desta auditoria, portanto `node --check` não foi executado. Nenhum teste físico com sensores, NVDA ou TalkBack foi realizado aqui. Repetir os testes relevantes depois de cada mudança; se a extração tocar em áreas fora das quatro suítes, criar QA focalizado antes de alterar o comportamento.
+Em 2026-11-15, antes e depois da extração, as quatro suítes existentes passaram. Depois da extração, passaram também 17 asserções focadas do indicador e a análise sintática de todos os 51 arquivos JavaScript via DukPy. `node` não está instalado, então `node --check` não foi executado. Nenhum teste manual do jogo, com sensores, NVDA ou TalkBack foi realizado nesta etapa. Repetir testes relevantes após cada mudança e criar QA focalizado quando a extração tocar áreas ainda não cobertas.
 
 ## Fonte e rastreabilidade
 
