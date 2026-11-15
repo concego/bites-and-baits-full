@@ -229,6 +229,17 @@ Antes de especificar, decidir:
 - Avaliar separadamente requisitos técnicos, custos, processo de publicação e acessibilidade das plataformas antes de assumir qualquer rota.
 - Não tratar decisão de distribuição como autorização para acessar contas, enviar releases ou publicar. O usuário mantém controle dessas ações.
 
+### 2.12 Estudos históricos de arte visual e descrições cromáticas
+
+**Status: propostas registradas em documentos locais antigos; reconfirmar antes de criar especificação ou implementar.**
+
+- O antigo `VISUAL-ASSET-PLAN.md` propunha um inventário de SVGs para equipamentos, barcos, estabelecimentos e mapas, com identificadores e `viewBox` sugeridos, símbolos reutilizáveis e renderizadores por contexto. A proposta também listava modelos de itens e zonas. Esses detalhes não são uma especificação vigente: o `VISUAL-DESIGN-STANDARD.md` versionado no repositório é a referência visual atual, e os IDs, dimensões e inventários antigos devem ser comparados com o código/arte existente antes de qualquer reaproveitamento.
+- O estudo antigo de integração com o Croma propunha descrições opcionais de associações conceituais das cores dentro do texto normal, desativadas por padrão, sem áudio separado e sem efeitos de gameplay. Isso não confirma uma decisão atual de integrar o Croma.
+- O estudo deixou sem decisão a cobertura da paleta além das cores suportadas, a experiência em húngaro, os itens abrangidos, a versão/licença a incorporar e a arquitetura da integração. Não carregar bibliotecas de terceiros por CDN/runtime remoto com base naquele estudo.
+- Reconfirmar o interesse e rever o estado atual do Croma e do jogo antes de decidir se esse recurso deve existir. Até lá, não criar configuração, metadados, adaptador nem dependência.
+
+O GDD local antigo também reúne estado de jogo, propostas, dados de catálogo, backlog e histórico que hoje estão distribuídos entre o código, o devlog, o brainstorming e documentos versionados. Suas descrições de funcionalidades existentes, tabelas e status de releases não devem ser copiadas como estado atual; consultar as fontes atuais e manter apenas ideias ainda úteis e devidamente classificadas.
+
 ## 3. Pendências de validação do que já existe
 
 Esses itens não são features novas e devem ser acompanhados em separado do brainstorming de implementação:
