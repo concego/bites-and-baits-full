@@ -87,7 +87,7 @@ As faixas são aproximadas e devem ser recalculadas após cada extração. Módu
 ## Prioridade sugerida e etapas independentes
 
 1. **Atualizar mapa:** concluído nesta branch; faixas e limites foram conferidos contra `main` consultada em 2026-11-15.
-2. **Primeira extração de apresentação:** concluída nesta branch. A atualização do indicador de direção do peixe foi movida para a função `FishingHudView.setFishDirection`; `Game` preserva o estado de fase/lado e chama a view nos mesmos pontos. Especificação: `dev-instructions/refactor/fish-direction-indicator.md`.
+2. **Primeira extração de apresentação:** concluída nesta branch. A atualização do indicador de direção do peixe foi movida para a função `FishingHudView.setFishDirection`; `Game` preserva o estado de fase/lado e chama a view nos mesmos seis pontos. Especificação: `dev-instructions/refactor/fish-direction-indicator.md`.
 3. **Testar após cada passo:** nesta extração passaram o QA focalizado (17 asserções), as quatro suítes de regressão disponíveis e a análise de sintaxe de 51 arquivos JS com DukPy. Smoke test manual de navegador/leitor de tela/sensores segue pendente.
 4. **Próximo passo ainda não iniciado:** revisar a etapa seguinte, identificar a próxima fronteira de baixo risco, registrar especificação aprovada e só então alterar código. Não combinar múltiplas extrações. `init`, `enterState`, timers, física, sensores e migração para ES Modules continuam em fases posteriores separadas.
 
