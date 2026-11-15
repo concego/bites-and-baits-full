@@ -1,136 +1,102 @@
-# Mapa de responsabilidades de `game.js`
+# Mapa atual de responsabilidades de `game.js`
 
-> Documento de análise estrutural. Esta primeira etapa não altera comportamento, HTML, CSS, dados ou acessibilidade.
->
-> Referência analisada: release `v0.1.0`, commit `0e0ee41`.
+> Auditoria estrutural somente de leitura, baseada no branch `main` consultado em 2026-11-15.
+> Commit do branch consultado: `6d9a1be149339a42aa684fd5e93ba994a7c21abb`.
+> O código de gameplay nessa árvore permanece no commit `c276447c05fcb75252fb70708b71c3532344e3d3`; o commit posterior de `main` adicionou documentação/orientações.
+> Este documento não especifica funcionalidade nova nem autoriza refatoração ou publicação. Antes de cada mudança de código, registrar uma especificação de escopo aprovada em `dev-instructions/`.
 
-## Diagnóstico
+## Diagnóstico atual
 
-`game.js` é um monólito de aproximadamente 2.943 linhas encapsulado em `const Game = (() => { ... })();`. O encapsulamento reduz o escopo global, mas o módulo ainda concentra responsabilidades de aplicação, domínio, renderização, entrada, persistência e acessibilidade.
+`game.js` contém aproximadamente **3.095 linhas / 126 KB** e instancia um único IIFE `Game`. Ainda concentra inicialização e ligação de eventos, telas de personagem e abertura da História, máquina de estados da pesca, coordenação de combate, entrada de teclado/sensores, HUD, pessoas presentes, navegação, inventário e loja.
 
-O projeto já possui módulos úteis — `inventory.js`, `audio.js`, `i18n.js`, `game-time.js`, catálogos e dados visuais — porém `game.js` conhece diretamente quase todos eles e também acessa muitos elementos do `index.html` por ID.
+O repositório já extraiu módulos coesos de combate numérico, troca de telas, anúncios acessíveis, persistência/apresentação da última captura e renderizadores de telas/painéis. Portanto, a refatoração não deve começar do zero nem duplicar esses módulos: primeiro deve reduzir coordenação e responsabilidades residuais de `Game`, preservando contratos existentes.
 
-## Dependências diretas
+O mapa anterior descrevia cerca de 2.943 linhas e apontava a release `v0.1.0` como referência. Está desatualizado; as faixas abaixo foram recalculadas a partir do `game.js` atual.
 
-### Serviços e módulos usados por `game.js`
+## Arquitetura e contratos existentes
 
-- `I18n` — textos e idioma;
-- `A11y` — preferências, escala de tempo, háptica e narração;
-- `Audio` — música, efeitos, vibração e reel;
-- `Sensors` — inclinação e chacoalhamento;
-- `GameTime` — relógio e tempo da cidade;
-- `Inventory` — equipamentos, peixes, iscas, moedas, barcos e zonas;
-- `Character` — identidade e aparência;
-- `getCharacterVisualCategories` — categorias da aparência;
-- `FISH_CATALOG` — espécies e física;
-- `MAP_CATALOG` — mapas e zonas;
-- `SHOP_CATALOG` — equipamentos e preços;
-- `VESSELS_CATALOG` — barcos;
-- `BAIT_CATALOG` — iscas.
+- `index.html` carrega scripts clássicos via tags `<script>` em ordem fixa. Não usa `type="module"` nem import/export ES Modules. A ordem de carregamento e os nomes globais são contratos implícitos.
+- `Game` mantém o estado da sessão dentro do IIFE e expõe atualmente uma API pública pequena (`state()` e `startNormal()`).
+- Vários módulos de view já recebem dados e ações via callbacks fornecidos por `Game`; manter esse padrão onde ele evita dependências circulares.
+- O código atual inclui `FishingCombat` para regras numéricas da luta, `ScreenNavigation`, `A11yAnnouncer`, `LastCatchStorage` e `LastCatchView`, além de views de pesca, inventário, loja, casa, estaleiro e viagem.
+- `i18n.js` tem aproximadamente 2.330 linhas / 147 KB, majoritariamente catálogos de textos localizados em PT, EN e HU; sua divisão por idioma é uma possibilidade de manutenção, mas não deve ser misturada à primeira refatoração de `game.js`.
 
-### Dependência estrutural atual
+## Mapa aproximado do `game.js` atual
 
-Os scripts são carregados globalmente pelo `index.html` em ordem fixa. Não há `import`/`export` nativos. Portanto, a ordem dos scripts e os nomes globais funcionam como um contrato implícito.
+As faixas são aproximadas e devem ser recalculadas após cada extração. Módulos de destino abaixo são propostas de responsabilidade, não nomes ou arquitetura aprovados para implementação.
 
-## Mapa por faixa de código
-
-As linhas são aproximadas e devem ser revistas após cada extração.
-
-| Faixa | Responsabilidade atual | Destino provável |
+| Linhas aprox. | Conteúdo atual | Observação / destino conceitual |
 |---|---|---|
-| 15–83 | IIFE, seletores DOM, estado global, peixe ativo e variáveis da linha | `game-context.js` / `dom.js` |
-| 23–42 | Aplicação inicial de i18n e sincronização de controles | `ui-i18n.js` |
-| 88–230 | Inicialização, parâmetros de teste, coleta de referências DOM e configuração inicial | `app.js` / `game-context.js` |
-| 230–366 | Menu principal, hub, acesso à Loja/Inventário, barra inferior e preferências | `game-navigation.js` / `settings-ui.js` |
-| 367–503 | Criação visual e identidade da personagem | `character-screen.js` |
-| 504–571 | Construção e atualização da linha SVG | `fishing-renderer.js` |
-| 572–735 | Peixe ativo, animação e física de aproximação/fuga | `fishing-physics.js` |
-| 736–753 | Seleção de idioma e perfil de áudio ambiente | `app.js` / `audio-profile.js` |
-| 754–816 | Início de jogo, configuração de HUD, sensores e modo | `game-session.js` |
-| 817–1063 | Máquina de estados da pescaria e resolução da captura | `fishing-state-machine.js` |
-| 1064–1104 | Entrada de inclinação | `game-input.js` |
-| 1105–1118 | Entrada de chacoalhamento | `game-input.js` |
-| 1119–1244 | Loop de tensão, força, cansaço, recuperação e ações de puxar/soltar | `fishing-physics.js` / `fishing-state-machine.js` |
-| 1245–1286 | Peixes decorativos de fundo | `fishing-renderer.js` |
-| 1287–1361 | Mordida, equipamento visual, isca HUD, capacidade e carga | `game-hud.js` / `fishing-session-ui.js` |
-| 1362–1470 | Última captura, persistência, resumo e foco acessível | `last-catch.js` / `accessibility-ui.js` |
-| 1471–1627 | Painéis de equipamento, carga e liberação de peixes | `game-panels.js` |
-| 1628–1661 | Agendamento da próxima mordida e influência da isca | `fishing-session.js` |
-| 1662–1782 | Resultado, retorno ao menu, hub, música, mapa ativo e HUD da cidade | `game-navigation.js` / `city-hub.js` |
-| 1783–1958 | Casa e Estaleiro, compra/equipamento de barcos | `house-screen.js` / `vessel-screen.js` |
-| 1959–2176 | Regras de mapa, barco permitido, viagem e zonas de pesca | `travel-screen.js` / `map-session.js` |
-| 2177–2454 | Abas e renderização do Inventário | `inventory-screen.js` |
-| 2455–2822 | Abas, renderização, compra, venda e equipamento da Loja | `shop-screen.js` |
-| 2823–2864 | Troca de telas e helpers gerais de UI | `game-navigation.js` / `ui.js` |
-| 2865–2929 | Narração, pontuação, tensão, indicadores e timers | `accessibility-announcer.js` / `game-hud.js` |
-| 2930–2943 | Inicialização automática e API pública `Game` | `app.js` |
+| 1–91 | IIFE, seletores, estado global da sessão, `applyI18n` | Contexto/controlador central; reduzir dependências globais somente quando houver especificação. |
+| 92–426 | `init`, reset e parâmetros de QA, caches de telas/DOM, registro de listeners e navegação inicial | Inicialização e composição da aplicação; primeira função grande (~335 linhas), mas extração exige mapear cuidadosamente callbacks e ordem de boot. |
+| 427–531 | Preferências/toggles, categorias visuais, resumo e presença da aparência do personagem | UI de personagem/preferências; pode ser candidato de baixo risco se estiver isolado dos contratos da abertura. |
+| 532–955 | Estado e renderização da abertura narrativa, diálogos/áudio, criação/edição de personagem e handlers | Fluxos de abertura e criação; responsabilidade coesa grande, com persistência/narração e acessibilidade. |
+| 956–1066 | Montagem/atualização da linha SVG e criação/destruição do peixe ativo | Renderização da cena de pesca. |
+| 1067–1196 | Física/animação de peixe e ciclo `tick` | Física e renderização temporal da cena; acoplado ao estado e aos elementos SVG. |
+| 1197–1322 | Seleção de idioma, perfil de áudio, `startGame`, preparação da sessão | Inicialização de sessão/modo e dependências de HUD/persistência. |
+| 1323–1642 | Silêncio TalkBack, falha de Boss, `enterState`, transições e consequências da máquina de pesca | Núcleo de estado da pescaria; função `enterState` ~304 linhas, maior risco de regressão. |
+| 1643–1831 | Handlers de inclinação/sacudida, loop da tensão, puxar e aliviar | Adaptadores de entrada + coordenação do combate; cálculos numéricos parcialmente isolados em `FishingCombat`. |
+| 1832–1956 | Peixes de fundo, indicadores/equipamento/carga, anúncio e releitura da última captura | Cena/HUD e coordenação da última captura. `LastCatchStorage`, `LastCatchView` e `A11yAnnouncer` já existem. |
+| 1967–2024 | Painéis de equipamento/carga e listas de isca | `FishingPanels`, `HoldPanelView` e `BaitPanelView` já existem; confirmar se ainda resta lógica de domínio no controlador. |
+| 2025–2142 | Próxima mordida, resultado, retorno, HUD da cidade, hub e mapa ativo | Sessão de pesca e navegação/hub entre modos. |
+| 2143–2264 | Casa, estaleiro, requisitos de vara/barco e viagem | `HouseView`, `VesselView`, `TravelView` já renderizam telas; regras e composição permanecem no controlador. |
+| 2265–2313 | Modal de zonas e HUD de zona | Coordenação de mapa/zona. |
+| 2314–2410 | Delegação de cliques internos, navegação da loja/inventário e tabs | Navegação dos painéis e abas; listeners/delegação devem permanecer idempotentes. |
+| 2411–2564 | Feedback e composição de `renderInventory` | Renderers de peixe, isca, roupa e decoração já são módulos; verificar callbacks e regras de compra/venda antes de extrair mais. |
+| 2565–2844 | Diálogos de Zeca, lista/conversa de NPCs, Pessoas presentes, agradecimento da Marta | Domínio social/narrativo e interface estão misturados; respeitar estado persistente, condições de descoberta e localização. |
+| 2845–2966 | Acesso/renderização da loja de roupa, loja geral, compra, venda e equipagem | `ClothingShopView`, `ShopBuyView` e `ShopSellView` já existem; manter regras de economia e callbacks numa fronteira clara. |
+| 2967–3095 | Modificadores de equipamento, troca/foco de telas, narração, controles, indicadores e timers | Helpers transversais atualmente agregados; separar só quando a coesão e a dependência forem claras. |
 
-## Estado que precisa ser protegido
+## Módulos existentes que devem ser reutilizados
 
-A refatoração não pode alterar estes conceitos:
+### Domínio e persistência
 
-- `gameMode`: `normal` ou `free`;
-- `state`: estados da máquina de pescaria;
-- `currentFish`;
-- `fishTired`;
-- `tension`;
-- `_lureX`, `_lureY`;
-- `score` e `best`;
-- `activeMap` e `activeZone`;
-- timers de mordida, espera, recuperação e tensão;
-- chaves de persistência da última captura;
-- equipamentos obtidos/equipados no `Inventory`.
+- `fishing-combat.js` — regras numéricas de progresso, tensão e fadiga.
+- `inventory.js` — inventário, moedas, equipamento, peixes, proteção de quest, barcos, casa e zonas.
+- `score-system.js` — pontuação/progressão da Pesca Livre.
+- `last-catch-storage.js` — leitura/gravação da última captura.
+- `game-time.js` — calendário/relógio.
+- `dani-quest.js` — quest fixa, Boss ambiental pós-quest e presente da Marta.
 
-## Fronteiras recomendadas
+### Acessibilidade, navegação e apresentação
 
-### 1. Núcleo de contexto
+- `accessibility-announcer.js` — fala via leitor de tela/live region, sem TTS próprio.
+- `screen-navigation.js` — ativação/bloqueio/foco inicial das telas.
+- `last-catch-view.js`, `fishing-hud-view.js`, `fishing-panels.js`, `hold-panel-view.js`, `bait-panel-view.js`.
+- `inventory-fish-view.js`, `inventory-bait-view.js`, `inventory-clothing-view.js`, `inventory-decoration-view.js`.
+- `shop-buy-view.js`, `shop-sell-view.js`, `clothing-shop-view.js`, `house-view.js`, `vessel-view.js`, `travel-view.js`, `zone-view.js`, `result-view.js`.
 
-Responsável somente por estado, configuração e referências compartilhadas. Não deve criar cartões de Loja nem renderizar peixes.
+### Dados/catálogos
 
-### 2. Domínio da pescaria
+`fish-data.js`, `fish-metrics.js`, `map-data.js`, `shop-data.js`, `house-data.js`, `home-decoration-data.js`, `clothing-catalog.js`, `clothing-stock.js`, `character-data.js`, `character-visual-data.js`, `npc-data.js` e `creature-profile.js` mantêm dados fora do controlador.
 
-A máquina de estados e a física devem receber dados e emitir eventos/resultado. A lógica não deve depender diretamente de detalhes de CSS ou de texto visual.
+## Estado e comportamentos que toda extração deve preservar
 
-### 3. Interface
+- Modo `normal` (História) e `free` (Pesca Livre), incluindo inventários, históricos e pontuação separados onde especificado.
+- Estados da máquina de pesca (`IDLE`, `CASTING`, `WAITING`, `BITING`, `REELING`, `CAUGHT`, `SNAPPED`) e ordem das transições/eventos.
+- Peixe, linha e combate: `currentFish`, `fishTired`, tensão, estado retornado por `FishingCombat`, impulsos e coordenadas da isca.
+- Pontuação/recorde, progressão do Boss e tratamento da fuga.
+- Timers de espera, mordida, recuperação, loop de tensão e animação; limpar e reiniciar uma única vez nos fluxos apropriados.
+- Controle de teclado e sensores com a mesma mecânica; não simplificar nem bifurcar a física do teclado.
+- Chaves de persistência e compatibilidade com saves/migrações existentes.
+- Foco, live regions, anúncios concisos e regras de silêncio para TalkBack; não adicionar fala própria duplicada.
+- Fluxos narrativos condicionais de Zeca, Dani e Marta; nenhuma informação pode surgir antes do estado correto.
+- IDs existentes do HTML, ordem dos scripts globais, tradução PT/EN/HU e seleção de conteúdo conforme idioma.
+- Loja, equipagem, capacidade e economia; nenhuma alteração de balanceamento deve ser introduzida sob a cobertura de uma refatoração.
 
-Renderizadores de HUD, Loja, Inventário, Casa, Estaleiro e painéis devem manipular seus próprios elementos e expor ações claras.
+## Prioridade sugerida e etapas independentes
 
-### 4. Acessibilidade
+1. **Manter este mapa atualizado** e verificar o tamanho/limites atuais. Documentação somente; sem alteração de gameplay.
+2. **Extrair um subsistema de apresentação/interface de baixo risco** que já esteja isolado por callbacks e módulos de view. Antes de escolher a extração exata, revisar no código as dependências e documentar a especificação aprovada; não selecionar automaticamente pelo tamanho.
+3. Após cada extração, executar os testes automatizados existentes afetados e regressões, comparar comportamento público/API, revisar IDs e ordem de scripts e realizar smoke test manual no navegador sem declarar TalkBack validado se não testado.
+4. Somente depois de resultado aceitável, especificar o próximo subsistema e repetir. `init`, `enterState`, timers, física, sensores e migração para ES Modules ficam para etapas posteriores e separadas.
 
-Anúncios, foco, live region e regras de silêncio do TalkBack devem ficar em uma camada identificável. Os textos continuam independentes da arte.
+## Testes e limitações registrados na auditoria
 
-### 5. Navegação
+No branch `main` consultado foram encontrados QA automatizados específicos: `qa_clothing_shop.py`, `qa_dani_quest.py`, `qa_dani_quest_inventory.py` e `qa_home_decorations.py`. Não foi encontrado um script de QA geral/automático no inventário de arquivos consultado. Testes automatizados dos fluxos não equivalem a smoke test do site nem validação manual de acessibilidade.
 
-A troca de telas, retorno ao menu e música de cada tela devem ficar juntos, sem misturar física da pescaria ou renderização de catálogo.
+Em 2026-11-15, as quatro suítes acima foram executadas nesta cópia de referência e passaram. `node` não estava instalado no ambiente desta auditoria, portanto `node --check` não foi executado. Nenhum teste físico com sensores, NVDA ou TalkBack foi realizado aqui. Repetir os testes relevantes depois de cada mudança; se a extração tocar em áreas fora das quatro suítes, criar QA focalizado antes de alterar o comportamento.
 
-## Ordem segura de extração
+## Fonte e rastreabilidade
 
-1. Criar um módulo de seletores DOM e contexto, sem mudar nomes;
-2. Extrair helpers de acessibilidade e anúncios;
-3. Extrair persistência de última captura;
-4. Extrair navegação e troca de telas;
-5. Extrair HUD e indicadores;
-6. Extrair painéis de equipamento/carga;
-7. Extrair Loja e Inventário;
-8. Extrair Casa, Estaleiro, viagem e zonas;
-9. Extrair entrada de teclado/sensores;
-10. Extrair renderização da cena;
-11. Extrair física;
-12. Isolar a máquina de estados;
-13. Trocar scripts globais por módulos ES, somente depois de estabilizar as fronteiras.
-
-## Critério de cada etapa
-
-Cada extração deve:
-
-- Entrar em um commit próprio na `main`;
-- Gerar um novo deploy no GitHub Pages;
-- Preservar o HTML e os IDs existentes;
-- Passar por um smoke test de Loja, Inventário e Pesca Livre;
-- Manter a árvore acessível e a leitura do TalkBack;
-- Ter um ponto de retorno identificável por commit ou tag;
-- Não misturar refatoração com funcionalidade nova.
-
-## Conclusão
-
-O maior ganho não virá de dividir o `index.html`, e sim de reduzir o papel de `game.js` de “dono de tudo” para um coordenador que conecta módulos menores. O release `v0.1.0` é o ponto de retorno antes da primeira extração.
+A auditoria comparou o `main` consultado em 2026-11-15 com a documentação e os arquivos vigentes dessa árvore. Este mapa é uma fotografia estrutural e pode ficar desatualizado após cada commit. Antes de uma extração, recalcular linhas e conferir o código real; não usar números desta tabela como substituto da leitura do subsistema.
