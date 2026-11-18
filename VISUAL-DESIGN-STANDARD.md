@@ -75,7 +75,7 @@ O estado visual nunca é a única comunicação: ele deve ser acompanhado por te
 
 ### Personagens e NPCs
 
-A direção é criar uma ferramenta/sistema próprio de criação de NPCs, reutilizando a ferramenta e a estrutura modular de criação de personagem do jogador. O propósito é facilitar a autoria de NPCs, a definição de sua aparência física, a geração de sua representação visual e a produção de descrições coerentes com os dados definidos. A ferramenta deve manter os dados separados da aparência, reutilizar camadas e gerar avatares SVG locais, sem criar uma arquitetura visual paralela. Ainda não está definido se essa ferramenta será apenas de autoria/desenvolvimento ou se também terá uma interface dentro do jogo; não presumir nenhuma das opções.
+A direção é criar uma ferramenta interna de autoria, possivelmente um módulo que a própria IA possa usar, para ajudar a criar NPCs seguindo as diretrizes de aparência definidas por Anderson. Ela deve reutilizar a ferramenta e a estrutura modular de criação de personagem do jogador para facilitar a definição da aparência física, a geração da representação visual e a produção de descrições coerentes com os dados configurados. Não é uma interface do jogo para jogadores. A forma técnica exata do módulo permanece em aberto. A ferramenta deve manter dados separados da aparência, reutilizar camadas e produzir avatares SVG locais, sem criar uma arquitetura visual paralela.
 
 As opções do personagem do jogador são deliberadamente limitadas pelo contexto: ele é uma pessoa jovem, em idade universitária, e as roupas selecionáveis representam o que já possui em casa, no próprio guarda-roupa. Portanto, seus conjuntos iniciais não são um catálogo irrestrito de moda.
 
