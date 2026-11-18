@@ -6,6 +6,12 @@ A criação acontece antes da troca de correspondência. O jogador confirma todo
 
 A aparência é modular em SVG e não altera atributos, economia, física ou regras de pesca. Gênero e forma textual são dados narrativos independentes da aparência.
 
+## Escopo diferente entre personagem do jogador e NPCs
+
+O personagem do jogador é uma pessoa jovem, de idade universitária. As opções de roupa representam as peças e os conjuntos que essa pessoa tem em casa, em seu guarda-roupa; por isso, a seleção inicial é limitada e coerente com esse contexto, não um catálogo irrestrito de vestuário.
+
+NPCs devem usar a mesma ferramenta e estrutura modular de criação do personagem do jogador, mas com mais opções de características e roupas, para representar idades, identidades e contextos variados. A idade e a aparência de cada NPC devem ser dados definidos para aquele personagem, nunca inferidos automaticamente. As opções adicionais destinadas a NPCs não ficam, por consequência, disponíveis ao jogador.
+
 ## Ordem proposta
 
 ### 1. Identidade narrativa
