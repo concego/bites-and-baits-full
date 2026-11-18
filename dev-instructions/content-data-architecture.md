@@ -70,6 +70,10 @@ Não usar um banco de dados local como destino automático para os catálogos fi
 - Manter os arquivos internos de orientação fora de pacotes distribuídos, conforme as regras existentes em `AGENTS.md` e `.gitattributes`.
 - Esta direção não autoriza publicação no Pages, atualização de releases ou alteração do repositório da demo.
 
+## Ordem de execução aprovada
+
+O roteiro detalhado de fatias, seus escopos, dependências e critérios de aceitação está em [`content-data-roadmap.md`](content-data-roadmap.md). A próxima fatia é construir no Pages uma vertical slice do manifest → índice de NPCs → JSON do Vitor → carregador central → validação, sem migrar lojas, quests ou outros catálogos. Antes de executar, ler o roteiro e tratar seus limites e critérios como parte da especificação.
+
 ## Próximas decisões antes de uma especificação executável
 
 1. Escolher o primeiro recorte pequeno que demonstrará o fluxo — por exemplo, um NPC e uma quest — sem migrar todos os catálogos.
