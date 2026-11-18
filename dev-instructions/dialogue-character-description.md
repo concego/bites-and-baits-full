@@ -21,9 +21,9 @@ Dar a jogadores cegos acesso opcional a informações sobre como são visualment
 
 ## Relação com a criação de NPCs
 
-A direção de design é criar uma ferramenta de autoria de NPCs que reutilize o sistema modular do personagem do jogador e facilite definir aparência, representação física e descrições. A descrição consultada durante o diálogo deve refletir apenas dados efetivamente definidos para aquele personagem e suas roupas atuais; se os dados relevantes não estiverem definidos, informar isso sem inventar características.
+A ferramenta de autoria de NPCs será interna e poderá ser um módulo usado pela própria IA para seguir as diretrizes de aparência definidas por Anderson ao criar NPCs. Não é uma interface para os jogadores. A descrição consultada durante o diálogo deve refletir apenas dados efetivamente definidos para aquele personagem e suas roupas atuais; se os dados relevantes não estiverem definidos, informar isso sem inventar características.
 
-A forma concreta do criador (ferramenta externa de autoria ou interface no próprio jogo) ainda não está decidida e não deve ser presumida nesta especificação. As decisões pendentes abaixo sobre alvo, integração, conteúdo e estado incompleto continuam bloqueando a implementação do botão de descrição até serem resolvidas.
+A forma técnica exata do módulo interno ainda não está decidida. As decisões pendentes abaixo sobre alvo, integração, conteúdo e estado incompleto continuam bloqueando a implementação do botão de descrição até serem resolvidas.
 
 ## Restrições
 
