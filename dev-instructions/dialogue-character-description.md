@@ -19,6 +19,12 @@ Dar a jogadores cegos acesso opcional a informações sobre como são visualment
 - Incluir textos em português do Brasil, inglês e húngaro, conforme o suporte de localização atual do jogo.
 - A descrição deve ser derivada somente de dados conhecidos do jogo. Não afirmar detalhes visuais que não estejam representados nos dados disponíveis.
 
+## Relação com a criação de NPCs
+
+A direção de design é criar uma ferramenta de autoria de NPCs que reutilize o sistema modular do personagem do jogador e facilite definir aparência, representação física e descrições. A descrição consultada durante o diálogo deve refletir apenas dados efetivamente definidos para aquele personagem e suas roupas atuais; se os dados relevantes não estiverem definidos, informar isso sem inventar características.
+
+A forma concreta do criador (ferramenta externa de autoria ou interface no próprio jogo) ainda não está decidida e não deve ser presumida nesta especificação. As decisões pendentes abaixo sobre alvo, integração, conteúdo e estado incompleto continuam bloqueando a implementação do botão de descrição até serem resolvidas.
+
 ## Restrições
 
 - Não alterar aparência, roupa, identidade narrativa, atributos, economia ou gameplay.
