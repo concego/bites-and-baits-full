@@ -10,9 +10,9 @@ A aparência é modular em SVG e não altera atributos, economia, física ou reg
 
 O personagem do jogador é uma pessoa jovem, de idade universitária. As opções de roupa representam as peças e os conjuntos que essa pessoa tem em casa, em seu guarda-roupa; por isso, a seleção inicial é limitada e coerente com esse contexto, não um catálogo irrestrito de vestuário.
 
-A direção de produto é criar uma espécie de criador de NPCs para facilitar a autoria dos personagens, a definição de sua representação física e a geração de descrições coerentes com os dados configurados. Ele deve reutilizar a ferramenta e a estrutura modular do criador do jogador, mas oferecer mais opções de características e roupas para representar idades, identidades e contextos variados. A idade e a aparência de cada NPC devem ser dados definidos para aquele personagem, nunca inferidos automaticamente; não inventar descrições para dados ausentes. As opções adicionais destinadas a NPCs não ficam, por consequência, disponíveis ao jogador.
+A direção de produto é criar um criador interno de NPCs — possivelmente um módulo que a própria IA possa usar — para ajudar a IA a criar personagens conforme as diretrizes de aparência definidas por Anderson, definir sua representação física e gerar descrições coerentes com os dados configurados. Ele deve reutilizar a ferramenta e a estrutura modular do criador do jogador, mas oferecer mais opções de características e roupas para representar idades, identidades e contextos variados. A idade e a aparência de cada NPC devem ser dados definidos para aquele personagem, nunca inferidos automaticamente; não inventar descrições para dados ausentes. As opções adicionais destinadas a NPCs não ficam, por consequência, disponíveis ao jogador.
 
-Ainda está em aberto qual será a forma dessa ferramenta (por exemplo, uma ferramenta de autoria separada ou uma interface do jogo). Não tratar a direção como decisão já tomada sobre a interface ou arquitetura concreta.
+Essa é uma ferramenta interna de autoria, não uma interface para os jogadores. A forma técnica exata (por exemplo, o desenho e as responsabilidades do módulo) ainda deve ser definida antes da especificação de implementação.
 
 ## Ordem proposta
 
