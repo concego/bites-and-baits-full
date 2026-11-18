@@ -224,3 +224,12 @@ O GDD e os demais documentos encontrados no workspace eram snapshots locais, nã
 ## Manutenção deste devlog
 
 Ao concluir uma etapa futura, registrar data, objetivo, implementação real, sistemas/arquivos afetados, migrações e persistência, testes, validação manual, problemas corrigidos, publicação/commit e release autorizada. Manter separados os estados local, QA, Pages, release e validação do produtor. Atualizar este documento quando houver progresso relevante; não transformar propostas de GDD em entregas concluídas.
+
+
+### 2026-11-18 — Diagnóstico/correção local da venda seguida de compra na loja
+
+Anderson trouxe feedback de um tester: depois de vender um item, o saldo e o conteúdo da loja pareciam não atualizar imediatamente, impedindo comprar outro item em seguida. A inspeção do branch `main` consultado confirmou uma falha parcial: `ShopSellView` atualizava o texto do saldo e re-renderizava as listas de venda, mas mantinha a aba de compra montada com o saldo e a lista de equipamentos possuídos anteriores. Assim, botões desabilitados por falta de moedas podiam continuar desabilitados até reabrir a loja, e equipamento vendido podia continuar parecendo possuído na loja.
+
+Correção implementada em branch isolada `fix-shop-sale-refresh`: `ShopSellView` recebe o callback `refreshBuy`; após sucesso em venda em lote de peixes, venda por quantidade de peixes, iscas ou equipamentos, atualiza o saldo e a lista de venda e chama `_renderShopBuy` para reconstruir a lista de compra com o estado novo. Tentativas de venda rejeitadas não chamam o callback. O cache-buster do script foi atualizado. Não houve alteração dos valores, das regras de venda/compra, dos textos ou do layout.
+
+QA: novo `qa_shop_sale_refresh.py` passou com 22 assertions cobrindo as quatro modalidades de venda, venda falha, saldo renderizado, atualização da affordance de compra e ordem da atualização. Também passaram `qa_clothing_shop.py`, `qa_dani_quest.py` (155 assertions), `qa_dani_quest_inventory.py` (21), `qa_home_decorations.py` e parsing de sintaxe por DukPy dos 51 arquivos JavaScript. Revisão manual no jogo com navegador/teclado/TalkBack não foi realizada e permanece necessária para confirmar a experiência do tester. A alteração está apenas em branch de trabalho; não foi publicada no Pages, mesclada em `main`, nem enviada a qualquer release/demo.
