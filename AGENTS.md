@@ -22,6 +22,13 @@ URL: https://raw.githubusercontent.com/concego/bites-and-baits-full/ec13f14cbaef
 - Em pacotes montados por outros processos, exclua esses documentos explicitamente e confira o conteúdo antes de publicar. Não presuma que `.gitattributes` controla ferramentas que não usam `git archive`.
 - Não remova créditos ou licenças necessários à distribuição sob pretexto de excluir orientações internas.
 
+## Fonte documental do projeto e workspace local
+
+- Para qualquer tarefa de Bites & Baits, consulte os arquivos atuais deste repositório (branch de trabalho confirmado), incluindo README e documentos pertinentes em `dev-instructions/`, `docs/` e na raiz. Essas cópias versionadas são a fonte documental de trabalho; confira também o código e o commit atual quando descrever estado implementado.
+- Não use arquivos em um workspace auxiliar de Zapia, snapshots `publish-*`, pastas `backups/`, cópias antigas ou payloads locais como fonte atual de requisitos ou estado do projeto. Eles podem estar desatualizados ou representar apenas uma etapa de publicação. Se um documento necessário não estiver no checkout/repositório, procure a versão canônica no GitHub; se não existir, registre a lacuna e peça orientação, em vez de reconstruí-lo a partir de um snapshot sem confirmação.
+- Trabalhe no checkout do repositório completo fornecido para desenvolvimento. Se ele não estiver disponível, obtenha os materiais atuais do repositório antes de prosseguir; não altere nem trate o workspace auxiliar como clone Git.
+- Para informações históricas, use o `DEVLOG.md` versionado. Para ideias ainda não aprovadas, siga a regra acima sobre o brainstorming: a IA de implementação não deve consultá-lo.
+
 ## Antes de trabalhar
 
 1. Leia o README e os documentos pertinentes à tarefa. No mínimo, considere `LORE-FOUNDATION.md`, `VISUAL-DESIGN-STANDARD.md` e `AUDIO-SOURCES.md` quando forem relevantes.
