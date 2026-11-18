@@ -21,7 +21,7 @@ Dar a jogadores cegos acesso opcional a informações sobre como são visualment
 
 ## Relação com a criação de NPCs
 
-A ferramenta de autoria de NPCs é literalmente a mesma interface usada para criar a personagem do jogador, reutilizada de modo independente do jogo geral e exclusivamente para criar NPCs. Não se conecta à partida nem à persistência geral. Ela dá suporte à criação dos dados visuais a partir das diretrizes de aparência definidas por Anderson. A descrição consultada durante o diálogo deve refletir apenas dados efetivamente definidos para aquele personagem e suas roupas atuais; se os dados relevantes não estiverem definidos, informar isso sem inventar características.
+A ferramenta de autoria de NPCs é literalmente a mesma interface usada para criar a personagem do jogador, reutilizada de modo independente do jogo geral e exclusivamente para criar NPCs. Não se conecta à partida nem à persistência geral. Ela dá suporte à criação dos dados visuais a partir das diretrizes de aparência definidas por Anderson. Ao concluir um NPC, a ferramenta pode gerar um arquivo com suas definições visuais para inclusão posterior no jogo; o formato e o processo de integração permanecem por definir. A descrição consultada durante o diálogo deve refletir apenas dados efetivamente definidos para aquele personagem e suas roupas atuais; se os dados relevantes não estiverem definidos, informar isso sem inventar características.
 
 A ferramenta autônoma usa a mesma interface do criador do jogador, mas sem conexão com o jogo geral. As decisões pendentes abaixo sobre alvo, integração dos diálogos, conteúdo e estado incompleto continuam bloqueando a implementação do botão de descrição até serem resolvidas.
 
