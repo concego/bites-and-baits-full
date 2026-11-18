@@ -57,7 +57,6 @@ Apresentar:
 - resumo textual da aparência;
 - roupa de chegada;
 - roupa de pesca;
-- descrição cromática extra, somente se a opção do Croma estiver ligada;
 - prévia visual do avatar.
 
 Ações:
@@ -70,12 +69,6 @@ Ações:
 ### 5. Confirmação
 
 Anunciar que a personagem foi criada. Persistir o estado e iniciar a correspondência da abertura.
-
-## Comportamento do Croma
-
-A configuração geral ficará em Opções. Quando ligada, a revisão e as descrições das cores incluem o campo extra de associação conceitual. Quando desligada, o texto normal permanece inalterado.
-
-A descrição cromática não será anunciada como áudio separado e não aparecerá se a configuração estiver desligada.
 
 ## Estado persistido
 
@@ -141,10 +134,9 @@ Cada escolha aponta para um símbolo estável. A renderização visual não deve
 4. Estado e seleção das 5 opções;
 5. Resumo textual;
 6. Avatar SVG modular;
-7. Integração opcional do Croma;
-8. Correspondência com nome e forma textual;
-9. Transição para chegada à cidade;
-10. Testes com TalkBack e revisão visual.
+7. Correspondência com nome e forma textual;
+8. Transição para chegada à cidade;
+9. Testes com TalkBack e revisão visual.
 
 
 ## Criação em uma única tela
