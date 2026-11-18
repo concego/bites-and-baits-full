@@ -2916,6 +2916,7 @@ const Game = (() => {
       sellEquip: id => Inventory.sellEquip(id),
       coins: () => Inventory.coins(),
       feedback: _shopFeedback,
+      refreshBuy: _renderShopBuy,
     });
   }
 
