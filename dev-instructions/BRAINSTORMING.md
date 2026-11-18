@@ -189,7 +189,7 @@ Antes de especificar, decidir:
 
 ### 2.8 NPCs, eventos e diálogos
 
-**Status: expansão de conteúdo; escolher recortes individualmente.**
+**Status: prioridade de acessibilidade definida; especificação pendente. Outras expansões devem ser escolhidas individualmente.**
 
 - Desenvolver Vitor como NPC recorrente do estaleiro; o próximo evento/conteúdo ainda está por decidir.
 - Acrescentar diálogos contextuais a Zeca sem antecipar informações que o jogador ainda não descobriu.
@@ -198,6 +198,7 @@ Antes de especificar, decidir:
 - Quests fixed e seasonal foram descritas como categorias gerais; apenas “O lambari de Dani” está confirmada como quest fixa no código atual. Calendário, repetição e conteúdo seasonal dependem de projeto futuro.
 - Afinidade numérica, romance e grandes árvores de diálogo são de alto risco e fora do escopo imediato conforme notas existentes. A possibilidade de flags simples e escolhas pontuais não é autorização para criar sistema amplo. Caso se retome, prototipar um NPC e poucas consequências.
 - Manter segredo narrativo de Marta e Dani: parentesco só se revela após a conclusão da quest. Não alterar essa ordem sem decisão explícita.
+- **Prioridade de acessibilidade definida em 2026-11-18 — descrição opcional de personagens nos diálogos:** adicionar uma ação/botão explícito e não intrusivo para o jogador solicitar uma descrição textual da aparência da pessoa jogadora ou do NPC durante uma conversa. A descrição deve refletir a aparência e a roupa atualmente usadas no momento do pedido, e não uma descrição fixa ou desatualizada; deve poder ser gerada novamente após trocas de roupa do jogador ou de um NPC. Não anunciar automaticamente nem interromper o diálogo: a consulta é opcional e sob demanda. Implementação não existe no código consultado em 2026-11-18; criar especificação aprovada antes de codificar, detalhando como detectar traje/contexto atual, compor descrição em PT/EN/HU, expor o controle a teclado/leitores de tela e evitar repetição excessiva.
 
 ### 2.9 Pesca, mapas, espécies, equipamentos e balanceamento
 
