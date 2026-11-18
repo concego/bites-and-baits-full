@@ -43,15 +43,17 @@ Não usar um banco de dados local como destino automático para os catálogos fi
 - **Direção definida:** usar JSON como formato-fonte dos dados de conteúdo. A ferramenta autônoma de criação de NPCs exporta um arquivo JSON por NPC, contendo as definições do personagem e sua aparência.
 - **Direção definida:** cada quest tem definição própria em JSON, separada do arquivo do NPC e referenciada por IDs estáveis. O save guarda apenas o progresso mutável da quest.
 - Catálogos de itens, roupas/equipamentos, barcos, peixes, mapas e zonas são organizados em arquivos JSON coesos por domínio, e não num único arquivo monolítico nem necessariamente um arquivo por item. Os registros de cada loja referenciam os IDs dos catálogos que ela utiliza; as regras da loja permanecem na lógica própria do sistema de loja.
-- Os arquivos JSON são fontes modulares versionadas no repositório. O jogo pode consumi-los diretamente ou receber um pacote consolidado gerado e validado durante a preparação; a escolha do mecanismo de carregamento e empacotamento continua pendente.
+- Os arquivos JSON são fontes modulares versionadas no repositório. A direção de integração aprovada é um manifest principal que aponta para índices por domínio; cada índice lista os arquivos JSON daquele domínio. Assim, adicionar um NPC ou quest afeta o índice pertinente, sem engrossar um manifest global único.
+- O jogo terá um carregador central de conteúdo que lê o manifest e os índices, valida/reúne os dados e os expõe por APIs de domínio estáveis. As telas e sistemas não devem buscar caminhos de JSON nem ler arquivos por conta própria.
+- Os JSONs modulares permanecem a fonte de autoria. Se, e quando, o número de arquivos ou o desempenho/empacotamento justificar, a preparação da build pode gerar um pacote consolidado validado; isso é uma otimização posterior, não substitui a organização modular de origem nem é requisito inicial.
 - O arquivo exportado pelo criador de NPCs contém definições de personagem/aparência. Não presumir que ele também gere ou embuta assets SVG/arte prontos.
 
 ## Integração e preparação de dados
 
 - A integração deve funcionar em builds locais de Windows e Android; não assumir que o browser do Pages é o runtime final.
 - A arquitetura atual confirmada é HTML/CSS/JavaScript com scripts clássicos carregados em ordem fixa pelo `index.html`, sem `import`/`export` nativos. Considerar essa realidade ao planejar a migração, mas não a tratar como limite permanente das versões empacotadas.
-- Manter como opção preferencial arquivos-fonte pequenos/modulares que possam ser validados antes da build e, se necessário, reunidos num pacote de execução. O jogo deve consumir dados por uma interface de domínio estável, sem cada tela conhecer o caminho físico dos arquivos.
-- **Pendente:** escolher como o runtime carrega os JSONs: carregamento modular em runtime ou pacote consolidado validado/gerado antes da build. Considerar Pages como ambiente de teste, Tauri, Capacitor, testes automatizados e facilidade de atualizar conteúdo. Módulos JavaScript de dados podem ser avaliados apenas se houver uma razão concreta para não usar os JSONs acordados como formato-fonte.
+- Manter arquivos-fonte pequenos/modulares, validados antes da build; permitir pacote consolidado apenas quando necessário. O jogo consome dados pelo carregador e por interfaces de domínio estáveis, sem cada tela conhecer caminhos físicos.
+- **Pendente:** definir o contrato técnico do manifest principal, índices de domínio e do carregador central, incluindo formatos, validação, tratamento de erro e integração com Pages, Tauri e Capacitor. A direção funcional (manifest → índices por domínio → registros JSON → carregador central) está aprovada; detalhe de serialização e implementação fica para a especificação de uma fatia.
 - **Pendente:** definir schema/versionamento dos JSONs, regras de validação, índice/manifesto ou outro mecanismo de descoberta de arquivos, comportamento para referências inválidas e o fluxo que integra a exportação do criador ao repositório/build.
 - **Pendente:** decidir fronteiras concretas e sequência de modernização dos módulos atuais. Não fazer uma migração ampla de `game.js` ou do carregamento de scripts apenas porque os dados passarão a ser modulares.
 
@@ -71,5 +73,6 @@ Não usar um banco de dados local como destino automático para os catálogos fi
 2. Definir se o criador deve exportar somente a ficha visual do NPC ou também dados textuais/descrições, e confirmar o contrato entre criador e jogo.
 3. Especificar os schemas dos JSONs de NPC, quest e catálogos por domínio, incluindo IDs e referências estáveis.
 4. Decidir carregamento e empacotamento compatíveis com Pages de teste, Windows/Tauri e Android/Capacitor.
-5. Definir se o recorte exige novos módulos, validação de dados, migração de saves ou todos esses elementos; não inferir.
-6. Só depois produzir especificação de implementação completa para o recorte aprovado, com escopo, dados, estados, dependências, acessibilidade, localização, compatibilidade, testes e critérios de aceitação.
+5. Especificar e implementar o manifest principal, os índices de domínio, o carregador central e a validação por uma fatia pequena. A alteração de `index.html` e de outros pontos de entrada está prevista como necessária para conectar o carregamento; não preservar a estrutura atual à custa de impedir a arquitetura aprovada.
+6. Definir se o recorte exige novos módulos, validação de dados, migração de saves ou todos esses elementos; não inferir.
+7. Só depois produzir especificação de implementação completa para o recorte aprovado, com escopo, dados, estados, dependências, acessibilidade, localização, compatibilidade, testes e critérios de aceitação.
