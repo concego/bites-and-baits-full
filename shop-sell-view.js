@@ -2,7 +2,7 @@
 const ShopSellView = (() => {
   const $ = id => document.getElementById(id);
 
-  function render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback }) {
+  function render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback, refreshBuy }) {
     const t = translate;
     const fbEl = $('shop-feedback');
     const equip = getEquip();
@@ -23,7 +23,8 @@ const ShopSellView = (() => {
         if (res.ok) {
           $('shop-coins').textContent = coins();
           feedback(fbEl, t('shop_sold', t('inv_tab_fish'), res.count, res.earned), true);
-          render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback });
+          render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback, refreshBuy });
+          if (typeof refreshBuy === 'function') refreshBuy();
         }
       });
       fishList.appendChild(sellAllBtn);
@@ -54,7 +55,8 @@ const ShopSellView = (() => {
           if (res.ok) {
             $('shop-coins').textContent = coins();
             feedback(fbEl, t('shop_sold', fishName, res.sold, res.earned), true);
-            render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback });
+            render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback, refreshBuy });
+            if (typeof refreshBuy === 'function') refreshBuy();
           }
         });
         fishList.appendChild(li);
@@ -90,7 +92,8 @@ const ShopSellView = (() => {
           if (res.ok) {
             $('shop-coins').textContent = coins();
             feedback(fbEl, t('shop_sold', baitName, res.sold, res.earned), true);
-            render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback });
+            render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback, refreshBuy });
+            if (typeof refreshBuy === 'function') refreshBuy();
           }
         });
         baitList.appendChild(li);
@@ -118,7 +121,8 @@ const ShopSellView = (() => {
           if (res.ok) {
             $('shop-coins').textContent = coins();
             feedback(fbEl, t('shop_sold', equipName, 1, res.earned), true);
-            render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback });
+            render({ translate, getInventory, isProtected, getBaits, getEquip, getOwnedEquip, catalog, baitCatalog, defaults, sellAll, sellFishQty, sellBaits, sellEquip, coins, feedback, refreshBuy });
+            if (typeof refreshBuy === 'function') refreshBuy();
           }
         });
         equipList.appendChild(li);
