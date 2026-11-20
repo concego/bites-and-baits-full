@@ -53,9 +53,13 @@ html = (ROOT / 'index.html').read_text(encoding='utf-8')
 game = (ROOT / 'game.js').read_text(encoding='utf-8')
 i18n = (ROOT / 'i18n.js').read_text(encoding='utf-8')
 assert 'ContentData.load().then' in game and ".catch(_showContentLoadError)" in game
-assert html.index('content-data.js') < html.index('game.js?v=json-content-vitor-01')
+assert html.index('content-data.js') < html.index('game.js?v=people-vitor-avatar-01')
 assert 'npc-data.js' not in html
 assert "ContentData.getNpc('vitor')" in game
+assert "peopleVitorAvatar: $('people-vitor-avatar')" in game
+assert "const showVitorAvatar = personId === 'vitor'" in game
+assert "CharacterAvatar.render(ui.peopleVitorAvatar, ContentData.getNpc('vitor')" in game
+assert 'id="people-vitor-avatar"' in html and 'people-conversation-content' in html
 assert 'npcs = Object.freeze(loaded)' in loader
 assert "response.ok" in loader and 'await response.text()' in loader and 'JSON.parse(text)' in loader
 assert 'ID duplicado' in loader and 'ID não corresponde ao índice' in loader
