@@ -42,7 +42,7 @@
 
 **Saída documental:** atualizar esta especificação e o devlog com os caminhos reais, contrato mínimo escolhido, testes e questões abertas descobertas.
 
-**Estado em 2026-11-20:** implementação e QA automatizado da fatia 1 estão na branch `json-content-slice-1-vitor`; ver `content-data-slice-1-vitor.md` e `DEVLOG.md`. QA de manifest/índice/preset e 11 casos dos validadores reais, incluindo 404 e JSON malformado, passou; as suítes de regressão relevantes também passaram. Verificação manual de inicialização/abertura no Pages e acessibilidade continua pendente; não considerar validada nem publicar/mover releases sem autorização específica.
+**Estado em 2026-11-20:** carregamento de conteúdo JSON da fatia 1 está no Pages para teste; o print de QA manual mostrou que o avatar de Vitor faltava em Pessoas presentes, pois essa tela ainda não o consumia. A correção local na branch de trabalho agora conecta o mesmo registro JSON à conversa de Vitor; QA automatizado foi repetido e passou. A correção visual não foi publicada. A validação visual desta integração no Pages e a validação de acessibilidade continuam pendentes; não considerar aceita nem mover releases sem autorização específica.
 
 ### Fatia 2 — Validador e contrato de dados reaproveitável
 
