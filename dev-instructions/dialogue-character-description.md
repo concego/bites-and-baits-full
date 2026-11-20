@@ -11,6 +11,7 @@ Dar a jogadores cegos acesso opcional a informações sobre como são visualment
 ## Requisitos confirmados
 
 - A descrição é uma ação explícita, opcional e solicitada pelo jogador durante o diálogo.
+- O botão/ação para solicitar descrição deve estar no menu **Pessoas presentes**.
 - O acesso à ação não depende de uma troca de roupa nem de qualquer outra mudança de aparência. Ela pode ser usada quantas vezes o jogador quiser, inclusive repetidamente sem que o estado visual tenha mudado.
 - Cada solicitação deve refletir os dados atuais da aparência e da roupa que o personagem está usando no momento; não usar um texto fixo ou desatualizado quando esses dados mudarem.
 - Se a aparência do personagem ainda não estiver definida, o jogo deve informar isso claramente. Não inventar, inferir nem preencher características ausentes.
