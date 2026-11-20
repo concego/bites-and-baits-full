@@ -20,3 +20,8 @@ Este é um contrato mínimo para a fatia de demonstração, não define versão 
 A apresentação visual deve exibir o avatar JSON do Vitor na conversa de Pessoas presentes e o avatar do protagonista em todas as conversas de Pessoas presentes. Não mostrar o avatar de Vitor nas conversas dos demais NPCs, cujos dados visuais não foram migrados.
 
 `qa_content_data_pipeline.py` verifica parse, manifest, índice, unicidade de IDs, existência/referência dos JSONs, campos requeridos, igualdade exata dos valores do preset legado e ordem do bootstrap. Os validadores do carregador rejeitam HTTP/JSON inválido, paths inválidos, versão/domínio incorreto, registros ausentes, IDs duplicados ou divergentes e aparência incompleta. `qa_content_data_runtime.py` executa os validadores reais e inclui casos negativos para 404 e JSON malformado, além de erros de versão, path traversal, IDs e campos obrigatórios. Esses testes cobrem as funções determinísticas reais; o `fetch` assíncrono ainda precisa de smoke test manual no Pages.
+
+
+## Estado da validação — 2026-11-20
+
+A fatia está implementada no código atual. QA automatizado passou conforme os testes listados acima. Anderson confirmou que já testou manualmente o fluxo no Pages, com teclado e leitor de tela; esses testes não estão pendentes. Não inferir a partir disso autorização para publicar, mover releases ou alterar a demo.
