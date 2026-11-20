@@ -30,6 +30,22 @@ const ContentData = (() => {
     return value;
   }
 
+  function _assertResponse(response, source) {
+    if (!response || response.ok !== true) {
+      const status = response && Number.isFinite(response.status) ? response.status : 'desconhecido';
+      _fail(source, `HTTP ${status}`);
+    }
+    return response;
+  }
+
+  function _parseJson(text, source) {
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      _fail(source, `JSON inválido (${error.message})`);
+    }
+  }
+
   function _validateManifest(value) {
     const source = 'content/manifest.json';
     if (!_object(value) || value.schemaVersion !== SCHEMA_VERSION) _fail(source, 'schemaVersion deve ser 1');
@@ -78,11 +94,12 @@ const ContentData = (() => {
     } catch (error) {
       _fail(label || path, `falha de rede (${error.message})`);
     }
-    if (!response.ok) _fail(label || path, `HTTP ${response.status}`);
+    _assertResponse(response, label || path);
     try {
-      return await response.json();
+      return _parseJson(await response.text(), label || path);
     } catch (error) {
-      _fail(label || path, `JSON inválido (${error.message})`);
+      if (String(error.message || error).indexOf('JSON inválido') >= 0) throw error;
+      _fail(label || path, `falha ao ler resposta (${error.message || error})`);
     }
   }
 
@@ -121,6 +138,12 @@ const ContentData = (() => {
   return Object.freeze({
     load,
     getNpc,
-    validation: Object.freeze({ manifest: _validateManifest, npcIndex: _validateIndex, npc: _validateNpc }),
+    validation: Object.freeze({
+      manifest: _validateManifest,
+      npcIndex: _validateIndex,
+      npc: _validateNpc,
+      response: _assertResponse,
+      jsonText: _parseJson,
+    }),
   });
 })();
