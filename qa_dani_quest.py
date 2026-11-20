@@ -216,7 +216,7 @@ assert 'fish-metrics.js?v=dani-' in index_html
 assert 'inventory-fish-view.js?v=dani-' in index_html
 assert 'clothing-catalog.js?v=dani-' in index_html
 assert 'clothing-stock.js?v=dani-' in index_html
-assert index_html.index('dani-quest.js') < index_html.index('game.js?v=json-content-vitor-01')
+assert index_html.index('dani-quest.js') < index_html.index('game.js?v=people-vitor-avatar-01')
 assert 'data-tab="decor"' in index_html and 'id="inv-tab-decor"' in index_html
 
 print('PASS: %d quest assertions; translations, daily 5%% spawn, 10-coin resale, fish delivery/locking, and Marta gift verified; reward=%d coins.' % (
