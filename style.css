@@ -1030,7 +1030,9 @@ html, body {
 }
 .people-dialog h2 { margin: 0 0 6px; color: var(--white); }
 .people-location { margin: 0 0 20px; color: #f2c84b; font-weight: 800; }
+.people-description-entry { width: 100%; margin: 0 0 12px; }
 .people-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.people-person-row { display: grid; gap: 8px; }
 .people-person-button {
   display: flex;
   flex-direction: column;
@@ -1049,6 +1051,12 @@ html, body {
 .people-person-button span { line-height: 1.4; }
 .people-empty { margin: 0; line-height: 1.5; }
 .people-conversation { margin-top: 18px; }
+.people-description-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.people-person-description-button { width: 100%; }
+.people-description-view { margin-top: 18px; }
+.people-description-view h3 { color: var(--white); line-height: 1.4; }
+.people-description-text { white-space: pre-line; line-height: 1.6; }
+.people-description-view button { width: 100%; }
 .people-speaker { margin: 0 0 8px; color: #f2c84b; font-weight: 800; }
 .people-dialogue-body { min-height: 5em; margin: 0 0 24px; line-height: 1.55; }
 .people-conversation-content {
