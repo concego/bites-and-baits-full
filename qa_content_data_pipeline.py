@@ -53,7 +53,7 @@ html = (ROOT / 'index.html').read_text(encoding='utf-8')
 game = (ROOT / 'game.js').read_text(encoding='utf-8')
 i18n = (ROOT / 'i18n.js').read_text(encoding='utf-8')
 assert 'ContentData.load().then' in game and ".catch(_showContentLoadError)" in game
-assert html.index('content-data.js') < html.index('game.js?v=people-vitor-avatar-01')
+assert html.index('content-data.js') < html.index('game.js?v=people-description-01')
 assert 'npc-data.js' not in html
 assert "ContentData.getNpc('vitor')" in game
 assert "peoplePlayerAvatar: $('people-player-avatar')" in game
