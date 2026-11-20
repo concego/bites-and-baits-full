@@ -221,6 +221,7 @@ const Game = (() => {
       peopleEmpty:    $('people-empty'),
       peopleList:     $('people-list'),
       peopleConversation: $('people-conversation'),
+      peopleVitorAvatar: $('people-vitor-avatar'),
       peopleSpeaker:  $('people-speaker'),
       peopleDialogueBody: $('people-dialogue-body'),
       peopleClose:    $('btn-people-close'),
@@ -2772,6 +2773,15 @@ const Game = (() => {
     peopleConversationPersonId = personId;
     peopleConversation = _peopleConversationLines(personId);
     peopleDialogueIndex = 0;
+    if (ui.peopleVitorAvatar) {
+      const showVitorAvatar = personId === 'vitor';
+      ui.peopleVitorAvatar.classList.toggle('hidden', !showVitorAvatar);
+      if (showVitorAvatar && typeof CharacterAvatar !== 'undefined') {
+        CharacterAvatar.render(ui.peopleVitorAvatar, ContentData.getNpc('vitor'), { outfit: 'arrival' });
+      } else {
+        ui.peopleVitorAvatar.textContent = '';
+      }
+    }
     ui.peopleListView.classList.add('hidden');
     ui.peopleConversation.classList.remove('hidden');
     _renderPeopleConversation();
