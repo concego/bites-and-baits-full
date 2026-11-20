@@ -17,6 +17,6 @@ Este é um contrato mínimo para a fatia de demonstração, não define versão 
 
 ## Aceitação/QA
 
-A apresentação visual deve exibir o avatar JSON do Vitor na conversa de Pessoas presentes; não mostrar esse avatar nas conversas dos demais NPCs, cujos dados visuais não foram migrados.
+A apresentação visual deve exibir o avatar JSON do Vitor na conversa de Pessoas presentes e o avatar do protagonista em todas as conversas de Pessoas presentes. Não mostrar o avatar de Vitor nas conversas dos demais NPCs, cujos dados visuais não foram migrados.
 
 `qa_content_data_pipeline.py` verifica parse, manifest, índice, unicidade de IDs, existência/referência dos JSONs, campos requeridos, igualdade exata dos valores do preset legado e ordem do bootstrap. Os validadores do carregador rejeitam HTTP/JSON inválido, paths inválidos, versão/domínio incorreto, registros ausentes, IDs duplicados ou divergentes e aparência incompleta. `qa_content_data_runtime.py` executa os validadores reais e inclui casos negativos para 404 e JSON malformado, além de erros de versão, path traversal, IDs e campos obrigatórios. Esses testes cobrem as funções determinísticas reais; o `fetch` assíncrono ainda precisa de smoke test manual no Pages.
