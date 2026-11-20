@@ -42,9 +42,11 @@
 
 **Saída documental:** atualizar esta especificação e o devlog com os caminhos reais, contrato mínimo escolhido, testes e questões abertas descobertas.
 
-**Estado em 2026-11-20:** carregamento de conteúdo JSON da fatia 1 está no Pages para teste; o print de QA manual mostrou que o avatar de Vitor faltava em Pessoas presentes, pois essa tela ainda não o consumia. A correção local na branch de trabalho agora conecta o mesmo registro JSON à conversa de Vitor; QA automatizado foi repetido e passou. A correção visual não foi publicada. A validação visual desta integração no Pages e a validação de acessibilidade continuam pendentes; não considerar aceita nem mover releases sem autorização específica.
+**Estado em 2026-11-20: concluída.** O código atual integra o registro JSON de Vitor ao pipeline e à conversa em Pessoas presentes, e a especificação do botão de descrição também foi implementada. Os QA automatizados focados foram executados e passaram. Anderson confirmou que já realizou a validação manual do fluxo no Pages e a validação com teclado e leitor de tela. Portanto, esses testes manuais não estão pendentes. A conclusão desta fatia não autoriza novas publicações, atualização de releases ou alteração da demo.
 
 ### Fatia 2 — Validador e contrato de dados reaproveitável
+
+**Próxima prioridade após a conclusão da fatia 1.**
 
 **Objetivo:** tornar erros estruturais baratos de detectar antes de migrações de mais conteúdo.
 
