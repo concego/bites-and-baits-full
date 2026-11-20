@@ -1051,6 +1051,28 @@ html, body {
 .people-conversation { margin-top: 18px; }
 .people-speaker { margin: 0 0 8px; color: #f2c84b; font-weight: 800; }
 .people-dialogue-body { min-height: 5em; margin: 0 0 24px; line-height: 1.55; }
+.people-conversation-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.people-vitor-avatar {
+  display: flex;
+  flex: 0 0 84px;
+  width: 84px;
+  height: 120px;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+.people-vitor-avatar.hidden { display: none; }
+.people-vitor-avatar .character-avatar-svg {
+  display: block;
+  width: 84px;
+  height: 114px;
+}
+.people-dialogue-copy { flex: 1 1 auto; min-width: 0; }
+.people-dialogue-copy .people-dialogue-body { margin-bottom: 24px; }
 
 .shop-npc-dialog {
   position: absolute;
