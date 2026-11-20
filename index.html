@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Bites &amp; Baits</title>
-  <link rel="stylesheet" href="style.css?v=people-vitor-avatar-01" />
+  <link rel="stylesheet" href="style.css?v=people-description-01" />
   <link rel="stylesheet" href="style_visuals.css" />
   <link rel="stylesheet" href="style_character.css?v=creator-outfit-buttons-01" />
   <link rel="stylesheet" href="style-narrative.css?v=vitor-shore-02" />
@@ -1028,10 +1028,15 @@
       <h2 id="people-title" data-i18n="people_title"></h2>
       <p id="people-location" class="people-location"></p>
       <div id="people-list-view">
+        <button id="btn-people-player-description" class="btn-secondary people-description-entry" type="button" data-i18n="people_describe_player"></button>
         <p id="people-empty" class="people-empty hidden" data-i18n="people_empty"></p>
         <ul id="people-list" class="people-list" role="list"></ul>
       </div>
       <div id="people-conversation" class="people-conversation hidden">
+        <div class="people-description-actions">
+          <button id="btn-people-dialogue-player-description" class="btn-secondary" type="button" data-i18n="people_describe_player"></button>
+          <button id="btn-people-dialogue-npc-description" class="btn-secondary" type="button"></button>
+        </div>
         <div id="people-conversation-content" class="people-conversation-content">
           <div id="people-player-avatar" class="people-player-avatar" aria-hidden="true"></div>
           <div id="people-vitor-avatar" class="people-vitor-avatar hidden" aria-hidden="true"></div>
@@ -1042,6 +1047,11 @@
         </div>
         <button id="btn-people-dialogue-next" class="btn-primary" type="button" data-i18n="people_continue"></button>
       </div>
+      <section id="people-description-view" class="people-description-view hidden" role="region" aria-labelledby="people-description-title">
+        <h3 id="people-description-title" tabindex="-1"></h3>
+        <p id="people-description-text" class="people-description-text" tabindex="-1"></p>
+        <button id="btn-people-description-close" class="btn-primary" type="button" data-i18n="people_description_close"></button>
+      </section>
     </div>
   </div>
 
@@ -1058,7 +1068,7 @@
     });
   </script>
   <script src="a11y.js"></script>
-  <script src="i18n.js?v=json-content-error-01"></script>
+  <script src="i18n.js?v=people-description-01"></script>
   <script src="accessibility-announcer.js?v=dani-catch-followup-01"></script>
   <script src="last-catch-storage.js?v=refactor-02"></script>
   <script src="fish-data.js"></script>
@@ -1107,7 +1117,7 @@
   <script src="shop-buy-view.js?v=refactor-14"></script>
   <script src="fishing-combat.js?v=idea-031-prototype-01"></script>
   <script src="content-data.js?v=json-content-vitor-01"></script>
-  <script src="game.js?v=people-vitor-avatar-01"></script>
+  <script src="game.js?v=people-description-01"></script>
 
   <!-- ── Modal de Zonas de Pesca ─────────────────────────────────────── -->
   <div id="zone-modal" class="modal-overlay hidden" role="dialog"
