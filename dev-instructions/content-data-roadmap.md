@@ -42,6 +42,8 @@
 
 **Saída documental:** atualizar esta especificação e o devlog com os caminhos reais, contrato mínimo escolhido, testes e questões abertas descobertas.
 
+**Estado em 2026-11-20:** implementação e QA automatizado da fatia 1 estão na branch `json-content-slice-1-vitor`; ver `content-data-slice-1-vitor.md` e `DEVLOG.md`. QA de manifest/índice/preset e 11 casos dos validadores reais, incluindo 404 e JSON malformado, passou; as suítes de regressão relevantes também passaram. Verificação manual de inicialização/abertura no Pages e acessibilidade continua pendente; não considerar validada nem publicar/mover releases sem autorização específica.
+
 ### Fatia 2 — Validador e contrato de dados reaproveitável
 
 **Objetivo:** tornar erros estruturais baratos de detectar antes de migrações de mais conteúdo.
