@@ -1083,6 +1083,14 @@ html, body {
 }
 .people-dialogue-copy { flex: 1 1 auto; min-width: 0; }
 .people-dialogue-copy .people-dialogue-body { margin-bottom: 24px; }
+@media (max-width: 480px) {
+  .people-conversation-content { flex-wrap: wrap; }
+  .people-conversation-content .people-dialogue-copy { flex: 1 1 100%; }
+  .people-player-avatar,
+  .people-vitor-avatar { flex-basis: 68px; width: 68px; height: 98px; }
+  .people-player-avatar .character-avatar-svg,
+  .people-vitor-avatar .character-avatar-svg { width: 68px; height: 92px; }
+}
 
 .shop-npc-dialog {
   position: absolute;
