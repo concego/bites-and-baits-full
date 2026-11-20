@@ -1,7 +1,7 @@
 # Arquitetura de conteúdo, dados e persistência — Bites & Baits
 
 **Status:** direção arquitetural aprovada para orientar planejamento; não é autorização para uma refatoração ampla nem para publicar. Decisões marcadas como pendentes precisam ser discutidas antes de implementação que dependa delas.
-**Última atualização:** 2026-11-18.
+**Última atualização:** 2026-11-20.
 
 ## Objetivo do projeto
 
@@ -55,7 +55,7 @@ Não usar um banco de dados local como destino automático para os catálogos fi
 - A arquitetura deve evitar dependência de servidor e conservar a possibilidade de empacotar os mesmos dados com Tauri/Windows e Capacitor/Android na fase final. Verificação específica em cada pacote nativo pertence a essa fase, depois de o jogo estar pronto.
 - A arquitetura atual confirmada é HTML/CSS/JavaScript com scripts clássicos carregados em ordem fixa pelo `index.html`, sem `import`/`export` nativos. Considerar essa realidade ao planejar a migração, mas não a tratar como limite permanente das versões empacotadas.
 - Manter arquivos-fonte pequenos/modulares, validados antes da build; permitir pacote consolidado apenas quando necessário. O jogo consome dados pelo carregador e por interfaces de domínio estáveis, sem cada tela conhecer caminhos físicos.
-- **Contrato mínimo do exemplo da fatia 1:** especificado e implementado para manifest → índice de NPCs → JSON do Vitor → carregador central, descrito em `content-data-slice-1-vitor.md`. A validação manual no Pages continua pendente. Contratos e schemas mais amplos dos outros domínios permanecem por definir.
+- **Fatia 1 concluída:** contrato mínimo manifest → índice de NPCs → JSON do Vitor → carregador central está especificado e implementado em `content-data-slice-1-vitor.md`. Os QA automatizados focados passaram e Anderson confirmou a validação manual no Pages, com teclado e leitor de tela. Esses testes não estão pendentes. Contratos e schemas mais amplos dos outros domínios permanecem por definir.
 - A compatibilidade final com Tauri e Capacitor precisa ser preservada na arquitetura, mas não exige configurar, compilar ou validar apps nativos agora. Fazer essa integração e seus testes específicos quando o jogo estiver pronto para a etapa final de distribuição.
 - **Pendente além do exemplo Vitor:** generalizar/versionar schemas dos domínios, definir regras completas para referências inválidas e especificar o fluxo de integração da exportação do criador ao repositório. O contrato local da fatia 1 não fecha esses pontos globais; o trabalho continua orientado ao Pages, sem depender da compilação nativa.
 - **Pendente:** decidir fronteiras concretas e sequência de modernização dos módulos atuais. Não fazer uma migração ampla de `game.js` ou do carregamento de scripts apenas porque os dados passarão a ser modulares.
@@ -72,14 +72,13 @@ Não usar um banco de dados local como destino automático para os catálogos fi
 
 ## Ordem de execução aprovada
 
-O roteiro detalhado de fatias, seus escopos, dependências e critérios de aceitação está em [`content-data-roadmap.md`](content-data-roadmap.md). A próxima fatia é construir no Pages uma vertical slice do manifest → índice de NPCs → JSON do Vitor → carregador central → validação, sem migrar lojas, quests ou outros catálogos. Antes de executar, ler o roteiro e tratar seus limites e critérios como parte da especificação.
+O roteiro detalhado de fatias, seus escopos, dependências e critérios de aceitação está em [`content-data-roadmap.md`](content-data-roadmap.md). A vertical slice inicial com Vitor está concluída, incluindo a validação manual confirmada por Anderson. A próxima prioridade é a **Fatia 2 — Validador e contrato de dados reaproveitável**; consultar o roteiro antes de implementar. Cada nova migração segue como fatia pequena, sem exigir builds nativas e sem autorização implícita para publicar.
 
-## Próximas decisões antes de uma especificação executável
+## Decisões ainda necessárias para fatias futuras
 
-1. Escolher o primeiro recorte pequeno que demonstrará o fluxo — por exemplo, um NPC e uma quest — sem migrar todos os catálogos.
-2. Definir se o criador deve exportar somente a ficha visual do NPC ou também dados textuais/descrições, e confirmar o contrato entre criador e jogo.
-3. Especificar os schemas dos JSONs de NPC, quest e catálogos por domínio, incluindo IDs e referências estáveis.
-4. Definir e implementar carregamento inicial que funcione no Pages, sem servidor, mantendo os dados em JSON modular. Deixar a configuração, compilação e validação de Tauri/Windows e Capacitor/Android para a etapa final, quando o jogo estiver pronto.
-5. Especificar e implementar o manifest principal, os índices de domínio, o carregador central e a validação por uma fatia pequena. A alteração de `index.html` e de outros pontos de entrada está prevista como necessária para conectar o carregamento; não preservar a estrutura atual à custa de impedir a arquitetura aprovada.
-6. Definir se o recorte exige novos módulos, validação de dados, migração de saves ou todos esses elementos; não inferir.
-7. Só depois produzir especificação de implementação completa para o recorte aprovado, com escopo, dados, estados, dependências, acessibilidade, localização, compatibilidade, testes e critérios de aceitação.
+- Generalizar schemas e validação para os domínios além do exemplo mínimo de NPC; seguir a ordem e os bloqueios descritos no roteiro.
+- Antes da migração de uma loja, escolher qual loja e separar campos globais de catálogo dos campos específicos da oferta.
+- Definir o contrato de exportação da ferramenta autônoma de NPCs quando essa fatia for priorizada.
+- Manter a tecnologia/versionamento de saves como decisão separada; não presumir migração nem sincronização online.
+
+Esses pontos não reabrem nem anulam o contrato mínimo já implementado para a fatia 1.
