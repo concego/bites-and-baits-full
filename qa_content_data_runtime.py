@@ -29,8 +29,10 @@ rejects(function(){ContentData.validation.npcIndex({schemaVersion:1,domain:'npcs
 rejects(function(){ContentData.validation.npc(Object.assign({},npc,{id:'zeca'}),'vitor','vitor.json');},'não corresponde','record/index id mismatch rejected');
 var incomplete=JSON.parse(JSON.stringify(npc)); delete incomplete.appearance.hairColor;
 rejects(function(){ContentData.validation.npc(incomplete,'vitor','vitor.json');},'hairColor','missing required appearance field rejected');
+rejects(function(){ContentData.validation.response({ok:false,status:404},'content/npcs/vitor.json');},'HTTP 404','missing file HTTP error rejected');
+rejects(function(){ContentData.validation.jsonText('{broken','content/npcs/vitor.json');},'JSON inválido','malformed JSON rejected');
 JSON.stringify({checks:checks});
 '''
 shim="var document={baseURI:'https://example.test/bites-and-baits/'}; function URL(path,base){this.href=/^https?:/.test(path)?path:String(base).replace(/\\/?$/,'/')+path;}\n"
 result=json.loads(dukpy.evaljs(shim+loader+'\n'+harness))
-print('PASS: runtime ContentData validators: %d assertions (valid manifest/index/NPC; wrong version, traversal, duplicate/malformed/mismatched IDs, and incomplete appearance).' % result['checks'])
+print('PASS: runtime ContentData validators: %d assertions (valid records; wrong version, traversal, missing HTTP resource, malformed JSON, duplicate/malformed/mismatched IDs, and incomplete appearance).' % result['checks'])
