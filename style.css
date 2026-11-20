@@ -1056,6 +1056,7 @@ html, body {
   align-items: flex-start;
   gap: 12px;
 }
+.people-player-avatar,
 .people-vitor-avatar {
   display: flex;
   flex: 0 0 84px;
@@ -1066,6 +1067,7 @@ html, body {
   overflow: hidden;
 }
 .people-vitor-avatar.hidden { display: none; }
+.people-player-avatar .character-avatar-svg,
 .people-vitor-avatar .character-avatar-svg {
   display: block;
   width: 84px;
