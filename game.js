@@ -575,7 +575,7 @@ const Game = (() => {
       ui.openingCharacterAvatar.textContent = '';
     }
     if (['boatTravel', 'shoreArrival', 'shoreFarewell'].includes(step) && ui.openingVitorAvatar && typeof CharacterAvatar !== 'undefined') {
-      CharacterAvatar.render(ui.openingVitorAvatar, VITOR_CHARACTER, { outfit: 'arrival' });
+      CharacterAvatar.render(ui.openingVitorAvatar, ContentData.getNpc('vitor'), { outfit: 'arrival' });
     } else if (ui.openingVitorAvatar) {
       ui.openingVitorAvatar.textContent = '';
     }
@@ -3084,11 +3084,33 @@ const Game = (() => {
     Audio.stopReel();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
+  function _showContentLoadError(error) {
+    console.error('[ContentData] Falha ao carregar conteúdo obrigatório:', error);
+    const panel = document.createElement('main');
+    panel.setAttribute('role', 'alert');
+    panel.setAttribute('aria-live', 'assertive');
+    panel.tabIndex = -1;
+    panel.style.cssText = 'max-width:48rem;margin:3rem auto;padding:1.5rem;font:inherit;color:#17232a;background:#fff;border:3px solid #8b2f2f;border-radius:.5rem;';
+    const heading = document.createElement('h1');
+    heading.textContent = I18n.t('content_load_failed_title');
+    const message = document.createElement('p');
+    message.textContent = I18n.t('content_load_failed_message');
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.textContent = I18n.t('content_load_retry');
+    retry.addEventListener('click', () => window.location.reload());
+    panel.append(heading, message, retry);
+    document.body.prepend(panel);
+    panel.focus();
   }
+
+  ContentData.load().then(() => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+      init();
+    }
+  }).catch(_showContentLoadError);
   return {
     state:       () => state,
     startNormal: () => startGame('normal'),
