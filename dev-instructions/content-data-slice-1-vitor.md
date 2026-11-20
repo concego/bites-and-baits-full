@@ -2,7 +2,7 @@
 
 ## Escopo
 
-Migrar somente o preset visual de Vitor já usado na abertura, sem alterar seus valores nem a apresentação do avatar. Implementar o caminho manifest → índice de NPCs → JSON por NPC, carregamento central e validação necessária para Pages. Não migrar quests, outros NPCs, lojas, catálogos, save, regras ou acessibilidade de outros fluxos. Não publicar, mover tags/releases nem alterar a demo sem autorização própria.
+Migrar somente o preset visual de Vitor, sem alterar seus valores, e usá-lo tanto na abertura quanto na conversa de Vitor em Pessoas presentes. Implementar o caminho manifest → índice de NPCs → JSON por NPC, carregamento central e validação necessária para Pages. Não migrar quests, outros NPCs, lojas, catálogos, save, regras ou acessibilidade de outros fluxos. Não publicar, mover tags/releases nem alterar a demo sem autorização própria.
 
 ## Contrato mínimo adotado nesta fatia
 
@@ -16,5 +16,7 @@ Migrar somente o preset visual de Vitor já usado na abertura, sem alterar seus 
 Este é um contrato mínimo para a fatia de demonstração, não define versão final nem schemas de outros domínios. `fetch` usa URLs relativas ao documento para funcionar no Pages e não depende de servidor de conteúdo externo.
 
 ## Aceitação/QA
+
+A apresentação visual deve exibir o avatar JSON do Vitor na conversa de Pessoas presentes; não mostrar esse avatar nas conversas dos demais NPCs, cujos dados visuais não foram migrados.
 
 `qa_content_data_pipeline.py` verifica parse, manifest, índice, unicidade de IDs, existência/referência dos JSONs, campos requeridos, igualdade exata dos valores do preset legado e ordem do bootstrap. Os validadores do carregador rejeitam HTTP/JSON inválido, paths inválidos, versão/domínio incorreto, registros ausentes, IDs duplicados ou divergentes e aparência incompleta. `qa_content_data_runtime.py` executa os validadores reais e inclui casos negativos para 404 e JSON malformado, além de erros de versão, path traversal, IDs e campos obrigatórios. Esses testes cobrem as funções determinísticas reais; o `fetch` assíncrono ainda precisa de smoke test manual no Pages.
