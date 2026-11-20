@@ -56,7 +56,10 @@ assert 'ContentData.load().then' in game and ".catch(_showContentLoadError)" in 
 assert html.index('content-data.js') < html.index('game.js?v=people-vitor-avatar-01')
 assert 'npc-data.js' not in html
 assert "ContentData.getNpc('vitor')" in game
+assert "peoplePlayerAvatar: $('people-player-avatar')" in game
 assert "peopleVitorAvatar: $('people-vitor-avatar')" in game
+assert "_renderCharacterPresence(ui.peoplePlayerAvatar, null, null, 'arrival')" in game
+assert 'id="people-player-avatar"' in html
 assert "const showVitorAvatar = personId === 'vitor'" in game
 assert "CharacterAvatar.render(ui.peopleVitorAvatar, ContentData.getNpc('vitor')" in game
 assert 'id="people-vitor-avatar"' in html and 'people-conversation-content' in html
