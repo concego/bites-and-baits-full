@@ -220,7 +220,14 @@ const Game = (() => {
       peopleListView: $('people-list-view'),
       peopleEmpty:    $('people-empty'),
       peopleList:     $('people-list'),
+      peoplePlayerDescription: $('btn-people-player-description'),
       peopleConversation: $('people-conversation'),
+      peopleDialoguePlayerDescription: $('btn-people-dialogue-player-description'),
+      peopleDialogueNpcDescription: $('btn-people-dialogue-npc-description'),
+      peopleDescriptionView: $('people-description-view'),
+      peopleDescriptionTitle: $('people-description-title'),
+      peopleDescriptionText: $('people-description-text'),
+      peopleDescriptionClose: $('btn-people-description-close'),
       peoplePlayerAvatar: $('people-player-avatar'),
       peopleVitorAvatar: $('people-vitor-avatar'),
       peopleSpeaker:  $('people-speaker'),
@@ -339,6 +346,19 @@ const Game = (() => {
       _openPeoplePanel(location, event.currentTarget);
     });
     $('btn-people-close')?.addEventListener('click', _closePeoplePanel);
+    ui.peoplePlayerDescription?.addEventListener('click', event => {
+      const character = Character.load();
+      _openPeopleDescription('player', character.name || t('character_unknown_name'), event.currentTarget, 'list');
+    });
+    ui.peopleDialoguePlayerDescription?.addEventListener('click', event => {
+      const character = Character.load();
+      _openPeopleDescription('player', character.name || t('character_unknown_name'), event.currentTarget, 'conversation');
+    });
+    ui.peopleDialogueNpcDescription?.addEventListener('click', event => {
+      const person = _peopleAt(peopleLocation).find(item => item.id === peopleConversationPersonId);
+      if (person) _openPeopleDescription(person.id, t(person.name), event.currentTarget, 'conversation');
+    });
+    ui.peopleDescriptionClose?.addEventListener('click', _closePeopleDescription);
     ui.peopleDialogueNext?.addEventListener('click', _advancePeopleConversation);
     $('btn-hub-travel')?.addEventListener('click', () => { renderTravel(); showScreen('travel'); _startCityScreenMusic('travel'); });
     $('btn-hub-vessel')?.addEventListener('click', () => { renderVessel(); showScreen('vessel'); _startCityScreenMusic('vessel'); });
@@ -531,6 +551,8 @@ const Game = (() => {
   let peopleConversationPersonId = null;
   let peopleDialogueIndex = 0;
   let peopleReturnFocus = null;
+  let peopleDescriptionReturnView = null;
+  let peopleDescriptionReturnFocus = null;
 
   function _isStoryOpeningComplete() {
     return localStorage.getItem(STORY_OPENING_KEY) === '1';
@@ -2750,16 +2772,115 @@ const Game = (() => {
     ui.peopleLocation.textContent = _peopleLocationLabel(peopleLocation);
     ui.peopleList.innerHTML = '';
     ui.peopleEmpty.classList.toggle('hidden', people.length > 0);
+    if (ui.peopleDialoguePlayerDescription) ui.peopleDialoguePlayerDescription.textContent = t('people_describe_player');
     people.forEach(person => {
       const li = document.createElement('li');
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'people-person-button';
-      button.innerHTML = `<strong>${t(person.name)}</strong><span>${t(person.desc)}</span>`;
-      button.addEventListener('click', () => _openPeopleConversation(person.id));
-      li.appendChild(button);
+      li.className = 'people-person-row';
+      const talk = document.createElement('button');
+      talk.type = 'button';
+      talk.className = 'people-person-button';
+      talk.innerHTML = `<strong>${t(person.name)}</strong><span>${t(person.desc)}</span>`;
+      talk.addEventListener('click', () => _openPeopleConversation(person.id));
+      const describe = document.createElement('button');
+      describe.type = 'button';
+      describe.className = 'btn-secondary people-person-description-button';
+      describe.textContent = t('people_describe_person', t(person.name));
+      describe.addEventListener('click', event => {
+        _openPeopleDescription(person.id, t(person.name), event.currentTarget, 'list');
+      });
+      li.append(talk, describe);
       ui.peopleList.appendChild(li);
     });
+  }
+
+  function _peopleDescriptionLines(character, isPlayer) {
+    if (!character || !character.appearance || !character.genderProfile) return [];
+    const lang = I18n.getLang() || 'pt';
+    const categories = getCharacterVisualCategories(character.genderProfile);
+    const appearance = character.appearance;
+    const equipped = isPlayer && typeof Wardrobe !== 'undefined'
+      ? Wardrobe.getEquipped('arrival') : {};
+    const hasEquippedClothes = Object.keys(equipped).length > 0;
+    const lines = [];
+    const fields = [
+      'skinTone', 'height', 'bodyShape', 'faceShape', 'eyeDetails', 'eyeColor',
+      'hairStyle', 'hairColor', 'headCovering', 'facialHair', 'arrivalOutfit',
+      'footwear', 'accessories',
+    ];
+    const absentValues = new Set([
+      'nenhuma cobertura', 'no covering', 'nincs fejfedő',
+      'sem pelos faciais', 'no facial hair', 'nincs arcszőrzet',
+      'nenhum acessório', 'no accessories', 'nincsenek kiegészítők',
+    ]);
+    fields.forEach(field => {
+      if (field === 'arrivalOutfit' && hasEquippedClothes) return;
+      if (field === 'headCovering' && equipped.headwear) return;
+      if (field === 'hairColor' && /hairStyle-5$/.test(String(appearance.hairStyle || ''))) return;
+      const category = categories.find(item => item.key === field);
+      const selected = category?.options.find(item => item.value === appearance[field]);
+      if (!category || !selected) return;
+      const value = selected.labels?.[lang] || selected.labels?.pt;
+      if (!value || absentValues.has(value.toLocaleLowerCase())) return;
+      const label = category.labels?.[lang] || category.labels?.pt;
+      if (!label) return;
+      let line = `${label}: ${value}`;
+      if (field === 'arrivalOutfit' && selected.description) {
+        line += ` — ${selected.description[lang] || selected.description.pt}`;
+      }
+      lines.push(`${line}.`);
+    });
+    const clothingLabels = {
+      top: t('people_description_slot_top'),
+      bottom: t('people_description_slot_bottom'),
+      outerwear: t('people_description_slot_outerwear'),
+      headwear: t('people_description_slot_headwear'),
+      gloves: t('people_description_slot_gloves'),
+    };
+    Object.entries(equipped).forEach(([slot, item]) => {
+      if (!item) return;
+      const label = clothingLabels[slot] || slot;
+      const color = item.colorName?.[lang] || item.colorName?.pt;
+      const name = item.name?.[lang] || item.name?.pt;
+      const details = item.description?.[lang] || item.description?.pt;
+      const pieces = [name, color, details].filter(Boolean);
+      if (pieces.length) lines.push(`${t('people_description_current_clothes')}, ${label}: ${pieces.join(', ')}.`);
+    });
+    return lines;
+  }
+
+  function _getPeopleDescription(personId, fallbackName) {
+    let character = null;
+    const isPlayer = personId === 'player';
+    if (isPlayer) character = Character.load();
+    else if (personId === 'vitor') character = ContentData.getNpc('vitor');
+    const name = isPlayer ? (character?.name || t('character_unknown_name')) : (fallbackName || personId);
+    const lines = _peopleDescriptionLines(character, isPlayer);
+    return { name, text: lines.length ? lines.join('\n') : t('people_description_not_implemented', name) };
+  }
+
+  function _openPeopleDescription(personId, name, trigger, returnView) {
+    const description = _getPeopleDescription(personId, name);
+    const titleText = t('people_description_title', name || description.name);
+    if (ui.peopleDescriptionTitle) ui.peopleDescriptionTitle.textContent = titleText;
+    if (ui.peopleDescriptionText) ui.peopleDescriptionText.textContent = description.text;
+    peopleDescriptionReturnView = returnView === 'conversation' ? 'conversation' : 'list';
+    peopleDescriptionReturnFocus = trigger || document.activeElement;
+    ui.peopleListView?.classList.add('hidden');
+    ui.peopleConversation?.classList.add('hidden');
+    ui.peopleDescriptionView?.classList.remove('hidden');
+    requestAnimationFrame(() => ui.peopleDescriptionText?.focus());
+  }
+
+  function _closePeopleDescription() {
+    if (!peopleDescriptionReturnView || !ui.peopleDescriptionView) return;
+    ui.peopleDescriptionView.classList.add('hidden');
+    const returnView = peopleDescriptionReturnView;
+    ui.peopleListView?.classList.toggle('hidden', returnView !== 'list');
+    ui.peopleConversation?.classList.toggle('hidden', returnView !== 'conversation');
+    peopleDescriptionReturnView = null;
+    const target = peopleDescriptionReturnFocus;
+    peopleDescriptionReturnFocus = null;
+    requestAnimationFrame(() => target?.focus?.());
   }
 
   function _renderPeopleConversation() {
@@ -2768,6 +2889,10 @@ const Game = (() => {
     ui.peopleSpeaker.textContent = line.speaker;
     ui.peopleDialogueBody.textContent = line.text;
     ui.peopleDialogueNext.textContent = t('people_continue');
+    const person = _peopleAt(peopleLocation).find(item => item.id === peopleConversationPersonId);
+    if (ui.peopleDialogueNpcDescription && person) {
+      ui.peopleDialogueNpcDescription.textContent = t('people_describe_person', t(person.name));
+    }
   }
 
   function _openPeopleConversation(personId) {
@@ -2797,6 +2922,9 @@ const Game = (() => {
     ui.peoplePanel.classList.add('hidden');
     ui.peopleListView.classList.remove('hidden');
     ui.peopleConversation.classList.add('hidden');
+    ui.peopleDescriptionView?.classList.add('hidden');
+    peopleDescriptionReturnView = null;
+    peopleDescriptionReturnFocus = null;
     if (ui.peoplePlayerAvatar) ui.peoplePlayerAvatar.textContent = '';
     if (ui.peopleVitorAvatar) ui.peopleVitorAvatar.textContent = '';
     peopleConversation = null;
