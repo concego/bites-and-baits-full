@@ -221,6 +221,7 @@ const Game = (() => {
       peopleEmpty:    $('people-empty'),
       peopleList:     $('people-list'),
       peopleConversation: $('people-conversation'),
+      peoplePlayerAvatar: $('people-player-avatar'),
       peopleVitorAvatar: $('people-vitor-avatar'),
       peopleSpeaker:  $('people-speaker'),
       peopleDialogueBody: $('people-dialogue-body'),
@@ -2773,6 +2774,9 @@ const Game = (() => {
     peopleConversationPersonId = personId;
     peopleConversation = _peopleConversationLines(personId);
     peopleDialogueIndex = 0;
+    if (ui.peoplePlayerAvatar && typeof CharacterAvatar !== 'undefined') {
+      _renderCharacterPresence(ui.peoplePlayerAvatar, null, null, 'arrival');
+    }
     if (ui.peopleVitorAvatar) {
       const showVitorAvatar = personId === 'vitor';
       ui.peopleVitorAvatar.classList.toggle('hidden', !showVitorAvatar);
@@ -2793,6 +2797,8 @@ const Game = (() => {
     ui.peoplePanel.classList.add('hidden');
     ui.peopleListView.classList.remove('hidden');
     ui.peopleConversation.classList.add('hidden');
+    if (ui.peoplePlayerAvatar) ui.peoplePlayerAvatar.textContent = '';
+    if (ui.peopleVitorAvatar) ui.peopleVitorAvatar.textContent = '';
     peopleConversation = null;
     peopleConversationPersonId = null;
     const target = peopleReturnFocus;
