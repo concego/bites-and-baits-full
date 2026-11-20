@@ -57,7 +57,7 @@ assert html.index('content-data.js') < html.index('game.js?v=json-content-vitor-
 assert 'npc-data.js' not in html
 assert "ContentData.getNpc('vitor')" in game
 assert 'npcs = Object.freeze(loaded)' in loader
-assert "response.ok" in loader and 'await response.json()' in loader
+assert "response.ok" in loader and 'await response.text()' in loader and 'JSON.parse(text)' in loader
 assert 'ID duplicado' in loader and 'ID não corresponde ao índice' in loader
 assert all(k in i18n for k in ('content_load_failed_title','content_load_failed_message','content_load_retry'))
 assert not (ROOT / 'npc-data.js').exists(), 'legacy duplicate preset must not remain'
